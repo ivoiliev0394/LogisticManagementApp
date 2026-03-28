@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\iwail\\Desktop\\LogisticManagementApp\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{7856F8FC-0760-4A6B-CE3B-5C30CD3D9E6F}|LogisticManagementApp\\LogisticManagementApp.csproj|c:\\users\\iwail\\desktop\\logisticmanagementapp\\logisticmanagementapp\\areas\\identity\\pages\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{7856F8FC-0760-4A6B-CE3B-5C30CD3D9E6F}|LogisticManagementApp\\LogisticManagementApp.csproj|solutionrelative:logisticmanagementapp\\areas\\identity\\pages\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "_ViewStart.cshtml",
+              "DocumentMoniker": "C:\\Users\\iwail\\Desktop\\LogisticManagementApp\\LogisticManagementApp\\Areas\\Identity\\Pages\\_ViewStart.cshtml",
+              "RelativeDocumentMoniker": "LogisticManagementApp\\Areas\\Identity\\Pages\\_ViewStart.cshtml",
+              "ToolTip": "C:\\Users\\iwail\\Desktop\\LogisticManagementApp\\LogisticManagementApp\\Areas\\Identity\\Pages\\_ViewStart.cshtml",
+              "RelativeToolTip": "LogisticManagementApp\\Areas\\Identity\\Pages\\_ViewStart.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-28T18:45:38.683Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
