@@ -19,9 +19,10 @@
 
   <ItemGroup>
     <Folder Include="Applicationn\" />
-    <Folder Include="Domain\" />
     <Folder Include="Filters\" />
-    <Folder Include="Infrastructure\" />
+    <Folder Include="Infrastructure\Persistence\Extensions\" />
+    <Folder Include="Infrastructure\Persistence\Seed\" />
+    <Folder Include="Infrastructure\Persistence\Configurations\" />
   </ItemGroup>
 
 </Project>

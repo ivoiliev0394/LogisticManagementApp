@@ -30,9 +30,11 @@ namespace LogisticManagementApp.Domain.Companies
         [Required]
         public bool IsActive { get; set; } = true;
 
+        public ApplicationUser? User { get; set; }
+
         // Navigation
         public ICollection<CompanyContact> Contacts { get; set; } = new List<CompanyContact>();
         public ICollection<CompanyBranch> Branches { get; set; } = new List<CompanyBranch>();
-        public ICollection<AspNetUsers> Users { get; set; } = new HashSet<AspNetUsers>();
+        
     }
 }

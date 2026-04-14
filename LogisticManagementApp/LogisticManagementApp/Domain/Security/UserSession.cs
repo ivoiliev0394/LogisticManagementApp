@@ -10,13 +10,13 @@ namespace LogisticManagementApp.Domain.Security
     {
         [Required]
         [MaxLength(450)]
-        public string UserId { get; set; } = null!;
+        public string UserId { get; set; } = string.Empty;
 
         [ForeignKey(nameof(UserId))]
-        public AspNetUsers User { get; set; } = null!;
+        public ApplicationUser User { get; set; } = null!;
 
         [Required]
-        [MaxLength(200)]
+        [MaxLength(300)]
         public string SessionToken { get; set; } = null!;
 
         [Required]

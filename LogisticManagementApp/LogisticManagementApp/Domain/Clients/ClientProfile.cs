@@ -8,11 +8,6 @@ namespace LogisticManagementApp.Domain.Clients
 {
     public class ClientProfile : BaseEntity
     {
-        [Required]
-        public string? UserId { get; set; }
-
-        [ForeignKey(nameof(UserId))]
-        public AspNetUsers? User { get; set; }
 
         [Required]
         [MaxLength(50)]
@@ -31,6 +26,9 @@ namespace LogisticManagementApp.Domain.Clients
 
         [Required]
         public DateTime CreatedOnUtc { get; set; } = DateTime.UtcNow;
+        public string UserId { get; set; } = string.Empty;
+
+        public ApplicationUser User { get; set; } = null!;
 
         public ICollection<ClientAddress> Addresses { get; set; } = new List<ClientAddress>();
         public ICollection<Order> Orders { get; set; } = new List<Order>();

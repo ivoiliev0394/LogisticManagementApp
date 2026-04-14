@@ -7,27 +7,23 @@ namespace LogisticManagementApp.Domain.Operations.Preferences
 {
     public class SavedFilter : BaseEntity
     {
-        [Required]
-        [MaxLength(150)]
-        public string Name { get; set; } = null!;
-
-        [Required]
-        [MaxLength(100)]
-        public string EntityType { get; set; } = null!; // Shipments, Orders, Invoices...
-
-        [Required]
-        [MaxLength(4000)]
-        public string FilterJson { get; set; } = null!;
-
         [MaxLength(450)]
         public string? UserId { get; set; }
 
         [ForeignKey(nameof(UserId))]
-        public AspNetUsers? User { get; set; }
+        public ApplicationUser? User { get; set; }
 
         public Guid? CompanyId { get; set; }
 
         [Required]
-        public bool IsDefault { get; set; } = false;
+        [MaxLength(100)]
+        public string EntityType { get; set; } = null!;
+
+        [Required]
+        [MaxLength(100)]
+        public string Name { get; set; } = null!;
+
+        [MaxLength(4000)]
+        public string? FilterJson { get; set; }
     }
 }

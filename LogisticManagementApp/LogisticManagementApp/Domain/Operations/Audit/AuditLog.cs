@@ -22,7 +22,7 @@ namespace LogisticManagementApp.Domain.Operations.Audit
         public string? UserId { get; set; }
 
         [ForeignKey(nameof(UserId))]
-        public AspNetUsers? User { get; set; }
+        public ApplicationUser? User { get; set; }
 
         [MaxLength(100)]
         public string? UserName { get; set; }
