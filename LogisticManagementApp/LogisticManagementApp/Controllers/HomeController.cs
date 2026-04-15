@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace LogisticManagementApp.Controllers
 {
-    [AllowAnonymous]
+    
     public class HomeController : Controller
     {
         private readonly IHomeService _homeService;
@@ -16,6 +16,7 @@ namespace LogisticManagementApp.Controllers
             _homeService = homeService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -41,6 +42,7 @@ namespace LogisticManagementApp.Controllers
             return View(model);
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(string trackingNumber)
@@ -62,17 +64,21 @@ namespace LogisticManagementApp.Controllers
             var model = await _homeService.TrackShipmentAsync(trackingNumber);
             return View(model);
         }
+
         [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult AdminDashboard()
         {
             return View("~/Views/Home/Dashboards/AdminDashboard.cshtml");
         }
+
+        [AllowAnonymous]
         public IActionResult Privacy()
         {
             return View();
         }
 
+        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
