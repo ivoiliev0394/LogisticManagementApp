@@ -26,8 +26,11 @@ namespace LogisticManagementApp.Domain.Clients
 
         [Required]
         public DateTime CreatedOnUtc { get; set; } = DateTime.UtcNow;
+
+        [MaxLength(450)]
         public string UserId { get; set; } = string.Empty;
 
+        [ForeignKey(nameof(UserId))]
         public ApplicationUser User { get; set; } = null!;
 
         public ICollection<ClientAddress> Addresses { get; set; } = new List<ClientAddress>();

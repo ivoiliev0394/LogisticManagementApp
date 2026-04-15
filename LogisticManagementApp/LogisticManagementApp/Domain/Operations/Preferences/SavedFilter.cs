@@ -16,14 +16,17 @@ namespace LogisticManagementApp.Domain.Operations.Preferences
         public Guid? CompanyId { get; set; }
 
         [Required]
-        [MaxLength(100)]
-        public string EntityType { get; set; } = null!;
+        [MaxLength(150)]
+        public string Name { get; set; } = null!;
 
         [Required]
         [MaxLength(100)]
-        public string Name { get; set; } = null!;
+        public string EntityType { get; set; } = null!; // Shipments, Orders, Invoices...
 
+        [Required]
         [MaxLength(4000)]
-        public string? FilterJson { get; set; }
+        public string FilterJson { get; set; } = null!;
+        [Required]
+        public bool IsDefault { get; set; } = false;
     }
 }

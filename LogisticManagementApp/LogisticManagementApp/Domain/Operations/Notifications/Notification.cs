@@ -1,4 +1,5 @@
 ﻿using LogisticManagementApp.Domain.Common;
+using LogisticManagementApp.Domain.Enums.Operations;
 using LogisticManagementApp.Domain.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -16,8 +17,10 @@ namespace LogisticManagementApp.Domain.Operations.Notifications
         public Guid? RecipientCompanyId { get; set; }
 
         [Required]
-        [MaxLength(100)]
-        public string NotificationType { get; set; } = null!;
+        public NotificationType NotificationType { get; set; } = NotificationType.Info;
+
+        [Required]
+        public NotificationChannel Channel { get; set; } = NotificationChannel.InApp;
 
         [Required]
         [MaxLength(200)]
@@ -28,11 +31,16 @@ namespace LogisticManagementApp.Domain.Operations.Notifications
 
         public bool IsRead { get; set; }
 
+        public DateTime? ReadAtUtc { get; set; }
+
+        public DateTime? SentAtUtc { get; set; }
+
         [MaxLength(100)]
         public string? RelatedEntityType { get; set; }
 
         public Guid? RelatedEntityId { get; set; }
 
-        public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+        [MaxLength(1000)]
+        public string? Notes { get; set; }
     }
 }

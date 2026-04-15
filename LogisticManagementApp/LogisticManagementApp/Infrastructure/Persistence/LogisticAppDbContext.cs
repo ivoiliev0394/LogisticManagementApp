@@ -191,19 +191,23 @@ namespace LogisticManagementApp.Infrastructure.Persistence
             modelBuilder.Entity<ApplicationUser>(entity =>
             {
                 entity.ToTable("AspNetUsers");
+
+                modelBuilder.Entity<ApplicationUser>(entity =>
+                {
+                    entity.ToTable("AspNetUsers");
+
+                    entity.HasOne(u => u.Company)
+                        .WithOne(c => c.User)
+                        .HasForeignKey<ApplicationUser>(u => u.CompanyId)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    entity.HasOne(u => u.ClientProfile)
+                        .WithOne(c => c.User)
+                        .HasForeignKey<ClientProfile>(c => c.UserId)
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             });
-
-            modelBuilder.Entity<ApplicationUser>()
-                .HasOne(u => u.Company)
-                .WithOne(c => c.User)
-                .HasForeignKey<ApplicationUser>(u => u.CompanyId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<ApplicationUser>()
-                .HasOne(u => u.ClientProfile)
-                .WithOne(c => c.User)
-                .HasForeignKey<ClientProfile>(c => c.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ApplicationRole>().ToTable("AspNetRoles");
             modelBuilder.Entity<IdentityUserRole<string>>().ToTable("AspNetUserRoles");

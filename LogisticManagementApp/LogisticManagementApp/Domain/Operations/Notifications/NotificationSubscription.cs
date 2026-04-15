@@ -1,4 +1,5 @@
 ﻿using LogisticManagementApp.Domain.Common;
+using LogisticManagementApp.Domain.Enums.Operations;
 using LogisticManagementApp.Domain.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -17,12 +18,15 @@ namespace LogisticManagementApp.Domain.Operations.Notifications
 
         [Required]
         [MaxLength(100)]
-        public string EventKey { get; set; } = null!;
+        public string EventKey { get; set; } = null!; // Shipment.Delivered, Invoice.Overdue
 
         [Required]
-        [MaxLength(50)]
-        public string Channel { get; set; } = null!; // Email, InApp, SMS
+        public NotificationChannel Channel { get; set; } = NotificationChannel.InApp;
 
+        [Required]
         public bool IsEnabled { get; set; } = true;
+
+        [MaxLength(300)]
+        public string? Notes { get; set; }
     }
 }
