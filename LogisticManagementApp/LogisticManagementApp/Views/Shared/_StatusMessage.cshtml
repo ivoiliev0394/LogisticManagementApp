@@ -1,0 +1,87 @@
+﻿@{
+    var successMessage = TempData["SuccessMessage"]?.ToString();
+    var errorMessage = TempData["ErrorMessage"]?.ToString();
+    var warningMessage = TempData["WarningMessage"]?.ToString();
+    var infoMessage = TempData["InfoMessage"]?.ToString();
+}
+
+@if (!string.IsNullOrWhiteSpace(successMessage) ||
+     !string.IsNullOrWhiteSpace(errorMessage) ||
+     !string.IsNullOrWhiteSpace(warningMessage) ||
+     !string.IsNullOrWhiteSpace(infoMessage))
+{
+    <div id="app-toast-stack" class="app-toast-stack">
+        @if (!string.IsNullOrWhiteSpace(successMessage))
+        {
+            <div class="app-toast app-toast-success" data-toast>
+                <div class="app-toast-icon">✓</div>
+                <div class="app-toast-content">
+                    <div class="app-toast-title">Успешно</div>
+                    <div class="app-toast-message">@successMessage</div>
+                </div>
+                <button type="button" class="app-toast-close" data-toast-close aria-label="Close">×</button>
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <div class="app-toast app-toast-error" data-toast>
+                <div class="app-toast-icon">!</div>
+                <div class="app-toast-content">
+                    <div class="app-toast-title">Грешка</div>
+                    <div class="app-toast-message">@errorMessage</div>
+                </div>
+                <button type="button" class="app-toast-close" data-toast-close aria-label="Close">×</button>
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(warningMessage))
+        {
+            <div class="app-toast app-toast-warning" data-toast>
+                <div class="app-toast-icon">!</div>
+                <div class="app-toast-content">
+                    <div class="app-toast-title">Внимание</div>
+                    <div class="app-toast-message">@warningMessage</div>
+                </div>
+                <button type="button" class="app-toast-close" data-toast-close aria-label="Close">×</button>
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(infoMessage))
+        {
+            <div class="app-toast app-toast-info" data-toast>
+                <div class="app-toast-icon">i</div>
+                <div class="app-toast-content">
+                    <div class="app-toast-title">Информация</div>
+                    <div class="app-toast-message">@infoMessage</div>
+                </div>
+                <button type="button" class="app-toast-close" data-toast-close aria-label="Close">×</button>
+            </div>
+        }
+    </div>
+
+    <script>
+        (function () {
+            const toasts = document.querySelectorAll('[data-toast]');
+            if (!toasts.length) return;
+
+            toasts.forEach(function (toast) {
+                const closeBtn = toast.querySelector('[data-toast-close]');
+
+                const removeToast = function () {
+                    toast.classList.add('app-toast-hide');
+
+                    setTimeout(function () {
+                        toast.remove();
+                    }, 300);
+                };
+
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', removeToast);
+                }
+
+                setTimeout(removeToast, 4500);
+            });
+        })();
+    </script>
+}

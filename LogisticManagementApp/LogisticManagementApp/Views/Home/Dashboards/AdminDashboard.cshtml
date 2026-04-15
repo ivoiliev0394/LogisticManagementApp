@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="text-success mb-1">Admin Dashboard</h1>
+            <p class="text-muted mb-0">Добре дошъл, @User.Identity?.Name</p>
+        </div>
+        <a asp-controller="Admin" asp-action="Index" class="btn btn-success">Отвори Admin Portal</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <p class="mb-0">Тук можеш да преминеш към универсалния admin CRUD за всички entity-та в системата.</p>
+        </div>
+    </div>
+</div>

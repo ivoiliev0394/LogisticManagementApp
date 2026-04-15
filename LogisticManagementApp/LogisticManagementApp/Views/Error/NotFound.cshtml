@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "404 - Not Found";
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 75vh;">
+    <div class="card p-5 text-center error-card" style="max-width: 620px; width: 100%;">
+        <div class="error-code text-primary">404</div>
+        <h1 class="mb-3">Page Not Found</h1>
+        <p class="text-muted mb-4">
+            Страницата, която търсиш, не съществува или е била преместена.
+        </p>
+
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Към началната страница</a>
+            @if (User.Identity?.IsAuthenticated != true)
+            {
+                <a asp-controller="Auth" asp-action="Login" class="btn btn-outline-success">Login</a>
+            }
+        </div>
+    </div>
+</div>

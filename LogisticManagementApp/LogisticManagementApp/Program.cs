@@ -1,3 +1,7 @@
+using LogisticManagementApp.Application.Services;
+using LogisticManagementApp.Applicationn.Interfaces;
+using LogisticManagementApp.Applicationn.Interfaces.Auth;
+using LogisticManagementApp.Applicationn.Services;
 using LogisticManagementApp.Domain.Identity;
 using LogisticManagementApp.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
@@ -13,6 +17,9 @@ builder.Services.AddDbContext<LogisticAppDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddScoped<IHomeService, HomeService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services
     .AddIdentity<ApplicationUser, ApplicationRole>(options =>

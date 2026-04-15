@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Company Dashboard";
+    var companyId = User.FindFirst("CompanyId")?.Value;
+}
+
+<div class="container mt-4">
+    <h1 class="text-success">Company Dashboard</h1>
+    <p>Добре дошъл, @User.Identity?.Name</p>
+    <p>Роля: Company</p>
+    <p>CompanyId: @companyId</p>
+    <p>Тук company user-ът ще вижда само данни за своята компания.</p>
+</div>

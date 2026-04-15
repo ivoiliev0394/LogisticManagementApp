@@ -1,8 +1,117 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model LogisticManagementApp.Models.Home.HomeViewModel
+
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+    <div class="card p-4 mb-4 text-center">
+        <h2 class="mb-3">Проследи пратка</h2>
+        <p class="text-muted mb-4">Въведи номера на пратката и виж текущия статус.</p>
+
+        <form asp-action="Index" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <input name="trackingNumber"
+                           value="@Model.TrackingNumber"
+                           class="form-control"
+                           placeholder="Пример: SHP-10000" />
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-success w-100">Track</button>
+                </div>
+            </div>
+        </form>
+
+        @if (!string.IsNullOrWhiteSpace(Model.TrackingNumber))
+        {
+            <div class="mt-4 text-start">
+                @if (Model.TrackingFound)
+                {
+                    <div class="card p-4 mt-3">
+                        <h4 class="mb-3">Резултат за: @Model.ShipmentNo</h4>
+
+                        <p><strong>Статус:</strong> @Model.Status</p>
+                        <p><strong>Текуща локация:</strong> @(Model.CurrentLocation ?? "Няма данни")</p>
+                        <p><strong>Последен ъпдейт:</strong> @(Model.LastUpdate ?? "Няма данни")</p>
+                        <p><strong>Детайли:</strong> @(Model.Details ?? "Няма допълнителни детайли")</p>
+
+                        @if (Model.TrackingEvents.Any())
+                        {
+                            <hr />
+                            <h5 class="mb-3">История</h5>
+
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Събитие</th>
+                                            <th>Дата</th>
+                                            <th>Локация</th>
+                                            <th>Детайли</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.TrackingEvents)
+                                        {
+                                            <tr>
+                                                <td>@item.EventType</td>
+                                                <td>@item.EventTime</td>
+                                                <td>@(item.Location ?? "-")</td>
+                                                <td>@(item.Details ?? "-")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="card p-4 mt-3">
+                        <h4 class="mb-2">Няма намерена пратка</h4>
+                        <p class="text-muted mb-0">
+                            Не открихме пратка с номер <strong>@Model.TrackingNumber</strong>.
+                        </p>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card p-4 h-100">
+                <h4 class="mb-3">🌍 Доставяме до</h4>
+
+                <ul class="list-unstyled">
+                    @foreach (var country in Model.SupportedCountries)
+                    {
+                        <li class="mb-2">
+                            <span class="check-mark">✔</span> @country
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card p-4 h-100">
+                <h4 class="mb-3">🚛 Партньори</h4>
+
+                <ul class="list-unstyled">
+                    @foreach (var company in Model.CourierCompanies)
+                    {
+                        <li class="mb-2">
+                            <span class="check-mark">✔</span> @company
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
