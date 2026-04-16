@@ -1,0 +1,67 @@
+﻿@model LogisticManagementApp.Models.ClientPortal.ClientOrdersViewModel
+
+@{
+    ViewData["Title"] = "Моите заявки";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="text-success mb-1">Моите заявки</h1>
+            <p class="text-muted mb-0">Всички заявки, създадени от клиента.</p>
+        </div>
+        <a asp-controller="ClientPortal" asp-action="Dashboard" class="btn btn-outline-secondary">Назад към профила</a>
+    </div>
+
+    <div class="card p-4">
+        @if (Model.Orders.Any())
+        {
+            <div class="table-responsive" data-table-pagination-wrapper>
+                <table class="table table-hover align-middle" data-table-pagination="true" data-page-size="5">
+                    <thead>
+                        <tr>
+                            <th>Номер</th>
+                            <th>Статус</th>
+                            <th>Приоритет</th>
+                            <th>Pickup адрес</th>
+                            <th>Delivery адрес</th>
+                            <th>Pickup дата</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.Orders)
+                        {
+                            <tr>
+                                <td>@order.OrderNo</td>
+                                <td>@order.Status</td>
+                                <td>@order.Priority</td>
+                                <td>@(order.PickupAddress ?? "-")</td>
+                                <td>@(order.DeliveryAddress ?? "-")</td>
+                                <td>@(order.RequestedPickupDateUtc?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "-")</td>
+                                <td>
+                                    @if (order.ShipmentId.HasValue)
+                                    {
+                                        <a asp-controller="ClientPortal"
+                                               asp-action="TrackShipment"
+                                               asp-route-shipmentId="@order.ShipmentId"
+                                               class="btn btn-sm btn-outline-success">
+                                            Проследи пратката
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Няма създадена пратка</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted mb-0">Няма намерени заявки за този клиент.</p>
+        }
+    </div>
+</div>

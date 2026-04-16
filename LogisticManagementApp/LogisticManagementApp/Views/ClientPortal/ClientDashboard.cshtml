@@ -1,0 +1,171 @@
+﻿@model LogisticManagementApp.Models.ClientPortal.ClientDashboardViewModel
+
+@{
+    ViewData["Title"] = "Клиентски профил";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="text-success mb-1">Здравей, @Model.FullName!</h1>
+            <p class="text-muted mb-0">Това е твоят клиентски портал.</p>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card p-3 h-100">
+                <div class="text-muted small">Адреси</div>
+                <div class="fs-3 fw-bold text-muted">@Model.AddressCount</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 h-100">
+                <div class="text-muted small">Заявки</div>
+                <div class="fs-3 fw-bold text-muted">@Model.OrderCount</div>
+                <div class="small text-muted">Активни: @Model.ActiveOrderCount</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 h-100">
+                <div class="text-muted small">Пратки</div>
+                <div class="fs-3 fw-bold text-muted">@Model.ShipmentCount</div>
+                <div class="small text-muted">Активни: @Model.ActiveShipmentCount</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 h-100">
+                <div class="text-muted small">Профил</div>
+                <div class="fw-semibold text-muted">@Model.Username</div>
+                <div class="small text-muted">@Model.Email</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card p-4 h-100">
+                <h4 class="text-success">Моите данни</h4>
+                <hr />
+                <p class="mb-2"><strong>Име:</strong> @Model.FullName</p>
+                <p class="mb-2"><strong>Username:</strong> @Model.Username</p>
+                <p class="mb-2"><strong>Email:</strong> @Model.Email</p>
+                <p class="mb-2"><strong>Телефон:</strong> @(Model.PhoneNumber ?? "-")</p>
+                <p class="mb-0"><strong>Клиент от:</strong> @Model.CreatedOnUtc.ToLocalTime().ToString("dd.MM.yyyy")</p>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-success mb-0">Моите адреси</h4>
+                    <a asp-controller="ClientPortal" asp-action="MyAddresses" class="btn btn-outline-success btn-sm">Всички</a>
+                </div>
+
+                @if (Model.Addresses.Any())
+                {
+                    <div class="row g-3">
+                        @foreach (var address in Model.Addresses)
+                        {
+                            <div class="col-md-6">
+                                <div class="border rounded p-3 h-100">
+                                    <div class="fw-semibold text-muted">@address.DisplayText</div>
+                                    <div class="small text-muted">@(address.IsDefault ? "Основен адрес" : "Допълнителен адрес")</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">Няма записани адреси.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-lg-6">
+            <div class="card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-success mb-0">Последни заявки</h4>
+                    <a asp-controller="ClientPortal" asp-action="MyOrders" class="btn btn-outline-success btn-sm">Всички</a>
+                </div>
+
+                @if (Model.RecentOrders.Any())
+                {
+                    <div class="table-responsive" data-table-pagination-wrapper>
+                        <table class="table align-middle" data-table-pagination="true" data-page-size="5">
+                            <thead>
+                                <tr>
+                                    <th>Номер</th>
+                                    <th>Статус</th>
+                                    <th>Приоритет</th>
+                                    <th>Pickup</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model.RecentOrders)
+                                {
+                                    <tr>
+                                        <td>@order.OrderNo</td>
+                                        <td>@order.Status</td>
+                                        <td>@order.Priority</td>
+                                        <td>@(order.PickupAddress ?? "-")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">Няма намерени заявки.</p>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-success mb-0">Последни пратки</h4>
+                    <a asp-controller="ClientPortal" asp-action="MyShipments" class="btn btn-outline-success btn-sm">Всички</a>
+                </div>
+
+                @if (Model.RecentShipments.Any())
+                {
+                    <div class="table-responsive" data-table-pagination-wrapper>
+                        <table class="table align-middle" data-table-pagination="true" data-page-size="5">
+                            <thead>
+                                <tr>
+                                    <th>Пратка</th>
+                                    <th>Статус</th>
+                                    <th>Tracking</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var shipment in Model.RecentShipments)
+                                {
+                                    <tr>
+                                        <td>@shipment.ShipmentNo</td>
+                                        <td>@shipment.Status</td>
+                                        <td>
+                                            <div>@(shipment.LastTrackingEvent ?? "-")</div>
+                                            <div class="small text-muted">
+                                                @(shipment.LastTrackingEventUtc?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "-")
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">Няма намерени пратки.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

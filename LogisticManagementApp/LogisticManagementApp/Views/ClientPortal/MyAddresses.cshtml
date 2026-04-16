@@ -1,0 +1,95 @@
+﻿@model LogisticManagementApp.Models.ClientPortal.ClientAddressesViewModel
+
+@{
+    ViewData["Title"] = "Моите адреси";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Моите адреси</h2>
+        <a asp-controller="ClientPortal"
+               asp-action="CreateAddress"
+               class="btn btn-success">
+            Нов адрес
+        </a>
+    </div>
+
+    @if (Model.Addresses != null && Model.Addresses.Any())
+    {
+        <div class="table-responsive" data-table-pagination-wrapper>
+            <table class="table table-dark table-hover align-middle" data-table-pagination="true" data-page-size="5">
+                <thead>
+                    <tr>
+                        <th>Държава</th>
+                        <th>Град</th>
+                        <th>Улица</th>
+                        <th>Пощенски код</th>
+                        <th>Основен</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var address in Model.Addresses)
+                    {
+                        <tr>
+                            <td>@address.Country</td>
+                            <td>@address.City</td>
+                            <td>@address.Street</td>
+                            <td>@(string.IsNullOrWhiteSpace(address.PostalCode) ? "-" : address.PostalCode)</td>
+                            <td>
+                                @if (address.IsDefault)
+                                {
+                                    <span class="badge bg-success">Да</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Не</span>
+                                }
+                            </td>
+                            <td class="d-flex gap-2 flex-wrap">
+                                <a asp-controller="ClientPortal"
+                                       asp-action="EditAddress"
+                                       asp-route-id="@address.Id"
+                                       class="btn btn-sm btn-outline-primary">
+                                    Редактирай
+                                </a>
+
+                                @if (!address.IsDefault)
+                                {
+                                    <form asp-controller="ClientPortal"
+                                          asp-action="SetDefaultAddress"
+                                          asp-route-id="@address.Id"
+                                          method="post"
+                                          class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-warning">
+                                            Направи основен
+                                        </button>
+                                    </form>
+                                }
+
+                                <form asp-controller="ClientPortal"
+                                      asp-action="DeleteAddress"
+                                      asp-route-id="@address.Id"
+                                      method="post"
+                                      class="d-inline"
+                                      onsubmit="return confirm('Сигурни ли сте, че искате да изтриете този адрес?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        Изтрий
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            Нямате добавени адреси.
+        </div>
+    }
+</div>

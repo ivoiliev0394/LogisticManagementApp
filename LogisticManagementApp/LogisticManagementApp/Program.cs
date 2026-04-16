@@ -1,7 +1,9 @@
 using LogisticManagementApp.Application.Services;
 using LogisticManagementApp.Applicationn.Interfaces;
 using LogisticManagementApp.Applicationn.Interfaces.Auth;
+using LogisticManagementApp.Applicationn.Interfaces.ClientPortal;
 using LogisticManagementApp.Applicationn.Services;
+using LogisticManagementApp.Applicationn.Services.ClientPortal;
 using LogisticManagementApp.Domain.Identity;
 using LogisticManagementApp.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
@@ -20,6 +22,8 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddScoped<IHomeService, HomeService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IClientPortalService, ClientPortalService>();
+builder.Services.AddScoped<IClientAddressService, ClientAddressService>();
 
 builder.Services
     .AddIdentity<ApplicationUser, ApplicationRole>(options =>

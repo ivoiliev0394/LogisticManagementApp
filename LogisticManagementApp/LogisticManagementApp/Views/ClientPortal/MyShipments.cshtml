@@ -1,0 +1,65 @@
+﻿@model LogisticManagementApp.Models.ClientPortal.ClientShipmentsViewModel
+
+@{
+    ViewData["Title"] = "Моите пратки";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="text-success mb-1">Моите пратки</h1>
+            <p class="text-muted mb-0">Пратките, които са свързани с твоите заявки.</p>
+        </div>
+        <a asp-controller="ClientPortal" asp-action="Dashboard" class="btn btn-outline-secondary">Назад към профила</a>
+    </div>
+
+    <div class="card p-4">
+        @if (Model.Shipments.Any())
+        {
+            <div class="table-responsive" data-table-pagination-wrapper>
+                <table class="table table-hover align-middle" data-table-pagination="true" data-page-size="5">
+                    <thead>
+                        <tr>
+                            <th>Shipment No</th>
+                            <th>Order No</th>
+                            <th>Статус</th>
+                            <th>Получател</th>
+                            <th>Customer Ref</th>
+                            <th>Последен tracking</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var shipment in Model.Shipments)
+                        {
+                            <tr>
+                                <td>@shipment.ShipmentNo</td>
+                                <td>@shipment.OrderNo</td>
+                                <td>@shipment.Status</td>
+                                <td>@(shipment.ReceiverAddress ?? "-")</td>
+                                <td>@(shipment.CustomerReference ?? "-")</td>
+                                <td>
+                                    <div>@(shipment.LastTrackingEvent ?? "-")</div>
+                                    <div class="small text-muted">
+                                        @(shipment.LastTrackingEventUtc?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "-")
+                                    </div>
+                                </td>
+                                <td>
+                                    <a asp-controller="ClientPortal"
+                                           asp-action="TrackShipment"
+                                           asp-route-shipmentId="@shipment.Id"
+                                           class="btn btn-sm btn-outline-success">
+                                        Проследи
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted mb-0">Няма намерени пратки за този клиент.</p>
+        }
+    </div>
+</div>
