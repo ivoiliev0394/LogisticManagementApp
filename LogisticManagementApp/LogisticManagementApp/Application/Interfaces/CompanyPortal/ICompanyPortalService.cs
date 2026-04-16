@@ -1,0 +1,761 @@
+﻿using LogisticManagementApp.Models.CompanyPortal;
+using LogisticManagementApp.Models.CompanyPortal.Branches;
+using LogisticManagementApp.Models.CompanyPortal.Capabilities;
+using LogisticManagementApp.Models.CompanyPortal.Billing;
+using LogisticManagementApp.Models.CompanyPortal.Contacts;
+using LogisticManagementApp.Models.CompanyPortal.Documents;
+using LogisticManagementApp.Models.CompanyPortal.Orders;
+using LogisticManagementApp.Models.CompanyPortal.Pricing;
+using LogisticManagementApp.Models.CompanyPortal.Compliance;
+using LogisticManagementApp.Models.CompanyPortal.Assets.Sea;
+using LogisticManagementApp.Models.CompanyPortal.Assets.Road;
+using LogisticManagementApp.Models.CompanyPortal.Assets.Air;
+using LogisticManagementApp.Models.CompanyPortal.Assets.Rail;
+using LogisticManagementApp.Models.CompanyPortal.Assets.CargoUnits;
+using LogisticManagementApp.Models.CompanyPortal.Routes;
+using LogisticManagementApp.Models.CompanyPortal.SharedLocations;
+using LogisticManagementApp.Models.CompanyPortal.Operations;
+using LogisticManagementApp.Models.CompanyPortal.Shipments;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.CargoItems;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Containers;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Legs;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.PackageItems;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Packages;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Party;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.ProofOfDelivery;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.References;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Statuses;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Tags;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.TrackingEvents;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Trips;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Ulds;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Voyages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace LogisticManagementApp.Applicationn.Interfaces.CompanyPortal
+{
+    public interface ICompanyPortalService
+    {
+        #region Company Profile
+
+        Task<CompanyProfileViewModel?> GetMyCompanyAsync(Guid companyId);
+        Task<EditCompanyProfileViewModel?> GetEditCompanyAsync(Guid companyId);
+        Task<bool> UpdateMyCompanyAsync(Guid companyId, EditCompanyProfileViewModel model);
+
+        #endregion
+
+        #region Shared Options
+
+        Task<IEnumerable<SelectListItem>> GetAddressOptionsAsync();
+        Task<IEnumerable<SelectListItem>> GetShipmentPartyContactOptionsAsync(Guid selectedCompanyId);
+
+        #endregion
+
+        #region Branches
+
+        Task<IEnumerable<CompanyBranchListItemViewModel>> GetMyBranchesAsync(Guid companyId);
+        Task CreateBranchAsync(Guid companyId, CompanyBranchCreateViewModel model);
+        Task<CompanyBranchEditViewModel?> GetBranchForEditAsync(Guid companyId, Guid branchId);
+        Task<bool> UpdateBranchAsync(Guid companyId, CompanyBranchEditViewModel model);
+        Task<bool> DeleteBranchAsync(Guid companyId, Guid branchId);
+
+        #endregion
+
+        #region Contacts
+
+        Task<IEnumerable<CompanyContactListItemViewModel>> GetMyContactsAsync(Guid companyId);
+        Task CreateContactAsync(Guid companyId, CompanyContactCreateViewModel model);
+        Task<CompanyContactEditViewModel?> GetContactForEditAsync(Guid companyId, Guid contactId);
+        Task<bool> UpdateContactAsync(Guid companyId, CompanyContactEditViewModel model);
+        Task<bool> DeleteContactAsync(Guid companyId, Guid contactId);
+
+        #endregion
+
+        #region Capabilities
+
+        Task<IEnumerable<CompanyCapabilityListItemViewModel>> GetMyCapabilitiesAsync(Guid companyId);
+        Task<bool> CreateCapabilityAsync(Guid companyId, CompanyCapabilityCreateViewModel model);
+        Task<CompanyCapabilityEditViewModel?> GetCapabilityForEditAsync(Guid companyId, Guid capabilityId);
+        Task<bool> UpdateCapabilityAsync(Guid companyId, CompanyCapabilityEditViewModel model);
+        Task<bool> DeleteCapabilityAsync(Guid companyId, Guid capabilityId);
+
+        #endregion
+
+        #region Orders
+
+        Task<CompanyOrdersViewModel> GetMyOrdersAsync(Guid companyId);
+        Task<CompanyOrderDetailsViewModel?> GetOrderDetailsAsync(Guid companyId, Guid orderId);
+
+        Task<CompanyOrderCreateViewModel> GetCreateOrderModelAsync();
+        Task<Guid> CreateOrderAsync(Guid companyId, CompanyOrderCreateViewModel model);
+
+        Task<CompanyOrderEditViewModel?> GetOrderForEditAsync(Guid companyId, Guid orderId);
+        Task<bool> UpdateOrderAsync(Guid companyId, CompanyOrderEditViewModel model);
+        Task<bool> DeleteOrderAsync(Guid companyId, Guid orderId);
+
+        Task<CompanyOrderLineCreateViewModel?> GetCreateOrderLineModelAsync(Guid companyId, Guid orderId);
+        Task<bool> CreateOrderLineAsync(Guid companyId, CompanyOrderLineCreateViewModel model);
+
+        Task<CompanyOrderLineEditViewModel?> GetOrderLineForEditAsync(Guid companyId, Guid lineId);
+        Task<bool> UpdateOrderLineAsync(Guid companyId, CompanyOrderLineEditViewModel model);
+        Task<bool> DeleteOrderLineAsync(Guid companyId, Guid lineId);
+
+        Task<bool> SubmitOrderAsync(Guid companyId, Guid orderId);
+        Task<bool> ConfirmOrderAsync(Guid companyId, Guid orderId);
+        Task<bool> MarkOrderInProgressAsync(Guid companyId, Guid orderId);
+        Task<bool> CompleteOrderAsync(Guid companyId, Guid orderId);
+        Task<bool> CancelOrderAsync(Guid companyId, Guid orderId, string? reason = null);
+
+        #endregion
+
+        #region Shipments
+
+        Task<CompanyShipmentsViewModel> GetMyShipmentsAsync(Guid companyId);
+        Task<CompanyShipmentDetailsViewModel?> GetShipmentDetailsAsync(Guid companyId, Guid shipmentId);
+        Task<bool> UpdateShipmentStatusAsync(Guid companyId, Guid shipmentId, string newStatus, string? reason = null);
+
+        Task<CompanyShipmentCreateViewModel> GetCreateShipmentModelAsync(Guid companyId);
+        Task<Guid> CreateShipmentAsync(Guid companyId, CompanyShipmentCreateViewModel model);
+
+        Task<CompanyShipmentEditViewModel?> GetShipmentForEditAsync(Guid companyId, Guid shipmentId);
+        Task<bool> UpdateShipmentAsync(Guid companyId, CompanyShipmentEditViewModel model);
+        Task<bool> DeleteShipmentAsync(Guid companyId, Guid shipmentId);
+
+        #endregion
+
+        #region Shared Locations
+
+        Task<CompanySharedLocationsHomeViewModel> GetSharedLocationsHomeAsync();
+        Task<IEnumerable<AddressListItemViewModel>> GetAddressesAsync();
+        Task<IEnumerable<LocationListItemViewModel>> GetLocationsAsync();
+        Task<IEnumerable<WarehouseListItemViewModel>> GetWarehousesAsync();
+        Task<IEnumerable<TerminalListItemViewModel>> GetTerminalsAsync();
+        Task<IEnumerable<DockListItemViewModel>> GetDocksAsync();
+
+        #endregion
+
+        #region Assets - Home
+
+        Task<CompanyAssetsHomeViewModel> GetAssetsHomeAsync();
+
+        #endregion
+
+        #region Assets - Sea
+
+        Task<CompanySeaHomeViewModel> GetSeaAssetsHomeAsync();
+        Task<IEnumerable<VesselListItemViewModel>> GetVesselsAsync(Guid companyId);
+        Task<VesselCreateViewModel> GetCreateVesselModelAsync(Guid companyId);
+        Task<Guid?> CreateVesselAsync(Guid companyId, VesselCreateViewModel model);
+        Task<VesselEditViewModel?> GetVesselForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateVesselAsync(Guid companyId, VesselEditViewModel model);
+        Task<bool> DeleteVesselAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<VesselPositionListItemViewModel>> GetVesselPositionsAsync(Guid companyId);
+        Task<VesselPositionCreateViewModel> GetCreateVesselPositionModelAsync(Guid companyId);
+        Task<Guid?> CreateVesselPositionAsync(Guid companyId, VesselPositionCreateViewModel model);
+        Task<VesselPositionEditViewModel?> GetVesselPositionForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateVesselPositionAsync(Guid companyId, VesselPositionEditViewModel model);
+        Task<bool> DeleteVesselPositionAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<VoyageListItemViewModel>> GetVoyagesAsync(Guid companyId);
+        Task<VoyageCreateViewModel> GetCreateVoyageModelAsync(Guid companyId);
+        Task<Guid?> CreateVoyageAsync(Guid companyId, VoyageCreateViewModel model);
+        Task<VoyageEditViewModel?> GetVoyageForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateVoyageAsync(Guid companyId, VoyageEditViewModel model);
+        Task<bool> DeleteVoyageAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<VoyageStopListItemViewModel>> GetVoyageStopsAsync(Guid companyId);
+        Task<VoyageStopCreateViewModel> GetCreateVoyageStopModelAsync(Guid companyId);
+        Task<Guid?> CreateVoyageStopAsync(Guid companyId, VoyageStopCreateViewModel model);
+        Task<VoyageStopEditViewModel?> GetVoyageStopForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateVoyageStopAsync(Guid companyId, VoyageStopEditViewModel model);
+        Task<bool> DeleteVoyageStopAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<VesselCrewMemberListItemViewModel>> GetVesselCrewMembersAsync(Guid companyId);
+        Task<VesselCrewMemberCreateViewModel> GetCreateVesselCrewMemberModelAsync(Guid companyId);
+        Task<Guid?> CreateVesselCrewMemberAsync(Guid companyId, VesselCrewMemberCreateViewModel model);
+        Task<VesselCrewMemberEditViewModel?> GetVesselCrewMemberForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateVesselCrewMemberAsync(Guid companyId, VesselCrewMemberEditViewModel model);
+        Task<bool> DeleteVesselCrewMemberAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<CrewAssignmentListItemViewModel>> GetCrewAssignmentsAsync(Guid companyId);
+        Task<CrewAssignmentCreateViewModel> GetCreateCrewAssignmentModelAsync(Guid companyId);
+        Task<Guid?> CreateCrewAssignmentAsync(Guid companyId, CrewAssignmentCreateViewModel model);
+        Task<CrewAssignmentEditViewModel?> GetCrewAssignmentForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateCrewAssignmentAsync(Guid companyId, CrewAssignmentEditViewModel model);
+        Task<bool> DeleteCrewAssignmentAsync(Guid companyId, Guid id);
+
+        #endregion
+
+        #region Assets - Road
+
+        Task<CompanyRoadHomeViewModel> GetRoadAssetsHomeAsync();
+        Task<IEnumerable<VehicleListItemViewModel>> GetVehiclesAsync(Guid companyId);
+        Task<VehicleCreateViewModel> GetCreateVehicleModelAsync(Guid companyId);
+        Task<Guid?> CreateVehicleAsync(Guid companyId, VehicleCreateViewModel model);
+        Task<VehicleEditViewModel?> GetVehicleForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateVehicleAsync(Guid companyId, VehicleEditViewModel model);
+        Task<bool> DeleteVehicleAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<DriverListItemViewModel>> GetDriversAsync(Guid companyId);
+        Task<DriverCreateViewModel> GetCreateDriverModelAsync(Guid companyId);
+        Task<Guid?> CreateDriverAsync(Guid companyId, DriverCreateViewModel model);
+        Task<DriverEditViewModel?> GetDriverForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateDriverAsync(Guid companyId, DriverEditViewModel model);
+        Task<bool> DeleteDriverAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<TripListItemViewModel>> GetTripsAsync(Guid companyId);
+        Task<TripCreateViewModel> GetCreateTripModelAsync(Guid companyId);
+        Task<Guid?> CreateTripAsync(Guid companyId, TripCreateViewModel model);
+        Task<TripEditViewModel?> GetTripForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateTripAsync(Guid companyId, TripEditViewModel model);
+        Task<bool> DeleteTripAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<TripStopListItemViewModel>> GetTripStopsAsync(Guid companyId);
+        Task<TripStopCreateViewModel> GetCreateTripStopModelAsync(Guid companyId);
+        Task<Guid?> CreateTripStopAsync(Guid companyId, TripStopCreateViewModel model);
+        Task<TripStopEditViewModel?> GetTripStopForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateTripStopAsync(Guid companyId, TripStopEditViewModel model);
+        Task<bool> DeleteTripStopAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<TripShipmentListItemViewModel>> GetTripShipmentsAsync(Guid companyId);
+        Task<TripShipmentCreateViewModel> GetCreateTripShipmentModelAsync(Guid companyId);
+        Task<Guid?> CreateTripShipmentAsync(Guid companyId, TripShipmentCreateViewModel model);
+        Task<TripShipmentEditViewModel?> GetTripShipmentForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateTripShipmentAsync(Guid companyId, TripShipmentEditViewModel model);
+        Task<bool> DeleteTripShipmentAsync(Guid companyId, Guid id);
+
+        #endregion
+
+        #region Assets - Air
+
+        Task<CompanyAirHomeViewModel> GetAirAssetsHomeAsync();
+        Task<IEnumerable<AircraftListItemViewModel>> GetAircraftAsync(Guid companyId);
+        Task<AircraftCreateViewModel> GetCreateAircraftModelAsync(Guid companyId);
+        Task<Guid?> CreateAircraftAsync(Guid companyId, AircraftCreateViewModel model);
+        Task<AircraftEditViewModel?> GetAircraftForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateAircraftAsync(Guid companyId, AircraftEditViewModel model);
+        Task<bool> DeleteAircraftAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<FlightListItemViewModel>> GetFlightsAsync(Guid companyId);
+        Task<FlightCreateViewModel> GetCreateFlightModelAsync(Guid companyId);
+        Task<Guid?> CreateFlightAsync(Guid companyId, FlightCreateViewModel model);
+        Task<FlightEditViewModel?> GetFlightForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateFlightAsync(Guid companyId, FlightEditViewModel model);
+        Task<bool> DeleteFlightAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<FlightSegmentListItemViewModel>> GetFlightSegmentsAsync(Guid companyId);
+        Task<FlightSegmentCreateViewModel> GetCreateFlightSegmentModelAsync(Guid companyId);
+        Task<Guid?> CreateFlightSegmentAsync(Guid companyId, FlightSegmentCreateViewModel model);
+        Task<FlightSegmentEditViewModel?> GetFlightSegmentForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateFlightSegmentAsync(Guid companyId, FlightSegmentEditViewModel model);
+        Task<bool> DeleteFlightSegmentAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<AirCrewMemberListItemViewModel>> GetAirCrewMembersAsync(Guid companyId);
+        Task<AirCrewMemberCreateViewModel> GetCreateAirCrewMemberModelAsync(Guid companyId);
+        Task<Guid?> CreateAirCrewMemberAsync(Guid companyId, AirCrewMemberCreateViewModel model);
+        Task<AirCrewMemberEditViewModel?> GetAirCrewMemberForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateAirCrewMemberAsync(Guid companyId, AirCrewMemberEditViewModel model);
+        Task<bool> DeleteAirCrewMemberAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<AirCrewAssignmentListItemViewModel>> GetAirCrewAssignmentsAsync(Guid companyId);
+        Task<AirCrewAssignmentCreateViewModel> GetCreateAirCrewAssignmentModelAsync(Guid companyId);
+        Task<Guid?> CreateAirCrewAssignmentAsync(Guid companyId, AirCrewAssignmentCreateViewModel model);
+        Task<AirCrewAssignmentEditViewModel?> GetAirCrewAssignmentForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateAirCrewAssignmentAsync(Guid companyId, AirCrewAssignmentEditViewModel model);
+        Task<bool> DeleteAirCrewAssignmentAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<UldListItemViewModel>> GetUldsAsync(Guid companyId);
+        Task<UldCreateViewModel> GetCreateUldModelAsync(Guid companyId);
+        Task<Guid?> CreateUldAsync(Guid companyId, UldCreateViewModel model);
+        Task<UldEditViewModel?> GetUldForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateUldAsync(Guid companyId, UldEditViewModel model);
+        Task<bool> DeleteUldAsync(Guid companyId, Guid id);
+
+        #endregion
+
+        #region Assets - Rail
+
+        Task<CompanyRailHomeViewModel> GetRailAssetsHomeAsync();
+        Task<IEnumerable<TrainListItemViewModel>> GetTrainsAsync(Guid companyId);
+        Task<TrainCreateViewModel> GetCreateTrainModelAsync(Guid companyId);
+        Task<Guid?> CreateTrainAsync(Guid companyId, TrainCreateViewModel model);
+        Task<TrainEditViewModel?> GetTrainForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateTrainAsync(Guid companyId, TrainEditViewModel model);
+        Task<bool> DeleteTrainAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<RailCarListItemViewModel>> GetRailCarsAsync(Guid companyId);
+        Task<RailCarCreateViewModel> GetCreateRailCarModelAsync(Guid companyId);
+        Task<Guid?> CreateRailCarAsync(Guid companyId, RailCarCreateViewModel model);
+        Task<RailCarEditViewModel?> GetRailCarForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateRailCarAsync(Guid companyId, RailCarEditViewModel model);
+        Task<bool> DeleteRailCarAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<RailServiceListItemViewModel>> GetRailServicesAsync(Guid companyId);
+        Task<RailServiceCreateViewModel> GetCreateRailServiceModelAsync(Guid companyId);
+        Task<Guid?> CreateRailServiceAsync(Guid companyId, RailServiceCreateViewModel model);
+        Task<RailServiceEditViewModel?> GetRailServiceForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateRailServiceAsync(Guid companyId, RailServiceEditViewModel model);
+        Task<bool> DeleteRailServiceAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<RailMovementListItemViewModel>> GetRailMovementsAsync(Guid companyId);
+        Task<RailMovementCreateViewModel> GetCreateRailMovementModelAsync(Guid companyId);
+        Task<Guid?> CreateRailMovementAsync(Guid companyId, RailMovementCreateViewModel model);
+        Task<RailMovementEditViewModel?> GetRailMovementForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateRailMovementAsync(Guid companyId, RailMovementEditViewModel model);
+        Task<bool> DeleteRailMovementAsync(Guid companyId, Guid id);
+
+        #endregion
+
+        #region Assets - Cargo Units
+
+        Task<CompanyCargoUnitHomeViewModel> GetCargoUnitAssetsHomeAsync();
+        Task<IEnumerable<ContainerListItemViewModel>> GetContainersAsync(Guid companyId);
+        Task<ContainerCreateViewModel> GetCreateContainerModelAsync(Guid companyId);
+        Task<Guid?> CreateContainerAsync(Guid companyId, ContainerCreateViewModel model);
+        Task<ContainerEditViewModel?> GetContainerForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateContainerAsync(Guid companyId, ContainerEditViewModel model);
+        Task<bool> DeleteContainerAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<ContainerSealListItemViewModel>> GetContainerSealsAsync(Guid companyId);
+        Task<ContainerSealCreateViewModel> GetCreateContainerSealModelAsync(Guid companyId);
+        Task<Guid?> CreateContainerSealAsync(Guid companyId, ContainerSealCreateViewModel model);
+        Task<ContainerSealEditViewModel?> GetContainerSealForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateContainerSealAsync(Guid companyId, ContainerSealEditViewModel model);
+        Task<bool> DeleteContainerSealAsync(Guid companyId, Guid id);
+
+        #endregion
+
+        #region Routes
+
+        Task<CompanyRoutesHomeViewModel> GetRoutesHomeAsync();
+        Task<IEnumerable<RouteListItemViewModel>> GetRoutesAsync(Guid companyId);
+        Task<RouteCreateViewModel> GetCreateRouteModelAsync(Guid companyId);
+        Task<Guid?> CreateRouteAsync(Guid companyId, RouteCreateViewModel model);
+        Task<RouteEditViewModel?> GetRouteForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateRouteAsync(Guid companyId, RouteEditViewModel model);
+        Task<bool> DeleteRouteAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<RouteStopListItemViewModel>> GetRouteStopsAsync(Guid companyId);
+        Task<RouteStopCreateViewModel> GetCreateRouteStopModelAsync(Guid companyId);
+        Task<Guid?> CreateRouteStopAsync(Guid companyId, RouteStopCreateViewModel model);
+        Task<RouteStopEditViewModel?> GetRouteStopForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateRouteStopAsync(Guid companyId, RouteStopEditViewModel model);
+        Task<bool> DeleteRouteStopAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<RoutePlanListItemViewModel>> GetRoutePlansAsync(Guid companyId);
+        Task<RoutePlanCreateViewModel> GetCreateRoutePlanModelAsync(Guid companyId);
+        Task<Guid?> CreateRoutePlanAsync(Guid companyId, RoutePlanCreateViewModel model);
+        Task<RoutePlanEditViewModel?> GetRoutePlanForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateRoutePlanAsync(Guid companyId, RoutePlanEditViewModel model);
+        Task<bool> DeleteRoutePlanAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<RoutePlanStopListItemViewModel>> GetRoutePlanStopsAsync(Guid companyId);
+        Task<RoutePlanStopCreateViewModel> GetCreateRoutePlanStopModelAsync(Guid companyId);
+        Task<Guid?> CreateRoutePlanStopAsync(Guid companyId, RoutePlanStopCreateViewModel model);
+        Task<RoutePlanStopEditViewModel?> GetRoutePlanStopForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateRoutePlanStopAsync(Guid companyId, RoutePlanStopEditViewModel model);
+        Task<bool> DeleteRoutePlanStopAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<RoutePlanShipmentListItemViewModel>> GetRoutePlanShipmentsAsync(Guid companyId);
+        Task<RoutePlanShipmentCreateViewModel> GetCreateRoutePlanShipmentModelAsync(Guid companyId);
+        Task<Guid?> CreateRoutePlanShipmentAsync(Guid companyId, RoutePlanShipmentCreateViewModel model);
+        Task<RoutePlanShipmentEditViewModel?> GetRoutePlanShipmentForEditAsync(Guid companyId, Guid id);
+        Task<bool> UpdateRoutePlanShipmentAsync(Guid companyId, RoutePlanShipmentEditViewModel model);
+        Task<bool> DeleteRoutePlanShipmentAsync(Guid companyId, Guid id);
+
+        #endregion
+
+        #region Shipment Parties
+
+        Task<CompanyShipmentPartiesViewModel?> GetShipmentPartiesAsync(Guid companyId, Guid shipmentId);
+        Task<CompanyShipmentPartyCreateViewModel?> GetCreateShipmentPartyModelAsync(Guid companyId, Guid shipmentId);
+        Task<CompanyShipmentPartyCreateResult> CreateShipmentPartyAsync(Guid companyId, CompanyShipmentPartyCreateViewModel model);
+        Task<CompanyShipmentPartyEditViewModel?> GetShipmentPartyForEditAsync(Guid companyId, Guid shipmentPartyId);
+        Task<bool> UpdateShipmentPartyAsync(Guid companyId, CompanyShipmentPartyEditViewModel model);
+        Task<bool> DeleteShipmentPartyAsync(Guid companyId, Guid shipmentPartyId);
+
+        #endregion
+
+        #region Shipment Legs
+
+        Task<CompanyShipmentLegsViewModel?> GetShipmentLegsAsync(Guid companyId, Guid shipmentId);
+        Task<CompanyShipmentLegCreateViewModel?> GetCreateShipmentLegModelAsync(Guid companyId, Guid shipmentId);
+        Task<Guid?> CreateShipmentLegAsync(Guid companyId, CompanyShipmentLegCreateViewModel model);
+        Task<CompanyShipmentLegEditViewModel?> GetShipmentLegForEditAsync(Guid companyId, Guid shipmentLegId);
+        Task<bool> UpdateShipmentLegAsync(Guid companyId, CompanyShipmentLegEditViewModel model);
+        Task<bool> DeleteShipmentLegAsync(Guid companyId, Guid shipmentLegId);
+        Task<CompanyShipmentLegDetailsViewModel?> GetShipmentLegDetailsAsync(Guid companyId, Guid shipmentLegId);
+        Task<bool> UpdateShipmentLegStatusAsync(Guid companyId, CompanyShipmentLegStatusUpdateViewModel model);
+
+        #endregion
+
+        #region Tracking Events
+
+        Task<CompanyTrackingEventsViewModel?> GetTrackingEventsAsync(Guid companyId, Guid shipmentId);
+        Task<CompanyTrackingEventCreateViewModel?> GetCreateTrackingEventModelAsync(Guid companyId, Guid shipmentId);
+        Task<Guid?> CreateTrackingEventAsync(Guid companyId, CompanyTrackingEventCreateViewModel model);
+        Task<CompanyTrackingEventEditViewModel?> GetTrackingEventForEditAsync(Guid companyId, Guid trackingEventId);
+        Task<bool> UpdateTrackingEventAsync(Guid companyId, CompanyTrackingEventEditViewModel model);
+        Task<bool> DeleteTrackingEventAsync(Guid companyId, Guid trackingEventId);
+
+        #endregion
+
+        #region Proof Of Deliveries
+
+        Task<CompanyProofOfDeliveriesViewModel?> GetProofOfDeliveriesAsync(Guid companyId, Guid shipmentId);
+        Task<CompanyProofOfDeliveryCreateViewModel?> GetCreateProofOfDeliveryModelAsync(Guid companyId, Guid shipmentId);
+        Task<Guid?> CreateProofOfDeliveryAsync(Guid companyId, CompanyProofOfDeliveryCreateViewModel model);
+        Task<CompanyProofOfDeliveryEditViewModel?> GetProofOfDeliveryForEditAsync(Guid companyId, Guid proofOfDeliveryId);
+        Task<bool> UpdateProofOfDeliveryAsync(Guid companyId, CompanyProofOfDeliveryEditViewModel model);
+        //Task<bool> DeleteProofOfDeliveryAsync(Guid companyId, Guid proofOfDeliveryId);
+
+        #endregion
+
+        #region Packages
+
+        Task<CompanyPackagesViewModel?> GetPackagesAsync(Guid companyId, Guid shipmentId);
+        Task<CompanyPackageCreateViewModel?> GetCreatePackageModelAsync(Guid companyId, Guid shipmentId);
+        Task<Guid?> CreatePackageAsync(Guid companyId, CompanyPackageCreateViewModel model);
+        Task<CompanyPackageEditViewModel?> GetPackageForEditAsync(Guid companyId, Guid packageId);
+        Task<bool> UpdatePackageAsync(Guid companyId, CompanyPackageEditViewModel model);
+        Task<bool> DeletePackageAsync(Guid companyId, Guid packageId);
+
+        #endregion
+
+        #region Package Items
+
+        Task<CompanyPackageItemsViewModel?> GetPackageItemsAsync(Guid companyId, Guid packageId);
+        Task<CompanyPackageItemCreateViewModel?> GetCreatePackageItemModelAsync(Guid companyId, Guid packageId);
+        Task<Guid?> CreatePackageItemAsync(Guid companyId, CompanyPackageItemCreateViewModel model);
+        Task<CompanyPackageItemEditViewModel?> GetPackageItemForEditAsync(Guid companyId, Guid packageItemId);
+        Task<bool> UpdatePackageItemAsync(Guid companyId, CompanyPackageItemEditViewModel model);
+        Task<bool> DeletePackageItemAsync(Guid companyId, Guid packageItemId);
+
+        #endregion
+
+        #region Cargo Items
+
+        Task<CompanyCargoItemsViewModel?> GetCargoItemsAsync(Guid companyId, Guid shipmentId);
+        Task<CompanyCargoItemCreateViewModel?> GetCreateCargoItemModelAsync(Guid companyId, Guid shipmentId);
+        Task<Guid?> CreateCargoItemAsync(Guid companyId, CompanyCargoItemCreateViewModel model);
+        Task<CompanyCargoItemEditViewModel?> GetCargoItemForEditAsync(Guid companyId, Guid cargoItemId);
+        Task<bool> UpdateCargoItemAsync(Guid companyId, CompanyCargoItemEditViewModel model);
+        Task<bool> DeleteCargoItemAsync(Guid companyId, Guid cargoItemId);
+
+        #endregion
+
+        #region Shipment References
+
+        Task<CompanyShipmentReferencesViewModel?> GetShipmentReferencesAsync(Guid companyId, Guid shipmentId);
+        Task<CompanyShipmentReferenceCreateViewModel?> GetCreateShipmentReferenceModelAsync(Guid companyId, Guid shipmentId);
+        Task<Guid?> CreateShipmentReferenceAsync(Guid companyId, CompanyShipmentReferenceCreateViewModel model);
+        Task<CompanyShipmentReferenceEditViewModel?> GetShipmentReferenceForEditAsync(Guid companyId, Guid shipmentReferenceId);
+        Task<bool> UpdateShipmentReferenceAsync(Guid companyId, CompanyShipmentReferenceEditViewModel model);
+        Task<bool> DeleteShipmentReferenceAsync(Guid companyId, Guid shipmentReferenceId);
+
+        #endregion
+
+        #region Shipment Tags
+
+        Task<CompanyShipmentTagsViewModel?> GetShipmentTagsAsync(Guid companyId, Guid shipmentId);
+        Task<CompanyShipmentTagCreateViewModel?> GetCreateShipmentTagModelAsync(Guid companyId, Guid shipmentId);
+        Task<Guid?> CreateShipmentTagAsync(Guid companyId, CompanyShipmentTagCreateViewModel model);
+        Task<CompanyShipmentTagEditViewModel?> GetShipmentTagForEditAsync(Guid companyId, Guid shipmentTagId);
+        Task<bool> UpdateShipmentTagAsync(Guid companyId, CompanyShipmentTagEditViewModel model);
+        Task<bool> DeleteShipmentTagAsync(Guid companyId, Guid shipmentTagId);
+
+        #endregion
+
+        #region Shipment Voyages
+
+        Task<CompanyShipmentVoyagesViewModel?> GetShipmentVoyagesAsync(Guid companyId, Guid shipmentId);
+        Task<CompanyShipmentVoyageCreateViewModel?> GetCreateShipmentVoyageModelAsync(Guid companyId, Guid shipmentId);
+        Task<Guid?> CreateShipmentVoyageAsync(Guid companyId, CompanyShipmentVoyageCreateViewModel model);
+        Task<CompanyShipmentVoyageEditViewModel?> GetShipmentVoyageForEditAsync(Guid companyId, Guid shipmentVoyageId);
+        Task<bool> UpdateShipmentVoyageAsync(Guid companyId, CompanyShipmentVoyageEditViewModel model);
+        Task<bool> DeleteShipmentVoyageAsync(Guid companyId, Guid shipmentVoyageId);
+
+        #endregion
+
+        #region Shipment Trips
+
+        Task<CompanyShipmentTripsViewModel?> GetShipmentTripsAsync(Guid companyId, Guid shipmentId);
+        Task<CompanyShipmentTripCreateViewModel?> GetCreateShipmentTripModelAsync(Guid companyId, Guid shipmentId);
+        Task<Guid?> CreateShipmentTripAsync(Guid companyId, CompanyShipmentTripCreateViewModel model);
+        Task<CompanyShipmentTripEditViewModel?> GetShipmentTripForEditAsync(Guid companyId, Guid shipmentTripId);
+        Task<bool> UpdateShipmentTripAsync(Guid companyId, CompanyShipmentTripEditViewModel model);
+        Task<bool> DeleteShipmentTripAsync(Guid companyId, Guid shipmentTripId);
+
+        #endregion
+
+        #region Shipment Containers
+
+        Task<CompanyShipmentContainersViewModel?> GetShipmentContainersAsync(Guid companyId, Guid shipmentId);
+        Task<CompanyShipmentContainerCreateViewModel?> GetCreateShipmentContainerModelAsync(Guid companyId, Guid shipmentId);
+        Task<Guid?> CreateShipmentContainerAsync(Guid companyId, CompanyShipmentContainerCreateViewModel model);
+        Task<CompanyShipmentContainerEditViewModel?> GetShipmentContainerForEditAsync(Guid companyId, Guid shipmentContainerId);
+        Task<bool> UpdateShipmentContainerAsync(Guid companyId, CompanyShipmentContainerEditViewModel model);
+        Task<bool> DeleteShipmentContainerAsync(Guid companyId, Guid shipmentContainerId);
+
+        #endregion
+
+        #region Shipment ULDs
+
+        Task<CompanyShipmentUldsViewModel?> GetShipmentUldsAsync(Guid companyId, Guid shipmentId);
+        Task<CompanyShipmentUldCreateViewModel?> GetCreateShipmentUldModelAsync(Guid companyId, Guid shipmentId);
+        Task<Guid?> CreateShipmentUldAsync(Guid companyId, CompanyShipmentUldCreateViewModel model);
+        Task<CompanyShipmentUldEditViewModel?> GetShipmentUldForEditAsync(Guid companyId, Guid shipmentUldId);
+        Task<bool> UpdateShipmentUldAsync(Guid companyId, CompanyShipmentUldEditViewModel model);
+        Task<bool> DeleteShipmentUldAsync(Guid companyId, Guid shipmentUldId);
+
+        #endregion
+
+        #region Pricing
+
+        Task<IEnumerable<ServiceLevelListItemViewModel>> GetServiceLevelsAsync();
+        Task<IEnumerable<GeoZoneListItemViewModel>> GetGeoZonesAsync();
+        Task<IEnumerable<ZoneRuleListItemViewModel>> GetZoneRulesAsync();
+        Task<IEnumerable<TariffListItemViewModel>> GetTariffsAsync();
+        Task<IEnumerable<TariffRateListItemViewModel>> GetTariffRatesAsync();
+        Task<IEnumerable<SurchargeListItemViewModel>> GetSurchargesAsync();
+        Task<IEnumerable<TariffSurchargeListItemViewModel>> GetTariffSurchargesAsync();
+        Task<IEnumerable<AgreementListItemViewModel>> GetAgreementsAsync(Guid companyId);
+        Task<IEnumerable<DiscountRuleListItemViewModel>> GetDiscountRulesAsync(Guid companyId);
+        Task<IEnumerable<PricingQuoteListItemViewModel>> GetPricingQuotesAsync(Guid companyId);
+        Task<IEnumerable<PricingQuoteLineListItemViewModel>> GetPricingQuoteLinesAsync(Guid companyId);
+
+        Task<AgreementEditViewModel?> GetAgreementForEditAsync(Guid companyId, Guid agreementId);
+        Task<Guid?> CreateAgreementAsync(Guid companyId, AgreementCreateViewModel model);
+        Task<bool> UpdateAgreementAsync(Guid companyId, AgreementEditViewModel model);
+        Task<bool> DeleteAgreementAsync(Guid companyId, Guid agreementId);
+
+        Task<DiscountRuleCreateViewModel> GetCreateDiscountRuleModelAsync(Guid companyId);
+        Task<DiscountRuleEditViewModel?> GetDiscountRuleForEditAsync(Guid companyId, Guid discountRuleId);
+        Task<Guid?> CreateDiscountRuleAsync(Guid companyId, DiscountRuleCreateViewModel model);
+        Task<bool> UpdateDiscountRuleAsync(Guid companyId, DiscountRuleEditViewModel model);
+        Task<bool> DeleteDiscountRuleAsync(Guid companyId, Guid discountRuleId);
+
+        Task<PricingQuoteCreateViewModel> GetCreatePricingQuoteModelAsync(Guid companyId);
+        Task<PricingQuoteEditViewModel?> GetPricingQuoteForEditAsync(Guid companyId, Guid pricingQuoteId);
+        Task<Guid?> CreatePricingQuoteAsync(Guid companyId, PricingQuoteCreateViewModel model);
+        Task<bool> UpdatePricingQuoteAsync(Guid companyId, PricingQuoteEditViewModel model);
+        Task<bool> DeletePricingQuoteAsync(Guid companyId, Guid pricingQuoteId);
+
+        Task<PricingQuoteLineCreateViewModel> GetCreatePricingQuoteLineModelAsync(Guid companyId);
+        Task<PricingQuoteLineEditViewModel?> GetPricingQuoteLineForEditAsync(Guid companyId, Guid pricingQuoteLineId);
+        Task<Guid?> CreatePricingQuoteLineAsync(Guid companyId, PricingQuoteLineCreateViewModel model);
+        Task<bool> UpdatePricingQuoteLineAsync(Guid companyId, PricingQuoteLineEditViewModel model);
+        Task<bool> DeletePricingQuoteLineAsync(Guid companyId, Guid pricingQuoteLineId);
+
+        #endregion
+
+        #region Billing / Finance
+
+        Task<IEnumerable<ChargeListItemViewModel>> GetChargesAsync(Guid companyId);
+        Task<IEnumerable<ChargeRuleAppliedListItemViewModel>> GetChargeRulesAppliedAsync(Guid companyId);
+        Task<IEnumerable<InvoiceListItemViewModel>> GetInvoicesAsync(Guid companyId);
+        Task<IEnumerable<InvoiceLineListItemViewModel>> GetInvoiceLinesAsync(Guid companyId);
+        Task<IEnumerable<PaymentListItemViewModel>> GetPaymentsAsync(Guid companyId);
+        Task<IEnumerable<PaymentAllocationListItemViewModel>> GetPaymentAllocationsAsync(Guid companyId);
+        Task<IEnumerable<CreditNoteListItemViewModel>> GetCreditNotesAsync(Guid companyId);
+        Task<IEnumerable<TaxRateListItemViewModel>> GetTaxRatesAsync();
+
+        Task<ChargeCreateViewModel> GetCreateChargeModelAsync(Guid companyId);
+        Task<ChargeEditViewModel?> GetChargeForEditAsync(Guid companyId, Guid chargeId);
+        Task<Guid?> CreateChargeAsync(Guid companyId, ChargeCreateViewModel model);
+        Task<bool> UpdateChargeAsync(Guid companyId, ChargeEditViewModel model);
+        Task<bool> DeleteChargeAsync(Guid companyId, Guid chargeId);
+
+        Task<ChargeRuleAppliedCreateViewModel> GetCreateChargeRuleAppliedModelAsync(Guid companyId);
+        Task<ChargeRuleAppliedEditViewModel?> GetChargeRuleAppliedForEditAsync(Guid companyId, Guid chargeRuleAppliedId);
+        Task<Guid?> CreateChargeRuleAppliedAsync(Guid companyId, ChargeRuleAppliedCreateViewModel model);
+        Task<bool> UpdateChargeRuleAppliedAsync(Guid companyId, ChargeRuleAppliedEditViewModel model);
+        Task<bool> DeleteChargeRuleAppliedAsync(Guid companyId, Guid chargeRuleAppliedId);
+
+        Task<InvoiceEditViewModel?> GetInvoiceForEditAsync(Guid companyId, Guid invoiceId);
+        Task<Guid?> CreateInvoiceAsync(Guid companyId, InvoiceCreateViewModel model);
+        Task<bool> UpdateInvoiceAsync(Guid companyId, InvoiceEditViewModel model);
+        Task<bool> DeleteInvoiceAsync(Guid companyId, Guid invoiceId);
+
+        Task<InvoiceLineCreateViewModel> GetCreateInvoiceLineModelAsync(Guid companyId);
+        Task<InvoiceLineEditViewModel?> GetInvoiceLineForEditAsync(Guid companyId, Guid invoiceLineId);
+        Task<Guid?> CreateInvoiceLineAsync(Guid companyId, InvoiceLineCreateViewModel model);
+        Task<bool> UpdateInvoiceLineAsync(Guid companyId, InvoiceLineEditViewModel model);
+        Task<bool> DeleteInvoiceLineAsync(Guid companyId, Guid invoiceLineId);
+
+        Task<PaymentCreateViewModel> GetCreatePaymentModelAsync(Guid companyId);
+        Task<PaymentEditViewModel?> GetPaymentForEditAsync(Guid companyId, Guid paymentId);
+        Task<Guid?> CreatePaymentAsync(Guid companyId, PaymentCreateViewModel model);
+        Task<bool> UpdatePaymentAsync(Guid companyId, PaymentEditViewModel model);
+        Task<bool> DeletePaymentAsync(Guid companyId, Guid paymentId);
+
+        Task<PaymentAllocationCreateViewModel> GetCreatePaymentAllocationModelAsync(Guid companyId);
+        Task<PaymentAllocationEditViewModel?> GetPaymentAllocationForEditAsync(Guid companyId, Guid paymentAllocationId);
+        Task<Guid?> CreatePaymentAllocationAsync(Guid companyId, PaymentAllocationCreateViewModel model);
+        Task<bool> UpdatePaymentAllocationAsync(Guid companyId, PaymentAllocationEditViewModel model);
+        Task<bool> DeletePaymentAllocationAsync(Guid companyId, Guid paymentAllocationId);
+
+        Task<CreditNoteCreateViewModel> GetCreateCreditNoteModelAsync(Guid companyId);
+        Task<CreditNoteEditViewModel?> GetCreditNoteForEditAsync(Guid companyId, Guid creditNoteId);
+        Task<Guid?> CreateCreditNoteAsync(Guid companyId, CreditNoteCreateViewModel model);
+        Task<bool> UpdateCreditNoteAsync(Guid companyId, CreditNoteEditViewModel model);
+        Task<bool> DeleteCreditNoteAsync(Guid companyId, Guid creditNoteId);
+
+        #endregion
+
+        #region Documents
+
+        Task<IEnumerable<FileResourceListItemViewModel>> GetFileResourcesAsync(Guid companyId);
+        Task<IEnumerable<CompanyDocumentListItemViewModel>> GetDocumentsAsync(Guid companyId);
+        Task<IEnumerable<DocumentVersionListItemViewModel>> GetDocumentVersionsAsync(Guid companyId);
+        Task<IEnumerable<DocumentTemplateListItemViewModel>> GetDocumentTemplatesAsync(Guid companyId);
+
+        Task<DocumentCreateViewModel> GetCreateDocumentModelAsync(Guid companyId);
+        Task<DocumentEditViewModel?> GetDocumentForEditAsync(Guid companyId, Guid documentId);
+        Task<Guid?> CreateDocumentAsync(Guid companyId, DocumentCreateViewModel model);
+        Task<bool> UpdateDocumentAsync(Guid companyId, DocumentEditViewModel model);
+        Task<bool> DeleteDocumentAsync(Guid companyId, Guid documentId);
+
+        Task<DocumentVersionCreateViewModel> GetCreateDocumentVersionModelAsync(Guid companyId);
+        Task<DocumentVersionEditViewModel?> GetDocumentVersionForEditAsync(Guid companyId, Guid versionId);
+        Task<Guid?> CreateDocumentVersionAsync(Guid companyId, DocumentVersionCreateViewModel model);
+        Task<bool> UpdateDocumentVersionAsync(Guid companyId, DocumentVersionEditViewModel model);
+        Task<bool> DeleteDocumentVersionAsync(Guid companyId, Guid versionId);
+
+        Task<DocumentTemplateCreateViewModel> GetCreateDocumentTemplateModelAsync(Guid companyId);
+        Task<DocumentTemplateEditViewModel?> GetDocumentTemplateForEditAsync(Guid companyId, Guid templateId);
+        Task<Guid?> CreateDocumentTemplateAsync(Guid companyId, DocumentTemplateCreateViewModel model);
+        Task<bool> UpdateDocumentTemplateAsync(Guid companyId, DocumentTemplateEditViewModel model);
+        Task<bool> DeleteDocumentTemplateAsync(Guid companyId, Guid templateId);
+
+        #endregion
+
+        #region Compliance / Shipment Document Flow
+
+        Task<IEnumerable<DangerousGoodsDeclarationListItemViewModel>> GetDangerousGoodsDeclarationsAsync(Guid companyId);
+        Task<IEnumerable<TemperatureRequirementListItemViewModel>> GetTemperatureRequirementsAsync(Guid companyId);
+        Task<IEnumerable<ComplianceCheckListItemViewModel>> GetComplianceChecksAsync(Guid companyId);
+        Task<IEnumerable<DGDocumentListItemViewModel>> GetDGDocumentsAsync(Guid companyId);
+
+        Task<DangerousGoodsDeclarationCreateViewModel> GetCreateDangerousGoodsDeclarationModelAsync(Guid companyId);
+        Task<DangerousGoodsDeclarationEditViewModel?> GetDangerousGoodsDeclarationForEditAsync(Guid companyId, Guid declarationId);
+        Task<Guid?> CreateDangerousGoodsDeclarationAsync(Guid companyId, DangerousGoodsDeclarationCreateViewModel model);
+        Task<bool> UpdateDangerousGoodsDeclarationAsync(Guid companyId, DangerousGoodsDeclarationEditViewModel model);
+        Task<bool> DeleteDangerousGoodsDeclarationAsync(Guid companyId, Guid declarationId);
+
+        Task<TemperatureRequirementCreateViewModel> GetCreateTemperatureRequirementModelAsync(Guid companyId);
+        Task<TemperatureRequirementEditViewModel?> GetTemperatureRequirementForEditAsync(Guid companyId, Guid requirementId);
+        Task<Guid?> CreateTemperatureRequirementAsync(Guid companyId, TemperatureRequirementCreateViewModel model);
+        Task<bool> UpdateTemperatureRequirementAsync(Guid companyId, TemperatureRequirementEditViewModel model);
+        Task<bool> DeleteTemperatureRequirementAsync(Guid companyId, Guid requirementId);
+
+        Task<ComplianceCheckCreateViewModel> GetCreateComplianceCheckModelAsync(Guid companyId);
+        Task<ComplianceCheckEditViewModel?> GetComplianceCheckForEditAsync(Guid companyId, Guid complianceCheckId);
+        Task<Guid?> CreateComplianceCheckAsync(Guid companyId, ComplianceCheckCreateViewModel model);
+        Task<bool> UpdateComplianceCheckAsync(Guid companyId, ComplianceCheckEditViewModel model);
+        Task<bool> DeleteComplianceCheckAsync(Guid companyId, Guid complianceCheckId);
+
+        Task<DGDocumentCreateViewModel> GetCreateDGDocumentModelAsync(Guid companyId);
+        Task<DGDocumentEditViewModel?> GetDGDocumentForEditAsync(Guid companyId, Guid dgDocumentId);
+        Task<Guid?> CreateDGDocumentAsync(Guid companyId, DGDocumentCreateViewModel model);
+        Task<bool> UpdateDGDocumentAsync(Guid companyId, DGDocumentEditViewModel model);
+        Task<bool> DeleteDGDocumentAsync(Guid companyId, Guid dgDocumentId);
+
+        #endregion
+
+        #region Operations
+
+        Task<CompanyOperationsHomeViewModel> GetOperationsHomeAsync();
+
+        Task<IEnumerable<NotificationListItemViewModel>> GetNotificationsAsync(Guid companyId);
+        Task<NotificationCreateViewModel> GetCreateNotificationModelAsync(Guid companyId);
+        Task<NotificationEditViewModel?> GetNotificationForEditAsync(Guid companyId, Guid id);
+        Task<Guid?> CreateNotificationAsync(Guid companyId, NotificationCreateViewModel model);
+        Task<bool> UpdateNotificationAsync(Guid companyId, NotificationEditViewModel model);
+        Task<bool> DeleteNotificationAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<NotificationSubscriptionListItemViewModel>> GetNotificationSubscriptionsAsync(Guid companyId);
+        Task<NotificationSubscriptionCreateViewModel> GetCreateNotificationSubscriptionModelAsync(Guid companyId);
+        Task<NotificationSubscriptionEditViewModel?> GetNotificationSubscriptionForEditAsync(Guid companyId, Guid id);
+        Task<Guid?> CreateNotificationSubscriptionAsync(Guid companyId, NotificationSubscriptionCreateViewModel model);
+        Task<bool> UpdateNotificationSubscriptionAsync(Guid companyId, NotificationSubscriptionEditViewModel model);
+        Task<bool> DeleteNotificationSubscriptionAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<AuditLogListItemViewModel>> GetAuditLogsAsync(Guid companyId);
+
+        Task<IEnumerable<SavedFilterListItemViewModel>> GetSavedFiltersAsync(Guid companyId);
+        Task<SavedFilterCreateViewModel> GetCreateSavedFilterModelAsync(Guid companyId);
+        Task<SavedFilterEditViewModel?> GetSavedFilterForEditAsync(Guid companyId, Guid id);
+        Task<Guid?> CreateSavedFilterAsync(Guid companyId, SavedFilterCreateViewModel model);
+        Task<bool> UpdateSavedFilterAsync(Guid companyId, SavedFilterEditViewModel model);
+        Task<bool> DeleteSavedFilterAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<CompanyDashboardConfigListItemViewModel>> GetCompanyDashboardConfigsAsync(Guid companyId);
+        Task<CompanyDashboardConfigCreateViewModel> GetCreateCompanyDashboardConfigModelAsync(Guid companyId);
+        Task<CompanyDashboardConfigEditViewModel?> GetCompanyDashboardConfigForEditAsync(Guid companyId, Guid id);
+        Task<Guid?> CreateCompanyDashboardConfigAsync(Guid companyId, CompanyDashboardConfigCreateViewModel model);
+        Task<bool> UpdateCompanyDashboardConfigAsync(Guid companyId, CompanyDashboardConfigEditViewModel model);
+        Task<bool> DeleteCompanyDashboardConfigAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<BookingListItemViewModel>> GetBookingsAsync(Guid companyId);
+        Task<BookingCreateViewModel> GetCreateBookingModelAsync(Guid companyId);
+        Task<BookingEditViewModel?> GetBookingForEditAsync(Guid companyId, Guid id);
+        Task<Guid?> CreateBookingAsync(Guid companyId, BookingCreateViewModel model);
+        Task<bool> UpdateBookingAsync(Guid companyId, BookingEditViewModel model);
+        Task<bool> DeleteBookingAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<BookingLegListItemViewModel>> GetBookingLegsAsync(Guid companyId);
+        Task<BookingLegCreateViewModel> GetCreateBookingLegModelAsync(Guid companyId);
+        Task<BookingLegEditViewModel?> GetBookingLegForEditAsync(Guid companyId, Guid id);
+        Task<Guid?> CreateBookingLegAsync(Guid companyId, BookingLegCreateViewModel model);
+        Task<bool> UpdateBookingLegAsync(Guid companyId, BookingLegEditViewModel model);
+        Task<bool> DeleteBookingLegAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<ConsolidationListItemViewModel>> GetConsolidationsAsync(Guid companyId);
+        Task<IEnumerable<ConsolidationShipmentListItemViewModel>> GetConsolidationShipmentsAsync(Guid companyId);
+        Task<ConsolidationShipmentCreateViewModel> GetCreateConsolidationShipmentModelAsync(Guid companyId);
+        Task<ConsolidationShipmentEditViewModel?> GetConsolidationShipmentForEditAsync(Guid companyId, Guid id);
+        Task<Guid?> CreateConsolidationShipmentAsync(Guid companyId, ConsolidationShipmentCreateViewModel model);
+        Task<bool> UpdateConsolidationShipmentAsync(Guid companyId, ConsolidationShipmentEditViewModel model);
+        Task<bool> DeleteConsolidationShipmentAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<ResourceCalendarListItemViewModel>> GetResourceCalendarsAsync(Guid companyId);
+        Task<ResourceCalendarCreateViewModel> GetCreateResourceCalendarModelAsync(Guid companyId);
+        Task<ResourceCalendarEditViewModel?> GetResourceCalendarForEditAsync(Guid companyId, Guid id);
+        Task<Guid?> CreateResourceCalendarAsync(Guid companyId, ResourceCalendarCreateViewModel model);
+        Task<bool> UpdateResourceCalendarAsync(Guid companyId, ResourceCalendarEditViewModel model);
+        Task<bool> DeleteResourceCalendarAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<ResourceAvailabilityListItemViewModel>> GetResourceAvailabilitiesAsync(Guid companyId);
+        Task<ResourceAvailabilityCreateViewModel> GetCreateResourceAvailabilityModelAsync(Guid companyId);
+        Task<ResourceAvailabilityEditViewModel?> GetResourceAvailabilityForEditAsync(Guid companyId, Guid id);
+        Task<Guid?> CreateResourceAvailabilityAsync(Guid companyId, ResourceAvailabilityCreateViewModel model);
+        Task<bool> UpdateResourceAvailabilityAsync(Guid companyId, ResourceAvailabilityEditViewModel model);
+        Task<bool> DeleteResourceAvailabilityAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<CapacityReservationListItemViewModel>> GetCapacityReservationsAsync(Guid companyId);
+        Task<CapacityReservationCreateViewModel> GetCreateCapacityReservationModelAsync(Guid companyId);
+        Task<CapacityReservationEditViewModel?> GetCapacityReservationForEditAsync(Guid companyId, Guid id);
+        Task<Guid?> CreateCapacityReservationAsync(Guid companyId, CapacityReservationCreateViewModel model);
+        Task<bool> UpdateCapacityReservationAsync(Guid companyId, CapacityReservationEditViewModel model);
+        Task<bool> DeleteCapacityReservationAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<AssignmentListItemViewModel>> GetAssignmentsAsync(Guid companyId);
+        Task<AssignmentCreateViewModel> GetCreateAssignmentModelAsync(Guid companyId);
+        Task<AssignmentEditViewModel?> GetAssignmentForEditAsync(Guid companyId, Guid id);
+        Task<Guid?> CreateAssignmentAsync(Guid companyId, AssignmentCreateViewModel model);
+        Task<bool> UpdateAssignmentAsync(Guid companyId, AssignmentEditViewModel model);
+        Task<bool> DeleteAssignmentAsync(Guid companyId, Guid id);
+
+        Task<IEnumerable<UtilizationSnapshotListItemViewModel>> GetUtilizationSnapshotsAsync(Guid companyId);
+
+        #endregion
+
+        #region Shipment Status History
+
+        Task<CompanyShipmentStatusHistoryViewModel?> GetShipmentStatusHistoryAsync(Guid companyId, Guid shipmentId);
+
+        #endregion
+    }
+}
