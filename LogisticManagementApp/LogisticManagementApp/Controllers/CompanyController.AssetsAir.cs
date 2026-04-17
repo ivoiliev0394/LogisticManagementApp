@@ -17,7 +17,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Aircraft()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -29,7 +29,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateAircraft()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -41,7 +41,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAircraft(AircraftCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -62,7 +62,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditAircraft(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetAircraftForEditAsync(companyId.Value, id);
@@ -74,7 +74,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAircraft(AircraftEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -95,7 +95,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteAircraft(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteAircraftAsync(companyId.Value, id);
@@ -108,7 +108,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Flights()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -120,7 +120,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateFlight()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -132,7 +132,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateFlight(FlightCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -164,7 +164,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditFlight(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetFlightForEditAsync(companyId.Value, id);
@@ -176,7 +176,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditFlight(FlightEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -209,7 +209,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteFlight(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteFlightAsync(companyId.Value, id);
@@ -222,7 +222,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> FlightSegments()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -234,7 +234,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateFlightSegment()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -246,7 +246,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateFlightSegment(FlightSegmentCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -282,7 +282,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditFlightSegment(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetFlightSegmentForEditAsync(
@@ -297,7 +297,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditFlightSegment(FlightSegmentEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -333,7 +333,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteFlightSegment(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteFlightSegmentAsync(companyId.Value, id);
@@ -348,7 +348,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> AirCrewMembers()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -360,7 +360,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateAirCrewMember()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -372,7 +372,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAirCrewMember(AirCrewMemberCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -393,7 +393,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditAirCrewMember(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetAirCrewMemberForEditAsync(
@@ -408,7 +408,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAirCrewMember(AirCrewMemberEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -432,7 +432,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteAirCrewMember(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteAirCrewMemberAsync(companyId.Value, id);
@@ -447,7 +447,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> AirCrewAssignments()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -459,7 +459,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateAirCrewAssignment()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -473,7 +473,7 @@ namespace LogisticManagementApp.Controllers
             AirCrewAssignmentCreateViewModel model
         )
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -512,7 +512,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditAirCrewAssignment(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetAirCrewAssignmentForEditAsync(
@@ -527,7 +527,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAirCrewAssignment(AirCrewAssignmentEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -563,7 +563,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteAirCrewAssignment(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteAirCrewAssignmentAsync(
@@ -581,7 +581,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> ULDs()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -593,7 +593,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateULD()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -605,7 +605,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateULD(UldCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -626,7 +626,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditULD(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetUldForEditAsync(companyId.Value, id);
@@ -638,7 +638,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditULD(UldEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -659,7 +659,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteULD(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteUldAsync(companyId.Value, id);

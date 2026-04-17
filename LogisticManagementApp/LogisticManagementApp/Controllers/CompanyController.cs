@@ -1,11 +1,14 @@
 ﻿using LogisticManagementApp.Applicationn.Interfaces.CompanyPortal;
+using LogisticManagementApp.Domain.Enums.Billing;
+using LogisticManagementApp.Domain.Identity;
 using LogisticManagementApp.Models.CompanyPortal;
+using LogisticManagementApp.Models.CompanyPortal.Billing;
 using LogisticManagementApp.Models.CompanyPortal.Branches;
 using LogisticManagementApp.Models.CompanyPortal.Capabilities;
-using LogisticManagementApp.Models.CompanyPortal.Billing;
 using LogisticManagementApp.Models.CompanyPortal.Contacts;
 using LogisticManagementApp.Models.CompanyPortal.Orders;
 using LogisticManagementApp.Models.CompanyPortal.Pricing;
+using LogisticManagementApp.Models.CompanyPortal.Routes;
 using LogisticManagementApp.Models.CompanyPortal.Shipments;
 using LogisticManagementApp.Models.CompanyPortal.Shipments.CargoItems;
 using LogisticManagementApp.Models.CompanyPortal.Shipments.Containers;
@@ -20,10 +23,9 @@ using LogisticManagementApp.Models.CompanyPortal.Shipments.TrackingEvents;
 using LogisticManagementApp.Models.CompanyPortal.Shipments.Trips;
 using LogisticManagementApp.Models.CompanyPortal.Shipments.Ulds;
 using LogisticManagementApp.Models.CompanyPortal.Shipments.Voyages;
-using LogisticManagementApp.Models.CompanyPortal.Routes;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using LogisticManagementApp.Domain.Enums.Billing;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace LogisticManagementApp.Controllers
@@ -32,10 +34,13 @@ namespace LogisticManagementApp.Controllers
     public partial class CompanyController : Controller
     {
         private readonly ICompanyPortalService _companyPortalService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CompanyController(ICompanyPortalService companyPortalService)
+
+        public CompanyController(ICompanyPortalService companyPortalService, UserManager<ApplicationUser> userManager)
         {
             _companyPortalService = companyPortalService;
+            _userManager = userManager;
         }
 
         // ============================================================
@@ -50,16 +55,10 @@ namespace LogisticManagementApp.Controllers
         /// <summary>
         /// Взима CompanyId от claims на логнатия потребител.
         /// </summary>
-        private Guid? GetCurrentCompanyId()
+        private async Task<Guid?> GetCurrentCompanyIdAsync()
         {
-            var companyIdValue = User.FindFirst("CompanyId")?.Value;
-
-            if (Guid.TryParse(companyIdValue, out var companyId))
-            {
-                return companyId;
-            }
-
-            return null;
+            var user = await _userManager.GetUserAsync(User);
+            return user?.CompanyId;
         }
 
         #endregion
@@ -72,7 +71,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Profile()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -95,7 +94,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditProfile()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -119,7 +118,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditProfile(EditCompanyProfileViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -158,7 +157,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Branches()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -190,7 +189,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateBranch(CompanyBranchCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -215,7 +214,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditBranch(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -241,7 +240,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditBranch(CompanyBranchEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -273,7 +272,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteBranch(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -307,7 +306,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Contacts()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -334,7 +333,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateContact(CompanyContactCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -358,7 +357,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditContact(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -382,7 +381,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditContact(CompanyContactEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -412,7 +411,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteContact(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -447,7 +446,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Capabilities()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -474,7 +473,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateCapability(CompanyCapabilityCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -504,7 +503,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditCapability(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -528,7 +527,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCapability(CompanyCapabilityEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -559,7 +558,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteCapability(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
 
             if (companyId == null)
             {
@@ -594,7 +593,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Orders()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetMyOrdersAsync(companyId.Value);
@@ -607,7 +606,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> OrderDetails(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetOrderDetailsAsync(companyId.Value, id);
@@ -633,7 +632,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateOrder(CompanyOrderCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -653,7 +652,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditOrder(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetOrderForEditAsync(companyId.Value, id);
@@ -669,7 +668,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditOrder(CompanyOrderEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -698,7 +697,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteOrder(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteOrderAsync(companyId.Value, id);
@@ -715,7 +714,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SubmitOrder(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.SubmitOrderAsync(companyId.Value, id);
@@ -737,7 +736,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmOrder(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.ConfirmOrderAsync(companyId.Value, id);
@@ -754,7 +753,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MarkOrderInProgress(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.MarkOrderInProgressAsync(companyId.Value, id);
@@ -771,7 +770,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CompleteOrder(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.CompleteOrderAsync(companyId.Value, id);
@@ -788,7 +787,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CancelOrder(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.CancelOrderAsync(companyId.Value, id);
@@ -804,7 +803,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateOrderLine(Guid orderId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCreateOrderLineModelAsync(companyId.Value, orderId);
@@ -820,7 +819,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateOrderLine(CompanyOrderLineCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -845,7 +844,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditOrderLine(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetOrderLineForEditAsync(companyId.Value, id);
@@ -861,7 +860,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditOrderLine(CompanyOrderLineEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -887,7 +886,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteOrderLine(Guid id, Guid orderId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteOrderLineAsync(companyId.Value, id);
@@ -961,7 +960,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Agreements()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             var model = await _companyPortalService.GetAgreementsAsync(companyId.Value);
             return View("~/Views/CompanyPortal/Pricing/Agreements.cshtml", model);
@@ -970,7 +969,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> DiscountRules()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             var model = await _companyPortalService.GetDiscountRulesAsync(companyId.Value);
             return View("~/Views/CompanyPortal/Pricing/DiscountRules.cshtml", model);
@@ -979,7 +978,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> PricingQuotes()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             var model = await _companyPortalService.GetPricingQuotesAsync(companyId.Value);
             return View("~/Views/CompanyPortal/Pricing/PricingQuotes.cshtml", model);
@@ -988,7 +987,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> PricingQuoteLines()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             var model = await _companyPortalService.GetPricingQuoteLinesAsync(companyId.Value);
             return View("~/Views/CompanyPortal/Pricing/PricingQuoteLines.cshtml", model);
@@ -996,7 +995,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public IActionResult CreateAgreement()
         {
-            if (GetCurrentCompanyId() == null) return Forbid();
+            if (GetCurrentCompanyIdAsync() == null) return Forbid();
             return View("~/Views/CompanyPortal/Pricing/CreateAgreement.cshtml", new AgreementCreateViewModel());
         }
 
@@ -1004,7 +1003,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAgreement(AgreementCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             if (!ModelState.IsValid) return View("~/Views/CompanyPortal/Pricing/CreateAgreement.cshtml", model);
             var id = await _companyPortalService.CreateAgreementAsync(companyId.Value, model);
@@ -1020,7 +1019,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditAgreement(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             var model = await _companyPortalService.GetAgreementForEditAsync(companyId.Value, id);
             if (model == null) return NotFound();
@@ -1031,7 +1030,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAgreement(AgreementEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             if (!ModelState.IsValid) return View("~/Views/CompanyPortal/Pricing/EditAgreement.cshtml", model);
             var success = await _companyPortalService.UpdateAgreementAsync(companyId.Value, model);
@@ -1048,7 +1047,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteAgreement(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             var success = await _companyPortalService.DeleteAgreementAsync(companyId.Value, id);
             TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Agreement беше изтрит успешно." : "Неуспешно изтриване на agreement.";
@@ -1058,7 +1057,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateDiscountRule()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             var model = await _companyPortalService.GetCreateDiscountRuleModelAsync(companyId.Value);
             return View("~/Views/CompanyPortal/Pricing/CreateDiscountRule.cshtml", model);
@@ -1068,7 +1067,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateDiscountRule(DiscountRuleCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             if (!ModelState.IsValid)
             {
@@ -1111,7 +1110,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditDiscountRule(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             var model = await _companyPortalService.GetDiscountRuleForEditAsync(companyId.Value, id);
             if (model == null) return NotFound();
@@ -1122,7 +1121,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditDiscountRule(DiscountRuleEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             if (!ModelState.IsValid)
             {
@@ -1158,7 +1157,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteDiscountRule(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             var success = await _companyPortalService.DeleteDiscountRuleAsync(companyId.Value, id);
             TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Discount rule беше изтрит успешно." : "Неуспешно изтриване на discount rule.";
@@ -1168,7 +1167,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreatePricingQuote()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             var model = await _companyPortalService.GetCreatePricingQuoteModelAsync(companyId.Value);
             return View("~/Views/CompanyPortal/Pricing/CreatePricingQuote.cshtml", model);
@@ -1178,7 +1177,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePricingQuote(PricingQuoteCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             if (!ModelState.IsValid)
             {
@@ -1201,7 +1200,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditPricingQuote(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             var model = await _companyPortalService.GetPricingQuoteForEditAsync(companyId.Value, id);
             if (model == null) return NotFound();
@@ -1212,7 +1211,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditPricingQuote(PricingQuoteEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             if (!ModelState.IsValid)
             {
@@ -1238,7 +1237,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeletePricingQuote(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             var success = await _companyPortalService.DeletePricingQuoteAsync(companyId.Value, id);
             TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Pricing quote беше изтрит успешно." : "Неуспешно изтриване на pricing quote.";
@@ -1248,7 +1247,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreatePricingQuoteLine()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             var model = await _companyPortalService.GetCreatePricingQuoteLineModelAsync(companyId.Value);
             return View("~/Views/CompanyPortal/Pricing/CreatePricingQuoteLine.cshtml", model);
@@ -1258,7 +1257,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePricingQuoteLine(PricingQuoteLineCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             if (!ModelState.IsValid)
             {
@@ -1281,7 +1280,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditPricingQuoteLine(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             var model = await _companyPortalService.GetPricingQuoteLineForEditAsync(companyId.Value, id);
             if (model == null) return NotFound();
@@ -1292,7 +1291,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditPricingQuoteLine(PricingQuoteLineEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             if (!ModelState.IsValid)
             {
@@ -1318,7 +1317,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeletePricingQuoteLine(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
             var success = await _companyPortalService.DeletePricingQuoteLineAsync(companyId.Value, id);
             TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Pricing quote line беше изтрита успешно." : "Неуспешно изтриване на pricing quote line.";
@@ -1355,721 +1354,723 @@ namespace LogisticManagementApp.Controllers
         }
 
 
-[HttpGet]
-public async Task<IActionResult> Charges()
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetChargesAsync(companyId.Value);
-    return View("~/Views/CompanyPortal/Billing/Charges.cshtml", model);
-}
-
-[HttpGet]
-public async Task<IActionResult> ChargeRulesApplied()
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetChargeRulesAppliedAsync(companyId.Value);
-    return View("~/Views/CompanyPortal/Billing/ChargeRulesApplied.cshtml", model);
-}
-
-[HttpGet]
-public async Task<IActionResult> Invoices()
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetInvoicesAsync(companyId.Value);
-    return View("~/Views/CompanyPortal/Billing/Invoices.cshtml", model);
-}
-
-[HttpGet]
-public async Task<IActionResult> InvoiceLines()
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetInvoiceLinesAsync(companyId.Value);
-    return View("~/Views/CompanyPortal/Billing/InvoiceLines.cshtml", model);
-}
-
-[HttpGet]
-public async Task<IActionResult> Payments()
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetPaymentsAsync(companyId.Value);
-    return View("~/Views/CompanyPortal/Billing/Payments.cshtml", model);
-}
-
-[HttpGet]
-public async Task<IActionResult> PaymentAllocations()
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetPaymentAllocationsAsync(companyId.Value);
-    return View("~/Views/CompanyPortal/Billing/PaymentAllocations.cshtml", model);
-}
-
-[HttpGet]
-public async Task<IActionResult> CreditNotes()
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetCreditNotesAsync(companyId.Value);
-    return View("~/Views/CompanyPortal/Billing/CreditNotes.cshtml", model);
-}
-
-[HttpGet]
-public async Task<IActionResult> TaxRates()
-{
-    var model = await _companyPortalService.GetTaxRatesAsync();
-    return View("~/Views/CompanyPortal/Billing/TaxRates.cshtml", model);
-}
-
-[HttpGet]
-public async Task<IActionResult> CreateCharge()
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetCreateChargeModelAsync(companyId.Value);
-    return View("~/Views/CompanyPortal/Billing/CreateCharge.cshtml", model);
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> CreateCharge(ChargeCreateViewModel model)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    if (!ModelState.IsValid)
-    {
-        var reload = await _companyPortalService.GetCreateChargeModelAsync(companyId.Value);
-        CopyCharge(model, reload);
-        return View("~/Views/CompanyPortal/Billing/CreateCharge.cshtml", reload);
-    }
-
-    var id = await _companyPortalService.CreateChargeAsync(companyId.Value, model);
-    if (id == null)
-    {
-        TempData["ErrorMessage"] = "Неуспешно добавяне на charge.";
-        var reload = await _companyPortalService.GetCreateChargeModelAsync(companyId.Value);
-        CopyCharge(model, reload);
-        return View("~/Views/CompanyPortal/Billing/CreateCharge.cshtml", reload);
-    }
-
-    TempData["SuccessMessage"] = "Charge беше добавен успешно.";
-    return RedirectToAction(nameof(Charges));
-}
-
-[HttpGet]
-public async Task<IActionResult> EditCharge(Guid id)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetChargeForEditAsync(companyId.Value, id);
-    if (model == null) return NotFound();
-    return View("~/Views/CompanyPortal/Billing/EditCharge.cshtml", model);
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> EditCharge(ChargeEditViewModel model)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    if (!ModelState.IsValid)
-    {
-        var reload = await _companyPortalService.GetChargeForEditAsync(companyId.Value, model.Id);
-        if (reload != null)
+        [HttpGet]
+        public async Task<IActionResult> Charges()
         {
-            CopyCharge(model, reload);
-            model = reload;
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetChargesAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Billing/Charges.cshtml", model);
         }
-        return View("~/Views/CompanyPortal/Billing/EditCharge.cshtml", model);
-    }
 
-    var success = await _companyPortalService.UpdateChargeAsync(companyId.Value, model);
-    if (!success)
-    {
-        TempData["ErrorMessage"] = "Неуспешно обновяване на charge.";
-        return View("~/Views/CompanyPortal/Billing/EditCharge.cshtml", model);
-    }
-
-    TempData["SuccessMessage"] = "Charge беше обновен успешно.";
-    return RedirectToAction(nameof(Charges));
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> DeleteCharge(Guid id)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var success = await _companyPortalService.DeleteChargeAsync(companyId.Value, id);
-    TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Charge беше изтрит успешно." : "Неуспешно изтриване на charge.";
-    return RedirectToAction(nameof(Charges));
-}
-
-[HttpGet]
-public async Task<IActionResult> CreateChargeRuleApplied()
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetCreateChargeRuleAppliedModelAsync(companyId.Value);
-    return View("~/Views/CompanyPortal/Billing/CreateChargeRuleApplied.cshtml", model);
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> CreateChargeRuleApplied(ChargeRuleAppliedCreateViewModel model)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    if (!ModelState.IsValid)
-    {
-        var reload = await _companyPortalService.GetCreateChargeRuleAppliedModelAsync(companyId.Value);
-        CopyChargeRuleApplied(model, reload);
-        return View("~/Views/CompanyPortal/Billing/CreateChargeRuleApplied.cshtml", reload);
-    }
-
-    var id = await _companyPortalService.CreateChargeRuleAppliedAsync(companyId.Value, model);
-    if (id == null)
-    {
-        TempData["ErrorMessage"] = "Неуспешно добавяне на charge rule.";
-        var reload = await _companyPortalService.GetCreateChargeRuleAppliedModelAsync(companyId.Value);
-        CopyChargeRuleApplied(model, reload);
-        return View("~/Views/CompanyPortal/Billing/CreateChargeRuleApplied.cshtml", reload);
-    }
-
-    TempData["SuccessMessage"] = "Charge rule беше добавен успешно.";
-    return RedirectToAction(nameof(ChargeRulesApplied));
-}
-
-[HttpGet]
-public async Task<IActionResult> EditChargeRuleApplied(Guid id)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetChargeRuleAppliedForEditAsync(companyId.Value, id);
-    if (model == null) return NotFound();
-    return View("~/Views/CompanyPortal/Billing/EditChargeRuleApplied.cshtml", model);
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> EditChargeRuleApplied(ChargeRuleAppliedEditViewModel model)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    if (!ModelState.IsValid)
-    {
-        var reload = await _companyPortalService.GetChargeRuleAppliedForEditAsync(companyId.Value, model.Id);
-        if (reload != null)
+        [HttpGet]
+        public async Task<IActionResult> ChargeRulesApplied()
         {
-            CopyChargeRuleApplied(model, reload);
-            model = reload;
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetChargeRulesAppliedAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Billing/ChargeRulesApplied.cshtml", model);
         }
-        return View("~/Views/CompanyPortal/Billing/EditChargeRuleApplied.cshtml", model);
-    }
 
-    var success = await _companyPortalService.UpdateChargeRuleAppliedAsync(companyId.Value, model);
-    if (!success)
-    {
-        TempData["ErrorMessage"] = "Неуспешно обновяване на charge rule.";
-        return View("~/Views/CompanyPortal/Billing/EditChargeRuleApplied.cshtml", model);
-    }
-
-    TempData["SuccessMessage"] = "Charge rule беше обновен успешно.";
-    return RedirectToAction(nameof(ChargeRulesApplied));
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> DeleteChargeRuleApplied(Guid id)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var success = await _companyPortalService.DeleteChargeRuleAppliedAsync(companyId.Value, id);
-    TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Charge rule беше изтрит успешно." : "Неуспешно изтриване на charge rule.";
-    return RedirectToAction(nameof(ChargeRulesApplied));
-}
-
-[HttpGet]
-public IActionResult CreateInvoice()
-{
-    if (GetCurrentCompanyId() == null) return Forbid();
-    return View("~/Views/CompanyPortal/Billing/CreateInvoice.cshtml", new InvoiceCreateViewModel());
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> CreateInvoice(InvoiceCreateViewModel model)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    if (!ModelState.IsValid) return View("~/Views/CompanyPortal/Billing/CreateInvoice.cshtml", model);
-
-    var id = await _companyPortalService.CreateInvoiceAsync(companyId.Value, model);
-    if (id == null)
-    {
-        TempData["ErrorMessage"] = "Неуспешно добавяне на invoice.";
-        return View("~/Views/CompanyPortal/Billing/CreateInvoice.cshtml", model);
-    }
-
-    TempData["SuccessMessage"] = "Invoice беше добавен успешно.";
-    return RedirectToAction(nameof(Invoices));
-}
-
-[HttpGet]
-public async Task<IActionResult> EditInvoice(Guid id)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetInvoiceForEditAsync(companyId.Value, id);
-    if (model == null) return NotFound();
-    return View("~/Views/CompanyPortal/Billing/EditInvoice.cshtml", model);
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> EditInvoice(InvoiceEditViewModel model)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    if (!ModelState.IsValid) return View("~/Views/CompanyPortal/Billing/EditInvoice.cshtml", model);
-
-    var success = await _companyPortalService.UpdateInvoiceAsync(companyId.Value, model);
-    if (!success)
-    {
-        TempData["ErrorMessage"] = "Неуспешно обновяване на invoice.";
-        return View("~/Views/CompanyPortal/Billing/EditInvoice.cshtml", model);
-    }
-
-    TempData["SuccessMessage"] = "Invoice беше обновен успешно.";
-    return RedirectToAction(nameof(Invoices));
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> DeleteInvoice(Guid id)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var success = await _companyPortalService.DeleteInvoiceAsync(companyId.Value, id);
-    TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Invoice беше изтрита успешно." : "Неуспешно изтриване на invoice.";
-    return RedirectToAction(nameof(Invoices));
-}
-
-[HttpGet]
-public async Task<IActionResult> CreateInvoiceLine()
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetCreateInvoiceLineModelAsync(companyId.Value);
-    return View("~/Views/CompanyPortal/Billing/CreateInvoiceLine.cshtml", model);
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> CreateInvoiceLine(InvoiceLineCreateViewModel model)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    if (!ModelState.IsValid)
-    {
-        var reload = await _companyPortalService.GetCreateInvoiceLineModelAsync(companyId.Value);
-        CopyInvoiceLine(model, reload);
-        return View("~/Views/CompanyPortal/Billing/CreateInvoiceLine.cshtml", reload);
-    }
-
-    var id = await _companyPortalService.CreateInvoiceLineAsync(companyId.Value, model);
-    if (id == null)
-    {
-        TempData["ErrorMessage"] = "Неуспешно добавяне на invoice line.";
-        var reload = await _companyPortalService.GetCreateInvoiceLineModelAsync(companyId.Value);
-        CopyInvoiceLine(model, reload);
-        return View("~/Views/CompanyPortal/Billing/CreateInvoiceLine.cshtml", reload);
-    }
-
-    TempData["SuccessMessage"] = "Invoice line беше добавен успешно.";
-    return RedirectToAction(nameof(InvoiceLines));
-}
-
-[HttpGet]
-public async Task<IActionResult> EditInvoiceLine(Guid id)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetInvoiceLineForEditAsync(companyId.Value, id);
-    if (model == null) return NotFound();
-    return View("~/Views/CompanyPortal/Billing/EditInvoiceLine.cshtml", model);
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> EditInvoiceLine(InvoiceLineEditViewModel model)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    if (!ModelState.IsValid)
-    {
-        var reload = await _companyPortalService.GetInvoiceLineForEditAsync(companyId.Value, model.Id);
-        if (reload != null)
+        [HttpGet]
+        public async Task<IActionResult> Invoices()
         {
-            CopyInvoiceLine(model, reload);
-            model = reload;
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetInvoicesAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Billing/Invoices.cshtml", model);
         }
-        return View("~/Views/CompanyPortal/Billing/EditInvoiceLine.cshtml", model);
-    }
 
-    var success = await _companyPortalService.UpdateInvoiceLineAsync(companyId.Value, model);
-    if (!success)
-    {
-        TempData["ErrorMessage"] = "Неуспешно обновяване на invoice line.";
-        return View("~/Views/CompanyPortal/Billing/EditInvoiceLine.cshtml", model);
-    }
-
-    TempData["SuccessMessage"] = "Invoice line беше обновена успешно.";
-    return RedirectToAction(nameof(InvoiceLines));
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> DeleteInvoiceLine(Guid id)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var success = await _companyPortalService.DeleteInvoiceLineAsync(companyId.Value, id);
-    TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Invoice line беше изтрита успешно." : "Неуспешно изтриване на invoice line.";
-    return RedirectToAction(nameof(InvoiceLines));
-}
-
-[HttpGet]
-public async Task<IActionResult> CreatePayment()
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetCreatePaymentModelAsync(companyId.Value);
-    return View("~/Views/CompanyPortal/Billing/CreatePayment.cshtml", model);
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> CreatePayment(PaymentCreateViewModel model)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    if (!ModelState.IsValid)
-    {
-        var reload = await _companyPortalService.GetCreatePaymentModelAsync(companyId.Value);
-        CopyPayment(model, reload);
-        return View("~/Views/CompanyPortal/Billing/CreatePayment.cshtml", reload);
-    }
-
-    var id = await _companyPortalService.CreatePaymentAsync(companyId.Value, model);
-    if (id == null)
-    {
-        TempData["ErrorMessage"] = "Неуспешно добавяне на payment.";
-        var reload = await _companyPortalService.GetCreatePaymentModelAsync(companyId.Value);
-        CopyPayment(model, reload);
-        return View("~/Views/CompanyPortal/Billing/CreatePayment.cshtml", reload);
-    }
-
-    TempData["SuccessMessage"] = "Payment беше добавен успешно.";
-    return RedirectToAction(nameof(Payments));
-}
-
-[HttpGet]
-public async Task<IActionResult> EditPayment(Guid id)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetPaymentForEditAsync(companyId.Value, id);
-    if (model == null) return NotFound();
-    return View("~/Views/CompanyPortal/Billing/EditPayment.cshtml", model);
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> EditPayment(PaymentEditViewModel model)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    if (!ModelState.IsValid)
-    {
-        var reload = await _companyPortalService.GetPaymentForEditAsync(companyId.Value, model.Id);
-        if (reload != null)
+        [HttpGet]
+        public async Task<IActionResult> InvoiceLines()
         {
-            CopyPayment(model, reload);
-            model = reload;
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetInvoiceLinesAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Billing/InvoiceLines.cshtml", model);
         }
-        return View("~/Views/CompanyPortal/Billing/EditPayment.cshtml", model);
-    }
 
-    var success = await _companyPortalService.UpdatePaymentAsync(companyId.Value, model);
-    if (!success)
-    {
-        TempData["ErrorMessage"] = "Неуспешно обновяване на payment.";
-        return View("~/Views/CompanyPortal/Billing/EditPayment.cshtml", model);
-    }
-
-    TempData["SuccessMessage"] = "Payment беше обновен успешно.";
-    return RedirectToAction(nameof(Payments));
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> DeletePayment(Guid id)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var success = await _companyPortalService.DeletePaymentAsync(companyId.Value, id);
-    TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Payment беше изтрито успешно." : "Неуспешно изтриване на payment.";
-    return RedirectToAction(nameof(Payments));
-}
-
-[HttpGet]
-public async Task<IActionResult> CreatePaymentAllocation()
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetCreatePaymentAllocationModelAsync(companyId.Value);
-    return View("~/Views/CompanyPortal/Billing/CreatePaymentAllocation.cshtml", model);
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> CreatePaymentAllocation(PaymentAllocationCreateViewModel model)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    if (!ModelState.IsValid)
-    {
-        var reload = await _companyPortalService.GetCreatePaymentAllocationModelAsync(companyId.Value);
-        CopyPaymentAllocation(model, reload);
-        return View("~/Views/CompanyPortal/Billing/CreatePaymentAllocation.cshtml", reload);
-    }
-
-    var id = await _companyPortalService.CreatePaymentAllocationAsync(companyId.Value, model);
-    if (id == null)
-    {
-        TempData["ErrorMessage"] = "Неуспешно добавяне на payment allocation.";
-        var reload = await _companyPortalService.GetCreatePaymentAllocationModelAsync(companyId.Value);
-        CopyPaymentAllocation(model, reload);
-        return View("~/Views/CompanyPortal/Billing/CreatePaymentAllocation.cshtml", reload);
-    }
-
-    TempData["SuccessMessage"] = "Payment allocation беше добавен успешно.";
-    return RedirectToAction(nameof(PaymentAllocations));
-}
-
-[HttpGet]
-public async Task<IActionResult> EditPaymentAllocation(Guid id)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetPaymentAllocationForEditAsync(companyId.Value, id);
-    if (model == null) return NotFound();
-    return View("~/Views/CompanyPortal/Billing/EditPaymentAllocation.cshtml", model);
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> EditPaymentAllocation(PaymentAllocationEditViewModel model)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    if (!ModelState.IsValid)
-    {
-        var reload = await _companyPortalService.GetPaymentAllocationForEditAsync(companyId.Value, model.Id);
-        if (reload != null)
+        [HttpGet]
+        public async Task<IActionResult> Payments()
         {
-            CopyPaymentAllocation(model, reload);
-            model = reload;
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetPaymentsAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Billing/Payments.cshtml", model);
         }
-        return View("~/Views/CompanyPortal/Billing/EditPaymentAllocation.cshtml", model);
-    }
 
-    var success = await _companyPortalService.UpdatePaymentAllocationAsync(companyId.Value, model);
-    if (!success)
-    {
-        TempData["ErrorMessage"] = "Неуспешно обновяване на payment allocation.";
-        return View("~/Views/CompanyPortal/Billing/EditPaymentAllocation.cshtml", model);
-    }
-
-    TempData["SuccessMessage"] = "Payment allocation беше обновен успешно.";
-    return RedirectToAction(nameof(PaymentAllocations));
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> DeletePaymentAllocation(Guid id)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var success = await _companyPortalService.DeletePaymentAllocationAsync(companyId.Value, id);
-    TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Payment allocation беше изтрит успешно." : "Неуспешно изтриване на payment allocation.";
-    return RedirectToAction(nameof(PaymentAllocations));
-}
-
-[HttpGet]
-public async Task<IActionResult> CreateCreditNote()
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetCreateCreditNoteModelAsync(companyId.Value);
-    return View("~/Views/CompanyPortal/Billing/CreateCreditNote.cshtml", model);
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> CreateCreditNote(CreditNoteCreateViewModel model)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    if (!ModelState.IsValid)
-    {
-        var reload = await _companyPortalService.GetCreateCreditNoteModelAsync(companyId.Value);
-        CopyCreditNote(model, reload);
-        return View("~/Views/CompanyPortal/Billing/CreateCreditNote.cshtml", reload);
-    }
-
-    var id = await _companyPortalService.CreateCreditNoteAsync(companyId.Value, model);
-    if (id == null)
-    {
-        TempData["ErrorMessage"] = "Неуспешно добавяне на credit note.";
-        var reload = await _companyPortalService.GetCreateCreditNoteModelAsync(companyId.Value);
-        CopyCreditNote(model, reload);
-        return View("~/Views/CompanyPortal/Billing/CreateCreditNote.cshtml", reload);
-    }
-
-    TempData["SuccessMessage"] = "Credit note беше добавена успешно.";
-    return RedirectToAction(nameof(CreditNotes));
-}
-
-[HttpGet]
-public async Task<IActionResult> EditCreditNote(Guid id)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var model = await _companyPortalService.GetCreditNoteForEditAsync(companyId.Value, id);
-    if (model == null) return NotFound();
-    return View("~/Views/CompanyPortal/Billing/EditCreditNote.cshtml", model);
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> EditCreditNote(CreditNoteEditViewModel model)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    if (!ModelState.IsValid)
-    {
-        var reload = await _companyPortalService.GetCreditNoteForEditAsync(companyId.Value, model.Id);
-        if (reload != null)
+        [HttpGet]
+        public async Task<IActionResult> PaymentAllocations()
         {
-            CopyCreditNote(model, reload);
-            model = reload;
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetPaymentAllocationsAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Billing/PaymentAllocations.cshtml", model);
         }
-        return View("~/Views/CompanyPortal/Billing/EditCreditNote.cshtml", model);
-    }
 
-    var success = await _companyPortalService.UpdateCreditNoteAsync(companyId.Value, model);
-    if (!success)
-    {
-        TempData["ErrorMessage"] = "Неуспешно обновяване на credit note.";
-        return View("~/Views/CompanyPortal/Billing/EditCreditNote.cshtml", model);
-    }
+        [HttpGet]
+        public async Task<IActionResult> CreditNotes()
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetCreditNotesAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Billing/CreditNotes.cshtml", model);
+        }
 
-    TempData["SuccessMessage"] = "Credit note беше обновена успешно.";
-    return RedirectToAction(nameof(CreditNotes));
-}
+        [HttpGet]
+        public async Task<IActionResult> TaxRates()
+        {
+            var model = await _companyPortalService.GetTaxRatesAsync();
+            return View("~/Views/CompanyPortal/Billing/TaxRates.cshtml", model);
+        }
 
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> DeleteCreditNote(Guid id)
-{
-    var companyId = GetCurrentCompanyId();
-    if (companyId == null) return Forbid();
-    var success = await _companyPortalService.DeleteCreditNoteAsync(companyId.Value, id);
-    TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Credit note беше изтрита успешно." : "Неуспешно изтриване на credit note.";
-    return RedirectToAction(nameof(CreditNotes));
-}
+        [HttpGet]
+        public async Task<IActionResult> CreateCharge()
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetCreateChargeModelAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Billing/CreateCharge.cshtml", model);
+        }
 
-private static void CopyCharge(ChargeCreateViewModel source, ChargeCreateViewModel target)
-{
-    target.ShipmentId = source.ShipmentId;
-    target.ShipmentLegId = source.ShipmentLegId;
-    target.ChargeCode = source.ChargeCode;
-    target.Description = source.Description;
-    target.Quantity = source.Quantity;
-    target.UnitPrice = source.UnitPrice;
-    target.Currency = source.Currency;
-    target.SourceType = source.SourceType;
-    target.IsTaxable = source.IsTaxable;
-    target.TaxRatePercent = source.TaxRatePercent;
-    target.Notes = source.Notes;
-}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateCharge(ChargeCreateViewModel model)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreateChargeModelAsync(companyId.Value);
+                CopyCharge(model, reload);
+                return View("~/Views/CompanyPortal/Billing/CreateCharge.cshtml", reload);
+            }
 
-private static void CopyChargeRuleApplied(ChargeRuleAppliedCreateViewModel source, ChargeRuleAppliedCreateViewModel target)
-{
-    target.ChargeId = source.ChargeId;
-    target.SourceEntityType = source.SourceEntityType;
-    target.SourceEntityId = source.SourceEntityId;
-    target.RuleCode = source.RuleCode;
-    target.RuleDescription = source.RuleDescription;
-    target.AppliedAmount = source.AppliedAmount;
-    target.Notes = source.Notes;
-}
+            var id = await _companyPortalService.CreateChargeAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на charge.";
+                var reload = await _companyPortalService.GetCreateChargeModelAsync(companyId.Value);
+                CopyCharge(model, reload);
+                return View("~/Views/CompanyPortal/Billing/CreateCharge.cshtml", reload);
+            }
 
-private static void CopyInvoiceLine(InvoiceLineCreateViewModel source, InvoiceLineCreateViewModel target)
-{
-    target.InvoiceId = source.InvoiceId;
-    target.ChargeId = source.ChargeId;
-    target.ShipmentId = source.ShipmentId;
-    target.LineNo = source.LineNo;
-    target.Description = source.Description;
-    target.Quantity = source.Quantity;
-    target.UnitPrice = source.UnitPrice;
-    target.TaxRatePercent = source.TaxRatePercent;
-    target.LineNetAmount = source.LineNetAmount;
-    target.LineTaxAmount = source.LineTaxAmount;
-    target.LineTotalAmount = source.LineTotalAmount;
-}
+            TempData["SuccessMessage"] = "Charge беше добавен успешно.";
+            return RedirectToAction(nameof(Charges));
+        }
 
-private static void CopyPayment(PaymentCreateViewModel source, PaymentCreateViewModel target)
-{
-    target.InvoiceId = source.InvoiceId;
-    target.PaymentDateUtc = source.PaymentDateUtc;
-    target.Amount = source.Amount;
-    target.Currency = source.Currency;
-    target.PaymentMethod = source.PaymentMethod;
-    target.Status = source.Status;
-    target.TransactionReference = source.TransactionReference;
-    target.Notes = source.Notes;
-}
+        [HttpGet]
+        public async Task<IActionResult> EditCharge(Guid id)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetChargeForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+            return View("~/Views/CompanyPortal/Billing/EditCharge.cshtml", model);
+        }
 
-private static void CopyPaymentAllocation(PaymentAllocationCreateViewModel source, PaymentAllocationCreateViewModel target)
-{
-    target.PaymentId = source.PaymentId;
-    target.InvoiceId = source.InvoiceId;
-    target.AllocatedAmount = source.AllocatedAmount;
-    target.AllocatedAtUtc = source.AllocatedAtUtc;
-    target.Notes = source.Notes;
-}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCharge(ChargeEditViewModel model)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetChargeForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    CopyCharge(model, reload);
+                    model = reload;
+                }
+                return View("~/Views/CompanyPortal/Billing/EditCharge.cshtml", model);
+            }
 
-private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteCreateViewModel target)
-{
-    target.CreditNoteNo = source.CreditNoteNo;
-    target.InvoiceId = source.InvoiceId;
-    target.IssueDateUtc = source.IssueDateUtc;
-    target.Currency = source.Currency;
-    target.Status = source.Status;
-    target.NetAmount = source.NetAmount;
-    target.TaxAmount = source.TaxAmount;
-    target.TotalAmount = source.TotalAmount;
-    target.Reason = source.Reason;
-    target.Notes = source.Notes;
-}
+            var success = await _companyPortalService.UpdateChargeAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на charge.";
+                return View("~/Views/CompanyPortal/Billing/EditCharge.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Charge беше обновен успешно.";
+            return RedirectToAction(nameof(Charges));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCharge(Guid id)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var success = await _companyPortalService.DeleteChargeAsync(companyId.Value, id);
+            TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Charge беше изтрит успешно." : "Неуспешно изтриване на charge.";
+            return RedirectToAction(nameof(Charges));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateChargeRuleApplied()
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetCreateChargeRuleAppliedModelAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Billing/CreateChargeRuleApplied.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateChargeRuleApplied(ChargeRuleAppliedCreateViewModel model)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreateChargeRuleAppliedModelAsync(companyId.Value);
+                CopyChargeRuleApplied(model, reload);
+                return View("~/Views/CompanyPortal/Billing/CreateChargeRuleApplied.cshtml", reload);
+            }
+
+            var id = await _companyPortalService.CreateChargeRuleAppliedAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на charge rule.";
+                var reload = await _companyPortalService.GetCreateChargeRuleAppliedModelAsync(companyId.Value);
+                CopyChargeRuleApplied(model, reload);
+                return View("~/Views/CompanyPortal/Billing/CreateChargeRuleApplied.cshtml", reload);
+            }
+
+            TempData["SuccessMessage"] = "Charge rule беше добавен успешно.";
+            return RedirectToAction(nameof(ChargeRulesApplied));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditChargeRuleApplied(Guid id)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetChargeRuleAppliedForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+            return View("~/Views/CompanyPortal/Billing/EditChargeRuleApplied.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditChargeRuleApplied(ChargeRuleAppliedEditViewModel model)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetChargeRuleAppliedForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    CopyChargeRuleApplied(model, reload);
+                    model = reload;
+                }
+                return View("~/Views/CompanyPortal/Billing/EditChargeRuleApplied.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateChargeRuleAppliedAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на charge rule.";
+                return View("~/Views/CompanyPortal/Billing/EditChargeRuleApplied.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Charge rule беше обновен успешно.";
+            return RedirectToAction(nameof(ChargeRulesApplied));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteChargeRuleApplied(Guid id)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var success = await _companyPortalService.DeleteChargeRuleAppliedAsync(companyId.Value, id);
+            TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Charge rule беше изтрит успешно." : "Неуспешно изтриване на charge rule.";
+            return RedirectToAction(nameof(ChargeRulesApplied));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateInvoice()
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+
+            return View("~/Views/CompanyPortal/Billing/CreateInvoice.cshtml", new InvoiceCreateViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateInvoice(InvoiceCreateViewModel model)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid) return View("~/Views/CompanyPortal/Billing/CreateInvoice.cshtml", model);
+
+            var id = await _companyPortalService.CreateInvoiceAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на invoice.";
+                return View("~/Views/CompanyPortal/Billing/CreateInvoice.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Invoice беше добавен успешно.";
+            return RedirectToAction(nameof(Invoices));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditInvoice(Guid id)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetInvoiceForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+            return View("~/Views/CompanyPortal/Billing/EditInvoice.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditInvoice(InvoiceEditViewModel model)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid) return View("~/Views/CompanyPortal/Billing/EditInvoice.cshtml", model);
+
+            var success = await _companyPortalService.UpdateInvoiceAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на invoice.";
+                return View("~/Views/CompanyPortal/Billing/EditInvoice.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Invoice беше обновен успешно.";
+            return RedirectToAction(nameof(Invoices));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteInvoice(Guid id)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var success = await _companyPortalService.DeleteInvoiceAsync(companyId.Value, id);
+            TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Invoice беше изтрита успешно." : "Неуспешно изтриване на invoice.";
+            return RedirectToAction(nameof(Invoices));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateInvoiceLine()
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetCreateInvoiceLineModelAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Billing/CreateInvoiceLine.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateInvoiceLine(InvoiceLineCreateViewModel model)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreateInvoiceLineModelAsync(companyId.Value);
+                CopyInvoiceLine(model, reload);
+                return View("~/Views/CompanyPortal/Billing/CreateInvoiceLine.cshtml", reload);
+            }
+
+            var id = await _companyPortalService.CreateInvoiceLineAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на invoice line.";
+                var reload = await _companyPortalService.GetCreateInvoiceLineModelAsync(companyId.Value);
+                CopyInvoiceLine(model, reload);
+                return View("~/Views/CompanyPortal/Billing/CreateInvoiceLine.cshtml", reload);
+            }
+
+            TempData["SuccessMessage"] = "Invoice line беше добавен успешно.";
+            return RedirectToAction(nameof(InvoiceLines));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditInvoiceLine(Guid id)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetInvoiceLineForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+            return View("~/Views/CompanyPortal/Billing/EditInvoiceLine.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditInvoiceLine(InvoiceLineEditViewModel model)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetInvoiceLineForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    CopyInvoiceLine(model, reload);
+                    model = reload;
+                }
+                return View("~/Views/CompanyPortal/Billing/EditInvoiceLine.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateInvoiceLineAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на invoice line.";
+                return View("~/Views/CompanyPortal/Billing/EditInvoiceLine.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Invoice line беше обновена успешно.";
+            return RedirectToAction(nameof(InvoiceLines));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteInvoiceLine(Guid id)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var success = await _companyPortalService.DeleteInvoiceLineAsync(companyId.Value, id);
+            TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Invoice line беше изтрита успешно." : "Неуспешно изтриване на invoice line.";
+            return RedirectToAction(nameof(InvoiceLines));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreatePayment()
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetCreatePaymentModelAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Billing/CreatePayment.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePayment(PaymentCreateViewModel model)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreatePaymentModelAsync(companyId.Value);
+                CopyPayment(model, reload);
+                return View("~/Views/CompanyPortal/Billing/CreatePayment.cshtml", reload);
+            }
+
+            var id = await _companyPortalService.CreatePaymentAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на payment.";
+                var reload = await _companyPortalService.GetCreatePaymentModelAsync(companyId.Value);
+                CopyPayment(model, reload);
+                return View("~/Views/CompanyPortal/Billing/CreatePayment.cshtml", reload);
+            }
+
+            TempData["SuccessMessage"] = "Payment беше добавен успешно.";
+            return RedirectToAction(nameof(Payments));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditPayment(Guid id)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetPaymentForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+            return View("~/Views/CompanyPortal/Billing/EditPayment.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPayment(PaymentEditViewModel model)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetPaymentForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    CopyPayment(model, reload);
+                    model = reload;
+                }
+                return View("~/Views/CompanyPortal/Billing/EditPayment.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdatePaymentAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на payment.";
+                return View("~/Views/CompanyPortal/Billing/EditPayment.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Payment беше обновен успешно.";
+            return RedirectToAction(nameof(Payments));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePayment(Guid id)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var success = await _companyPortalService.DeletePaymentAsync(companyId.Value, id);
+            TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Payment беше изтрито успешно." : "Неуспешно изтриване на payment.";
+            return RedirectToAction(nameof(Payments));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreatePaymentAllocation()
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetCreatePaymentAllocationModelAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Billing/CreatePaymentAllocation.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePaymentAllocation(PaymentAllocationCreateViewModel model)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreatePaymentAllocationModelAsync(companyId.Value);
+                CopyPaymentAllocation(model, reload);
+                return View("~/Views/CompanyPortal/Billing/CreatePaymentAllocation.cshtml", reload);
+            }
+
+            var id = await _companyPortalService.CreatePaymentAllocationAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на payment allocation.";
+                var reload = await _companyPortalService.GetCreatePaymentAllocationModelAsync(companyId.Value);
+                CopyPaymentAllocation(model, reload);
+                return View("~/Views/CompanyPortal/Billing/CreatePaymentAllocation.cshtml", reload);
+            }
+
+            TempData["SuccessMessage"] = "Payment allocation беше добавен успешно.";
+            return RedirectToAction(nameof(PaymentAllocations));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditPaymentAllocation(Guid id)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetPaymentAllocationForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+            return View("~/Views/CompanyPortal/Billing/EditPaymentAllocation.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPaymentAllocation(PaymentAllocationEditViewModel model)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetPaymentAllocationForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    CopyPaymentAllocation(model, reload);
+                    model = reload;
+                }
+                return View("~/Views/CompanyPortal/Billing/EditPaymentAllocation.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdatePaymentAllocationAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на payment allocation.";
+                return View("~/Views/CompanyPortal/Billing/EditPaymentAllocation.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Payment allocation беше обновен успешно.";
+            return RedirectToAction(nameof(PaymentAllocations));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePaymentAllocation(Guid id)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var success = await _companyPortalService.DeletePaymentAllocationAsync(companyId.Value, id);
+            TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Payment allocation беше изтрит успешно." : "Неуспешно изтриване на payment allocation.";
+            return RedirectToAction(nameof(PaymentAllocations));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateCreditNote()
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetCreateCreditNoteModelAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Billing/CreateCreditNote.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateCreditNote(CreditNoteCreateViewModel model)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreateCreditNoteModelAsync(companyId.Value);
+                CopyCreditNote(model, reload);
+                return View("~/Views/CompanyPortal/Billing/CreateCreditNote.cshtml", reload);
+            }
+
+            var id = await _companyPortalService.CreateCreditNoteAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на credit note.";
+                var reload = await _companyPortalService.GetCreateCreditNoteModelAsync(companyId.Value);
+                CopyCreditNote(model, reload);
+                return View("~/Views/CompanyPortal/Billing/CreateCreditNote.cshtml", reload);
+            }
+
+            TempData["SuccessMessage"] = "Credit note беше добавена успешно.";
+            return RedirectToAction(nameof(CreditNotes));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditCreditNote(Guid id)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetCreditNoteForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+            return View("~/Views/CompanyPortal/Billing/EditCreditNote.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCreditNote(CreditNoteEditViewModel model)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreditNoteForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    CopyCreditNote(model, reload);
+                    model = reload;
+                }
+                return View("~/Views/CompanyPortal/Billing/EditCreditNote.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateCreditNoteAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на credit note.";
+                return View("~/Views/CompanyPortal/Billing/EditCreditNote.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Credit note беше обновена успешно.";
+            return RedirectToAction(nameof(CreditNotes));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCreditNote(Guid id)
+        {
+            var companyId = await GetCurrentCompanyIdAsync();
+            if (companyId == null) return Forbid();
+            var success = await _companyPortalService.DeleteCreditNoteAsync(companyId.Value, id);
+            TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Credit note беше изтрита успешно." : "Неуспешно изтриване на credit note.";
+            return RedirectToAction(nameof(CreditNotes));
+        }
+
+        private static void CopyCharge(ChargeCreateViewModel source, ChargeCreateViewModel target)
+        {
+            target.ShipmentId = source.ShipmentId;
+            target.ShipmentLegId = source.ShipmentLegId;
+            target.ChargeCode = source.ChargeCode;
+            target.Description = source.Description;
+            target.Quantity = source.Quantity;
+            target.UnitPrice = source.UnitPrice;
+            target.Currency = source.Currency;
+            target.SourceType = source.SourceType;
+            target.IsTaxable = source.IsTaxable;
+            target.TaxRatePercent = source.TaxRatePercent;
+            target.Notes = source.Notes;
+        }
+
+        private static void CopyChargeRuleApplied(ChargeRuleAppliedCreateViewModel source, ChargeRuleAppliedCreateViewModel target)
+        {
+            target.ChargeId = source.ChargeId;
+            target.SourceEntityType = source.SourceEntityType;
+            target.SourceEntityId = source.SourceEntityId;
+            target.RuleCode = source.RuleCode;
+            target.RuleDescription = source.RuleDescription;
+            target.AppliedAmount = source.AppliedAmount;
+            target.Notes = source.Notes;
+        }
+
+        private static void CopyInvoiceLine(InvoiceLineCreateViewModel source, InvoiceLineCreateViewModel target)
+        {
+            target.InvoiceId = source.InvoiceId;
+            target.ChargeId = source.ChargeId;
+            target.ShipmentId = source.ShipmentId;
+            target.LineNo = source.LineNo;
+            target.Description = source.Description;
+            target.Quantity = source.Quantity;
+            target.UnitPrice = source.UnitPrice;
+            target.TaxRatePercent = source.TaxRatePercent;
+            target.LineNetAmount = source.LineNetAmount;
+            target.LineTaxAmount = source.LineTaxAmount;
+            target.LineTotalAmount = source.LineTotalAmount;
+        }
+
+        private static void CopyPayment(PaymentCreateViewModel source, PaymentCreateViewModel target)
+        {
+            target.InvoiceId = source.InvoiceId;
+            target.PaymentDateUtc = source.PaymentDateUtc;
+            target.Amount = source.Amount;
+            target.Currency = source.Currency;
+            target.PaymentMethod = source.PaymentMethod;
+            target.Status = source.Status;
+            target.TransactionReference = source.TransactionReference;
+            target.Notes = source.Notes;
+        }
+
+        private static void CopyPaymentAllocation(PaymentAllocationCreateViewModel source, PaymentAllocationCreateViewModel target)
+        {
+            target.PaymentId = source.PaymentId;
+            target.InvoiceId = source.InvoiceId;
+            target.AllocatedAmount = source.AllocatedAmount;
+            target.AllocatedAtUtc = source.AllocatedAtUtc;
+            target.Notes = source.Notes;
+        }
+
+        private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteCreateViewModel target)
+        {
+            target.CreditNoteNo = source.CreditNoteNo;
+            target.InvoiceId = source.InvoiceId;
+            target.IssueDateUtc = source.IssueDateUtc;
+            target.Currency = source.Currency;
+            target.Status = source.Status;
+            target.NetAmount = source.NetAmount;
+            target.TaxAmount = source.TaxAmount;
+            target.TotalAmount = source.TotalAmount;
+            target.Reason = source.Reason;
+            target.Notes = source.Notes;
+        }
 
 
         #endregion
@@ -2082,7 +2083,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> Shipments()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetMyShipmentsAsync(companyId.Value);
@@ -2095,7 +2096,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> ShipmentDetails(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentDetailsAsync(companyId.Value, id);
@@ -2110,7 +2111,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> CreateShipment()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCreateShipmentModelAsync(companyId.Value);
@@ -2124,7 +2125,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateShipment(CompanyShipmentCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -2146,7 +2147,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> EditShipment(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentForEditAsync(companyId.Value, id);
@@ -2162,7 +2163,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditShipment(CompanyShipmentEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -2203,7 +2204,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteShipment(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteShipmentAsync(companyId.Value, id);
@@ -2220,7 +2221,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateShipmentStatus(Guid id, string newStatus, string? reason)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.UpdateShipmentStatusAsync(companyId.Value, id, newStatus, reason);
@@ -2247,7 +2248,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> ShipmentParties(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentPartiesAsync(companyId.Value, shipmentId);
@@ -2262,7 +2263,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> CreateShipmentParty(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCreateShipmentPartyModelAsync(companyId.Value, shipmentId);
@@ -2277,7 +2278,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> GetShipmentPartyContacts(Guid companyId)
         {
-            var currentCompanyId = GetCurrentCompanyId();
+            var currentCompanyId = await GetCurrentCompanyIdAsync();
             if (currentCompanyId == null)
             {
                 return Json(new List<object>());
@@ -2301,7 +2302,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateShipmentParty(CompanyShipmentPartyCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var result = await _companyPortalService.CreateShipmentPartyAsync(companyId.Value, model);
@@ -2332,7 +2333,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> EditShipmentParty(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentPartyForEditAsync(companyId.Value, id);
@@ -2348,7 +2349,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditShipmentParty(CompanyShipmentPartyEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -2390,7 +2391,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteShipmentParty(Guid id, Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteShipmentPartyAsync(companyId.Value, id);
@@ -2417,7 +2418,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> ShipmentLegs(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentLegsAsync(companyId.Value, shipmentId);
@@ -2432,7 +2433,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> ShipmentLegDetails(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentLegDetailsAsync(companyId.Value, id);
@@ -2447,7 +2448,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> CreateShipmentLeg(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCreateShipmentLegModelAsync(companyId.Value, shipmentId);
@@ -2463,7 +2464,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateShipmentLeg(CompanyShipmentLegCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -2495,7 +2496,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> EditShipmentLeg(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentLegForEditAsync(companyId.Value, id);
@@ -2511,7 +2512,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditShipmentLeg(CompanyShipmentLegEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -2545,7 +2546,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateShipmentLegStatus(CompanyShipmentLegStatusUpdateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.UpdateShipmentLegStatusAsync(companyId.Value, model);
@@ -2564,7 +2565,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteShipmentLeg(Guid id, Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteShipmentLegAsync(companyId.Value, id);
@@ -2595,7 +2596,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> TrackingEvents(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetTrackingEventsAsync(companyId.Value, shipmentId);
@@ -2610,7 +2611,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> CreateTrackingEvent(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCreateTrackingEventModelAsync(companyId.Value, shipmentId);
@@ -2626,7 +2627,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateTrackingEvent(CompanyTrackingEventCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -2658,7 +2659,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> EditTrackingEvent(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetTrackingEventForEditAsync(companyId.Value, id);
@@ -2674,7 +2675,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditTrackingEvent(CompanyTrackingEventEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -2707,7 +2708,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteTrackingEvent(Guid id, Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteTrackingEventAsync(companyId.Value, id);
@@ -2737,7 +2738,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> ProofOfDeliveries(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetProofOfDeliveriesAsync(companyId.Value, shipmentId);
@@ -2752,7 +2753,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> CreateProofOfDelivery(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCreateProofOfDeliveryModelAsync(companyId.Value, shipmentId);
@@ -2772,7 +2773,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateProofOfDelivery(CompanyProofOfDeliveryCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -2803,7 +2804,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> EditProofOfDelivery(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetProofOfDeliveryForEditAsync(companyId.Value, id);
@@ -2819,7 +2820,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditProofOfDelivery(CompanyProofOfDeliveryEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -2877,7 +2878,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> Packages(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetPackagesAsync(companyId.Value, shipmentId);
@@ -2889,7 +2890,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> CreatePackage(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCreatePackageModelAsync(companyId.Value, shipmentId);
@@ -2902,7 +2903,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePackage(CompanyPackageCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -2930,7 +2931,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> EditPackage(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetPackageForEditAsync(companyId.Value, id);
@@ -2943,7 +2944,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditPackage(CompanyPackageEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -2972,7 +2973,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeletePackage(Guid id, Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeletePackageAsync(companyId.Value, id);
@@ -2997,7 +2998,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> PackageItems(Guid packageId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetPackageItemsAsync(companyId.Value, packageId);
@@ -3009,7 +3010,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> CreatePackageItem(Guid packageId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCreatePackageItemModelAsync(companyId.Value, packageId);
@@ -3022,7 +3023,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePackageItem(CompanyPackageItemCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -3052,7 +3053,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> EditPackageItem(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetPackageItemForEditAsync(companyId.Value, id);
@@ -3065,7 +3066,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditPackageItem(CompanyPackageItemEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -3097,7 +3098,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeletePackageItem(Guid id, Guid packageId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeletePackageItemAsync(companyId.Value, id);
@@ -3122,7 +3123,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> CargoItems(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCargoItemsAsync(companyId.Value, shipmentId);
@@ -3134,7 +3135,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> CreateCargoItem(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCreateCargoItemModelAsync(companyId.Value, shipmentId);
@@ -3147,7 +3148,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateCargoItem(CompanyCargoItemCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -3175,7 +3176,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> EditCargoItem(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCargoItemForEditAsync(companyId.Value, id);
@@ -3188,7 +3189,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCargoItem(CompanyCargoItemEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -3218,7 +3219,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteCargoItem(Guid id, Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteCargoItemAsync(companyId.Value, id);
@@ -3243,7 +3244,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> ShipmentReferences(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentReferencesAsync(companyId.Value, shipmentId);
@@ -3255,7 +3256,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> CreateShipmentReference(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCreateShipmentReferenceModelAsync(companyId.Value, shipmentId);
@@ -3268,7 +3269,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateShipmentReference(CompanyShipmentReferenceCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -3296,7 +3297,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> EditShipmentReference(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentReferenceForEditAsync(companyId.Value, id);
@@ -3309,7 +3310,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditShipmentReference(CompanyShipmentReferenceEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -3339,7 +3340,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteShipmentReference(Guid id, Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteShipmentReferenceAsync(companyId.Value, id);
@@ -3364,7 +3365,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> ShipmentTags(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentTagsAsync(companyId.Value, shipmentId);
@@ -3376,7 +3377,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> CreateShipmentTag(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCreateShipmentTagModelAsync(companyId.Value, shipmentId);
@@ -3389,7 +3390,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateShipmentTag(CompanyShipmentTagCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -3417,7 +3418,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> EditShipmentTag(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentTagForEditAsync(companyId.Value, id);
@@ -3430,7 +3431,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditShipmentTag(CompanyShipmentTagEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -3460,7 +3461,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteShipmentTag(Guid id, Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteShipmentTagAsync(companyId.Value, id);
@@ -3485,7 +3486,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> ShipmentVoyages(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentVoyagesAsync(companyId.Value, shipmentId);
@@ -3497,7 +3498,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> CreateShipmentVoyage(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCreateShipmentVoyageModelAsync(companyId.Value, shipmentId);
@@ -3514,7 +3515,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateShipmentVoyage(CompanyShipmentVoyageCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -3549,7 +3550,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> EditShipmentVoyage(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentVoyageForEditAsync(companyId.Value, id);
@@ -3562,7 +3563,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditShipmentVoyage(CompanyShipmentVoyageEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -3594,7 +3595,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteShipmentVoyage(Guid id, Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteShipmentVoyageAsync(companyId.Value, id);
@@ -3619,7 +3620,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> ShipmentTrips(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentTripsAsync(companyId.Value, shipmentId);
@@ -3631,7 +3632,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> CreateShipmentTrip(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCreateShipmentTripModelAsync(companyId.Value, shipmentId);
@@ -3644,7 +3645,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateShipmentTrip(CompanyShipmentTripCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -3674,7 +3675,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> EditShipmentTrip(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentTripForEditAsync(companyId.Value, id);
@@ -3687,7 +3688,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditShipmentTrip(CompanyShipmentTripEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -3719,7 +3720,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteShipmentTrip(Guid id, Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteShipmentTripAsync(companyId.Value, id);
@@ -3744,7 +3745,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> ShipmentContainers(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentContainersAsync(companyId.Value, shipmentId);
@@ -3756,7 +3757,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> CreateShipmentContainer(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCreateShipmentContainerModelAsync(companyId.Value, shipmentId);
@@ -3769,7 +3770,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateShipmentContainer(CompanyShipmentContainerCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -3799,7 +3800,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> EditShipmentContainer(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentContainerForEditAsync(companyId.Value, id);
@@ -3812,7 +3813,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditShipmentContainer(CompanyShipmentContainerEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -3844,7 +3845,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteShipmentContainer(Guid id, Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteShipmentContainerAsync(companyId.Value, id);
@@ -3869,7 +3870,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> ShipmentUlds(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentUldsAsync(companyId.Value, shipmentId);
@@ -3881,7 +3882,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> CreateShipmentUld(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCreateShipmentUldModelAsync(companyId.Value, shipmentId);
@@ -3894,7 +3895,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateShipmentUld(CompanyShipmentUldCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -3924,7 +3925,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> EditShipmentUld(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentUldForEditAsync(companyId.Value, id);
@@ -3937,7 +3938,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditShipmentUld(CompanyShipmentUldEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -3969,7 +3970,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteShipmentUld(Guid id, Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteShipmentUldAsync(companyId.Value, id);
@@ -3994,7 +3995,7 @@ private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteC
         [HttpGet]
         public async Task<IActionResult> ShipmentStatusHistory(Guid shipmentId)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetShipmentStatusHistoryAsync(companyId.Value, shipmentId);

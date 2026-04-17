@@ -1,0 +1,87 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Branches.CompanyBranchCreateViewModel
+
+@{
+    ViewData["Title"] = "Създаване на клон";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <h2 class="h4 mb-1">Създаване на клон</h2>
+                    <p class="text-muted mb-0">Добавете нов клон към вашата фирма.</p>
+                </div>
+
+                <form asp-action="CreateBranch" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Име</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="BranchCode" class="form-label">Код на клон</label>
+                        <input asp-for="BranchCode" class="form-control" />
+                        <span asp-validation-for="BranchCode" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Phone" class="form-label">Телефон</label>
+                        <input asp-for="Phone" class="form-control" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Имейл</label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="AddressId" class="form-label">Адрес</label>
+                        <select asp-for="AddressId" asp-items="Model.AddressOptions" class="form-select">
+                            <option value="">-- Избери адрес --</option>
+                        </select>
+                        <span asp-validation-for="AddressId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Notes" class="form-label">Бележки</label>
+                        <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input asp-for="IsHeadOffice" class="form-check-input" />
+                        <label asp-for="IsHeadOffice" class="form-check-label">Централа</label>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input asp-for="IsActive" class="form-check-input" />
+                        <label asp-for="IsActive" class="form-check-label">Активен</label>
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2">
+                        <button type="submit" class="btn btn-success">Запази</button>
+                        <a asp-action="Branches" class="btn btn-outline-light">Назад</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

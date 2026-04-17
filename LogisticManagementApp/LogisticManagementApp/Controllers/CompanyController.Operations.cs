@@ -17,7 +17,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Notifications()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -29,7 +29,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateNotification()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -41,7 +41,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateNotification(NotificationCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -72,7 +72,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditNotification(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetNotificationForEditAsync(companyId.Value, id);
@@ -84,7 +84,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditNotification(NotificationEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -113,7 +113,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteNotification(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteNotificationAsync(companyId.Value, id);
@@ -129,7 +129,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> NotificationSubscriptions()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -141,7 +141,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateNotificationSubscription()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -157,7 +157,7 @@ namespace LogisticManagementApp.Controllers
             NotificationSubscriptionCreateViewModel model
         )
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -201,7 +201,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditNotificationSubscription(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetNotificationSubscriptionForEditAsync(
@@ -221,7 +221,7 @@ namespace LogisticManagementApp.Controllers
             NotificationSubscriptionEditViewModel model
         )
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -259,7 +259,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteNotificationSubscription(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteNotificationSubscriptionAsync(
@@ -278,7 +278,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> AuditLogs()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -290,7 +290,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> SavedFilters()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -302,7 +302,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateSavedFilter()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -314,7 +314,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateSavedFilter(SavedFilterCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -345,7 +345,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditSavedFilter(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetSavedFilterForEditAsync(companyId.Value, id);
@@ -357,7 +357,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditSavedFilter(SavedFilterEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -386,7 +386,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteSavedFilter(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteSavedFilterAsync(companyId.Value, id);
@@ -400,7 +400,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CompanyDashboardConfigs()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -412,7 +412,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateCompanyDashboardConfig()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -428,7 +428,7 @@ namespace LogisticManagementApp.Controllers
             CompanyDashboardConfigCreateViewModel model
         )
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -458,7 +458,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditCompanyDashboardConfig(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCompanyDashboardConfigForEditAsync(
@@ -475,7 +475,7 @@ namespace LogisticManagementApp.Controllers
             CompanyDashboardConfigEditViewModel model
         )
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -502,7 +502,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteCompanyDashboardConfig(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteCompanyDashboardConfigAsync(
@@ -521,7 +521,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Bookings()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -533,7 +533,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateBooking()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -545,7 +545,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateBooking(BookingCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -577,7 +577,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditBooking(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetBookingForEditAsync(companyId.Value, id);
@@ -589,7 +589,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditBooking(BookingEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -622,7 +622,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteBooking(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteBookingAsync(companyId.Value, id);
@@ -636,7 +636,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> BookingLegs()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -648,7 +648,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateBookingLeg()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -660,7 +660,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateBookingLeg(BookingLegCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -698,7 +698,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditBookingLeg(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetBookingLegForEditAsync(companyId.Value, id);
@@ -710,7 +710,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditBookingLeg(BookingLegEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -744,7 +744,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteBookingLeg(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteBookingLegAsync(companyId.Value, id);
@@ -758,7 +758,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Consolidations()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -770,7 +770,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> ConsolidationShipments()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -782,7 +782,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateConsolidationShipment()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -798,7 +798,7 @@ namespace LogisticManagementApp.Controllers
             ConsolidationShipmentCreateViewModel model
         )
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -845,7 +845,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditConsolidationShipment(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetConsolidationShipmentForEditAsync(
@@ -862,7 +862,7 @@ namespace LogisticManagementApp.Controllers
             ConsolidationShipmentEditViewModel model
         )
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -902,7 +902,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConsolidationShipment(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteConsolidationShipmentAsync(
@@ -921,7 +921,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> ResourceCalendars()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -933,7 +933,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateResourceCalendar()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -945,7 +945,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateResourceCalendar(ResourceCalendarCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -976,7 +976,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditResourceCalendar(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetResourceCalendarForEditAsync(
@@ -991,7 +991,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditResourceCalendar(ResourceCalendarEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -1023,7 +1023,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteResourceCalendar(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteResourceCalendarAsync(
@@ -1042,7 +1042,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> ResourceAvailabilities()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -1054,7 +1054,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateResourceAvailability()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -1068,7 +1068,7 @@ namespace LogisticManagementApp.Controllers
             ResourceAvailabilityCreateViewModel model
         )
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -1112,7 +1112,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditResourceAvailability(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetResourceAvailabilityForEditAsync(
@@ -1127,7 +1127,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditResourceAvailability(ResourceAvailabilityEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -1162,7 +1162,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteResourceAvailability(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteResourceAvailabilityAsync(
@@ -1181,7 +1181,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CapacityReservations()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -1193,7 +1193,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateCapacityReservation()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -1207,7 +1207,7 @@ namespace LogisticManagementApp.Controllers
             CapacityReservationCreateViewModel model
         )
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -1254,7 +1254,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditCapacityReservation(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetCapacityReservationForEditAsync(
@@ -1269,7 +1269,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCapacityReservation(CapacityReservationEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -1309,7 +1309,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteCapacityReservation(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteCapacityReservationAsync(
@@ -1328,7 +1328,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Assignments()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -1340,7 +1340,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateAssignment()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -1352,7 +1352,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAssignment(AssignmentCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -1388,7 +1388,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditAssignment(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetAssignmentForEditAsync(companyId.Value, id);
@@ -1400,7 +1400,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAssignment(AssignmentEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -1433,7 +1433,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteAssignment(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteAssignmentAsync(companyId.Value, id);
@@ -1447,7 +1447,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> UtilizationSnapshots()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(

@@ -1714,7 +1714,7 @@ namespace LogisticManagementApp.Applicationn.Services.CompanyPortal
         }
 
         private async Task<List<SelectListItem>> GetCompanyUserOptionsAsync(Guid companyId) =>
-            await _dbContext.AspNetUsers
+            await _dbContext.Users
                 .AsNoTracking()
                 .Where(x => x.CompanyId == companyId)
                 .OrderBy(x => x.UserName)
@@ -1778,7 +1778,7 @@ namespace LogisticManagementApp.Applicationn.Services.CompanyPortal
                 .ToListAsync();
 
         private async Task<bool> CompanyOwnsUserAsync(Guid companyId, string userId) =>
-            await _dbContext.AspNetUsers
+            await _dbContext.Users
                 .AsNoTracking()
                 .AnyAsync(x => x.Id == userId && x.CompanyId == companyId);
 

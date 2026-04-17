@@ -1,0 +1,100 @@
+@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Assets.Sea.VoyageStopListItemViewModel>
+
+@{
+    ViewData["Title"] = "Voyage Stops";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card">
+            <div class="card-body p-4">
+
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                    <div>
+                        <h2 class="h4 mb-1">Voyage Stops</h2>
+                        <p class="text-muted mb-0">
+                            Списък с voyage stops за текущата компания.
+                        </p>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <a asp-action="SeaAssets" class="btn btn-outline-light">Sea</a>
+                        <a asp-action="CreateVoyageStop" class="btn btn-primary">Нов запис</a>
+                    </div>
+                </div>
+
+                @if (Model.Any())
+                {
+                    <div class="table-responsive" data-table-pagination-wrapper>
+                        <table class="table align-middle" data-table-pagination="true" data-page-size="5">
+                            <thead>
+                                <tr>
+                                    <th>Voyage</th>
+                                    <th>Vessel</th>
+                                    <th>Location</th>
+                                    <th>Seq.</th>
+                                    <th>Planned Arrival</th>
+                                    <th>Planned Departure</th>
+                                    <th class="text-end">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.VoyageNumber</td>
+                                        <td>@item.VesselName</td>
+                                        <td>
+                                            <div class="fw-semibold">@item.LocationName</div>
+                                            <div class="small text-muted">
+                                                @(item.Notes ?? "-")
+                                            </div>
+                                        </td>
+                                        <td>@item.SequenceNumber</td>
+                                        <td>
+                                            @(item.PlannedArrivalUtc?.ToString("dd.MM.yyyy HH:mm") ?? "-")
+                                        </td>
+                                        <td>
+                                            @(item.PlannedDepartureUtc?.ToString("dd.MM.yyyy HH:mm") ?? "-")
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="d-flex flex-wrap justify-content-end gap-2">
+                                                <a asp-action="EditVoyageStop"
+                                                       asp-route-id="@item.Id"
+                                                       class="btn btn-sm btn-outline-light">
+                                                    Редакция
+                                                </a>
+
+                                                <form asp-action="DeleteVoyageStop"
+                                                      asp-route-id="@item.Id"
+                                                      method="post"
+                                                      class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-outline-light">
+                                                        Изтрий
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-muted">Няма записи.</div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

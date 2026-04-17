@@ -17,7 +17,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Routes()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -29,7 +29,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateRoute()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -41,7 +41,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateRoute(RouteCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -62,7 +62,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditRoute(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetRouteForEditAsync(companyId.Value, id);
@@ -74,7 +74,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditRoute(RouteEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -95,7 +95,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteRoute(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteRouteAsync(companyId.Value, id);
@@ -111,7 +111,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> RouteStops()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -123,7 +123,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateRouteStop()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -135,7 +135,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateRouteStop(RouteStopCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -167,7 +167,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditRouteStop(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetRouteStopForEditAsync(companyId.Value, id);
@@ -179,7 +179,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditRouteStop(RouteStopEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -209,7 +209,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteRouteStop(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteRouteStopAsync(companyId.Value, id);
@@ -225,7 +225,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> RoutePlans()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -237,7 +237,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateRoutePlan()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -249,7 +249,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateRoutePlan(RoutePlanCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -279,7 +279,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditRoutePlan(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetRoutePlanForEditAsync(companyId.Value, id);
@@ -291,7 +291,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditRoutePlan(RoutePlanEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -317,7 +317,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteRoutePlan(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteRoutePlanAsync(companyId.Value, id);
@@ -333,7 +333,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> RoutePlanStops()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -345,7 +345,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateRoutePlanStop()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -357,7 +357,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateRoutePlanStop(RoutePlanStopCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -391,7 +391,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditRoutePlanStop(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetRoutePlanStopForEditAsync(companyId.Value, id);
@@ -403,7 +403,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditRoutePlanStop(RoutePlanStopEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -434,7 +434,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteRoutePlanStop(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteRoutePlanStopAsync(companyId.Value, id);
@@ -450,7 +450,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> RoutePlanShipments()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -462,7 +462,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateRoutePlanShipment()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -474,7 +474,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateRoutePlanShipment(RoutePlanShipmentCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -508,7 +508,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditRoutePlanShipment(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetRoutePlanShipmentForEditAsync(companyId.Value, id);
@@ -520,7 +520,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditRoutePlanShipment(RoutePlanShipmentEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -551,7 +551,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteRoutePlanShipment(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var success = await _companyPortalService.DeleteRoutePlanShipmentAsync(companyId.Value, id);

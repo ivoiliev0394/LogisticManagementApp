@@ -17,7 +17,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Trains()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -29,7 +29,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateTrain()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -41,7 +41,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateTrain(TrainCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -62,7 +62,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditTrain(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetTrainForEditAsync(companyId.Value, id);
@@ -74,7 +74,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditTrain(TrainEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -95,7 +95,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteTrain(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var ok = await _companyPortalService.DeleteTrainAsync(companyId.Value, id);
@@ -108,7 +108,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> RailCars()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -120,7 +120,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateRailCar()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -132,7 +132,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateRailCar(RailCarCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -153,7 +153,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditRailCar(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetRailCarForEditAsync(companyId.Value, id);
@@ -165,7 +165,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditRailCar(RailCarEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -186,7 +186,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteRailCar(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var ok = await _companyPortalService.DeleteRailCarAsync(companyId.Value, id);
@@ -199,7 +199,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> RailServices()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -211,7 +211,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateRailService()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -223,7 +223,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateRailService(RailServiceCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -257,7 +257,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditRailService(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetRailServiceForEditAsync(companyId.Value, id);
@@ -269,7 +269,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditRailService(RailServiceEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -298,7 +298,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteRailService(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var ok = await _companyPortalService.DeleteRailServiceAsync(companyId.Value, id);
@@ -311,7 +311,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> RailMovements()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -323,7 +323,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateRailMovement()
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             return View(
@@ -335,7 +335,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateRailMovement(RailMovementCreateViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -373,7 +373,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditRailMovement(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var model = await _companyPortalService.GetRailMovementForEditAsync(
@@ -388,7 +388,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> EditRailMovement(RailMovementEditViewModel model)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             if (!ModelState.IsValid)
@@ -422,7 +422,7 @@ namespace LogisticManagementApp.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteRailMovement(Guid id)
         {
-            var companyId = GetCurrentCompanyId();
+            var companyId = await GetCurrentCompanyIdAsync();
             if (companyId == null) return Forbid();
 
             var ok = await _companyPortalService.DeleteRailMovementAsync(companyId.Value, id);

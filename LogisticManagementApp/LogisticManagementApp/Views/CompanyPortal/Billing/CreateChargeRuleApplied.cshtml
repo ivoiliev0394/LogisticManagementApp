@@ -1,0 +1,86 @@
+@model LogisticManagementApp.Models.CompanyPortal.Billing.ChargeRuleAppliedCreateViewModel
+
+@{
+    ViewData["Title"] = "Ново charge rule";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+
+                <h2 class="h4 mb-3">Ново charge rule</h2>
+
+                <form asp-action="CreateChargeRuleApplied" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="ChargeId" class="form-label"></label>
+                            <select asp-for="ChargeId"
+                                    asp-items="Model.ChargeOptions"
+                                    class="form-select">
+                                <option value="">Избери charge</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="SourceEntityType" class="form-label"></label>
+                            <input asp-for="SourceEntityType" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="SourceEntityId" class="form-label"></label>
+                            <input asp-for="SourceEntityId" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="RuleCode" class="form-label"></label>
+                            <input asp-for="RuleCode" class="form-control" />
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="RuleDescription" class="form-label"></label>
+                            <input asp-for="RuleDescription" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="AppliedAmount" class="form-label"></label>
+                            <input asp-for="AppliedAmount" class="form-control" />
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes"
+                                      class="form-control"
+                                      rows="4"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button class="btn btn-success" type="submit">
+                            Запази
+                        </button>
+
+                        <a asp-action="ChargeRulesApplied" class="btn btn-outline-light">
+                            Назад
+                        </a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

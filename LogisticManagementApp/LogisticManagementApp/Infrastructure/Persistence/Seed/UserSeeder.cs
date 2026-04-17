@@ -70,7 +70,7 @@ public static class UserSeeder
             var normalizedName = Normalize(company.Name);
             var email = $"{normalizedName}@company.logisticapp.com";
             var username = $"company_{normalizedName}";
-            string password = $"{company.Name}123!";
+            string password = $"Company123!";
 
             var existingUser = await userManager.Users
                 .FirstOrDefaultAsync(u => u.CompanyId == company.Id);

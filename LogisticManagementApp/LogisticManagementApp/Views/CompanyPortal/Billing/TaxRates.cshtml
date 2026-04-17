@@ -1,0 +1,96 @@
+@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Billing.TaxRateListItemViewModel>
+
+@{
+    ViewData["Title"] = "Tax Rates";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div>
+                        <h2 class="h4 mb-1">Tax Rates</h2>
+                        <p class="text-muted mb-0">
+                            Глобални tax rates, достъпни в системата.
+                        </p>
+                    </div>
+                </div>
+
+                <partial name="_StatusMessage" />
+
+                @if (!Model.Any())
+                {
+                    <div class="alert alert-info mb-0">
+                        Няма налични записи.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive" data-table-pagination-wrapper>
+                        <table class="table align-middle mb-0"
+                               data-table-pagination="true"
+                               data-page-size="10">
+
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Name</th>
+                                    <th>Country</th>
+                                    <th>Rate %</th>
+                                    <th>Valid from</th>
+                                    <th>Valid to</th>
+                                    <th>Active</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @item.TaxType
+                                        </td>
+
+                                        <td class="fw-semibold">
+                                            @item.Name
+                                        </td>
+
+                                        <td>
+                                            @(item.CountryCode ?? "-")
+                                        </td>
+
+                                        <td>
+                                            @item.RatePercent.ToString("F2")
+                                        </td>
+
+                                        <td>
+                                            @(item.ValidFromUtc?.ToString("dd.MM.yyyy") ?? "-")
+                                        </td>
+
+                                        <td>
+                                            @(item.ValidToUtc?.ToString("dd.MM.yyyy") ?? "-")
+                                        </td>
+
+                                        <td>
+                                            @(item.IsActive ? "Да" : "Не")
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

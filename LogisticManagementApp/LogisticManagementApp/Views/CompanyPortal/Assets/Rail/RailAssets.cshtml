@@ -1,0 +1,68 @@
+@model LogisticManagementApp.Models.CompanyPortal.Assets.Rail.CompanyRailHomeViewModel
+
+@{
+    ViewData["Title"] = "Rail Assets";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card">
+            <div class="card-body p-4">
+
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                    <div>
+                        <h2 class="h4 mb-1">Rail Assets</h2>
+                        <p class="text-muted mb-0">
+                            Управление на влакове, rail cars, услуги и движения.
+                        </p>
+                    </div>
+
+                    <a asp-action="Assets" class="btn btn-outline-light">
+                        Към Assets
+                    </a>
+                </div>
+
+                <div class="row g-4">
+                    @foreach (var card in Model.Cards)
+                    {
+                        <div class="col-12 col-md-6 col-xxl-4">
+                            <div class="stat-card h-100 d-flex flex-column">
+
+                                <div class="fw-semibold mb-2 text-muted">
+                                    @card.Title
+                                </div>
+
+                                <div class="text-muted mb-3">
+                                    @card.Description
+                                </div>
+
+                                <div class="mt-auto d-flex gap-2 flex-wrap">
+                                    <a asp-action="@card.ActionName"
+                                           class="btn btn-outline-light">
+                                        Отвори
+                                    </a>
+
+                                    @if (!string.IsNullOrWhiteSpace(card.CreateActionName))
+                                    {
+                                        <a asp-action="@card.CreateActionName"
+                                               class="btn btn-primary">
+                                            Нов
+                                        </a>
+                                    }
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

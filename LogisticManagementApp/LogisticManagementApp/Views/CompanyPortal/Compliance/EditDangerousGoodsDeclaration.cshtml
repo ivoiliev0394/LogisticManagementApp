@@ -1,0 +1,120 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Compliance.DangerousGoodsDeclarationEditViewModel
+@using LogisticManagementApp.Domain.Enums.Compliance
+
+@{
+    ViewData["Title"] = "Редакция на DG declaration";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="h4 mb-3">Редакция на DG declaration</h2>
+
+                <form asp-action="EditDangerousGoodsDeclaration" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="ShipmentId" class="form-label"></label>
+                            <select asp-for="ShipmentId"
+                                    asp-items="Model.ShipmentOptions"
+                                    class="form-select">
+                                <option value="">Избери shipment</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="PackageId" class="form-label"></label>
+                            <select asp-for="PackageId"
+                                    asp-items="Model.PackageOptions"
+                                    class="form-select">
+                                <option value="">Без package</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="UnNumber" class="form-label"></label>
+                            <input asp-for="UnNumber" class="form-control" />
+                        </div>
+
+                        <div class="col-md-8">
+                            <label asp-for="ProperShippingName" class="form-label"></label>
+                            <input asp-for="ProperShippingName" class="form-control" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="HazardClass" class="form-label"></label>
+                            <select asp-for="HazardClass"
+                                    asp-items="Html.GetEnumSelectList<HazardClass>()"
+                                    class="form-select">
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="PackingGroup" class="form-label"></label>
+                            <select asp-for="PackingGroup"
+                                    asp-items="Html.GetEnumSelectList<PackingGroup>()"
+                                    class="form-select">
+                                <option value="">Без group</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="NetQuantity" class="form-label"></label>
+                            <input asp-for="NetQuantity" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="QuantityUnit" class="form-label"></label>
+                            <input asp-for="QuantityUnit" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-check mt-4 pt-2">
+                                <input asp-for="RequiresSpecialHandling" class="form-check-input" />
+                                <label asp-for="RequiresSpecialHandling" class="form-check-label">
+                                    Requires special handling
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="HandlingInstructions" class="form-label"></label>
+                            <textarea asp-for="HandlingInstructions"
+                                      class="form-control"
+                                      rows="3"></textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes"
+                                      class="form-control"
+                                      rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button class="btn btn-success" type="submit">Запази</button>
+                        <a asp-action="DangerousGoodsDeclarations"
+                               class="btn btn-outline-light">
+                            Назад
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

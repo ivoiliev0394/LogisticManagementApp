@@ -5277,929 +5277,929 @@ namespace LogisticManagementApp.Applicationn.Services.CompanyPortal
         #endregion
 
 
-// Billing / Finance
+        // Billing / Finance
 
-#region Billing
+        #region Billing
 
-public async Task<IEnumerable<ChargeListItemViewModel>> GetChargesAsync(Guid companyId)
-{
-    return await _dbContext.Charges
-        .AsNoTracking()
-        .Where(x => !x.IsDeleted && x.Shipment.CustomerCompanyId == companyId)
-        .OrderByDescending(x => x.CreatedAtUtc)
-        .Select(x => new ChargeListItemViewModel
+        public async Task<IEnumerable<ChargeListItemViewModel>> GetChargesAsync(Guid companyId)
         {
-            Id = x.Id,
-            ShipmentId = x.ShipmentId,
-            ShipmentNo = x.Shipment.ShipmentNo,
-            ChargeCode = x.ChargeCode,
-            Description = x.Description,
-            Quantity = x.Quantity,
-            UnitPrice = x.UnitPrice,
-            Currency = x.Currency,
-            SourceType = x.SourceType.ToString(),
-            IsTaxable = x.IsTaxable,
-            TaxRatePercent = x.TaxRatePercent,
-            Notes = x.Notes
-        })
-        .ToListAsync();
-}
+            return await _dbContext.Charges
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Shipment.CustomerCompanyId == companyId)
+                .OrderByDescending(x => x.CreatedAtUtc)
+                .Select(x => new ChargeListItemViewModel
+                {
+                    Id = x.Id,
+                    ShipmentId = x.ShipmentId,
+                    ShipmentNo = x.Shipment.ShipmentNo,
+                    ChargeCode = x.ChargeCode,
+                    Description = x.Description,
+                    Quantity = x.Quantity,
+                    UnitPrice = x.UnitPrice,
+                    Currency = x.Currency,
+                    SourceType = x.SourceType.ToString(),
+                    IsTaxable = x.IsTaxable,
+                    TaxRatePercent = x.TaxRatePercent,
+                    Notes = x.Notes
+                })
+                .ToListAsync();
+        }
 
-public async Task<IEnumerable<ChargeRuleAppliedListItemViewModel>> GetChargeRulesAppliedAsync(Guid companyId)
-{
-    return await _dbContext.ChargeRulesApplied
-        .AsNoTracking()
-        .Where(x => !x.IsDeleted && x.Charge.Shipment.CustomerCompanyId == companyId)
-        .OrderByDescending(x => x.CreatedAtUtc)
-        .Select(x => new ChargeRuleAppliedListItemViewModel
+        public async Task<IEnumerable<ChargeRuleAppliedListItemViewModel>> GetChargeRulesAppliedAsync(Guid companyId)
         {
-            Id = x.Id,
-            ChargeId = x.ChargeId,
-            ShipmentNo = x.Charge.Shipment.ShipmentNo,
-            ChargeCode = x.Charge.ChargeCode,
-            SourceEntityType = x.SourceEntityType,
-            SourceEntityId = x.SourceEntityId,
-            RuleCode = x.RuleCode,
-            RuleDescription = x.RuleDescription,
-            AppliedAmount = x.AppliedAmount,
-            Notes = x.Notes
-        })
-        .ToListAsync();
-}
+            return await _dbContext.ChargeRulesApplied
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Charge.Shipment.CustomerCompanyId == companyId)
+                .OrderByDescending(x => x.CreatedAtUtc)
+                .Select(x => new ChargeRuleAppliedListItemViewModel
+                {
+                    Id = x.Id,
+                    ChargeId = x.ChargeId,
+                    ShipmentNo = x.Charge.Shipment.ShipmentNo,
+                    ChargeCode = x.Charge.ChargeCode,
+                    SourceEntityType = x.SourceEntityType,
+                    SourceEntityId = x.SourceEntityId,
+                    RuleCode = x.RuleCode,
+                    RuleDescription = x.RuleDescription,
+                    AppliedAmount = x.AppliedAmount,
+                    Notes = x.Notes
+                })
+                .ToListAsync();
+        }
 
-public async Task<IEnumerable<InvoiceListItemViewModel>> GetInvoicesAsync(Guid companyId)
-{
-    return await _dbContext.Invoices
-        .AsNoTracking()
-        .Where(x => !x.IsDeleted && x.BillToCompanyId == companyId)
-        .OrderByDescending(x => x.IssueDateUtc)
-        .ThenByDescending(x => x.CreatedAtUtc)
-        .Select(x => new InvoiceListItemViewModel
+        public async Task<IEnumerable<InvoiceListItemViewModel>> GetInvoicesAsync(Guid companyId)
         {
-            Id = x.Id,
-            InvoiceNo = x.InvoiceNo,
-            IssueDateUtc = x.IssueDateUtc,
-            DueDateUtc = x.DueDateUtc,
-            Currency = x.Currency,
-            Status = x.Status.ToString(),
-            SubtotalAmount = x.SubtotalAmount,
-            TaxAmount = x.TaxAmount,
-            TotalAmount = x.TotalAmount,
-            Notes = x.Notes
-        })
-        .ToListAsync();
-}
+            return await _dbContext.Invoices
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.BillToCompanyId == companyId)
+                .OrderByDescending(x => x.IssueDateUtc)
+                .ThenByDescending(x => x.CreatedAtUtc)
+                .Select(x => new InvoiceListItemViewModel
+                {
+                    Id = x.Id,
+                    InvoiceNo = x.InvoiceNo,
+                    IssueDateUtc = x.IssueDateUtc,
+                    DueDateUtc = x.DueDateUtc,
+                    Currency = x.Currency,
+                    Status = x.Status.ToString(),
+                    SubtotalAmount = x.SubtotalAmount,
+                    TaxAmount = x.TaxAmount,
+                    TotalAmount = x.TotalAmount,
+                    Notes = x.Notes
+                })
+                .ToListAsync();
+        }
 
-public async Task<IEnumerable<InvoiceLineListItemViewModel>> GetInvoiceLinesAsync(Guid companyId)
-{
-    return await _dbContext.InvoiceLines
-        .AsNoTracking()
-        .Where(x => !x.IsDeleted && x.Invoice.BillToCompanyId == companyId)
-        .OrderBy(x => x.Invoice.InvoiceNo)
-        .ThenBy(x => x.LineNo)
-        .Select(x => new InvoiceLineListItemViewModel
+        public async Task<IEnumerable<InvoiceLineListItemViewModel>> GetInvoiceLinesAsync(Guid companyId)
         {
-            Id = x.Id,
-            InvoiceId = x.InvoiceId,
-            InvoiceNo = x.Invoice.InvoiceNo,
-            ShipmentNo = x.Shipment != null ? x.Shipment.ShipmentNo : null,
-            ChargeCode = x.Charge != null ? x.Charge.ChargeCode : null,
-            LineNo = x.LineNo,
-            Description = x.Description,
-            Quantity = x.Quantity,
-            UnitPrice = x.UnitPrice,
-            TaxRatePercent = x.TaxRatePercent,
-            LineNetAmount = x.LineNetAmount,
-            LineTaxAmount = x.LineTaxAmount,
-            LineTotalAmount = x.LineTotalAmount
-        })
-        .ToListAsync();
-}
+            return await _dbContext.InvoiceLines
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Invoice.BillToCompanyId == companyId)
+                .OrderBy(x => x.Invoice.InvoiceNo)
+                .ThenBy(x => x.LineNo)
+                .Select(x => new InvoiceLineListItemViewModel
+                {
+                    Id = x.Id,
+                    InvoiceId = x.InvoiceId,
+                    InvoiceNo = x.Invoice.InvoiceNo,
+                    ShipmentNo = x.Shipment != null ? x.Shipment.ShipmentNo : null,
+                    ChargeCode = x.Charge != null ? x.Charge.ChargeCode : null,
+                    LineNo = x.LineNo,
+                    Description = x.Description,
+                    Quantity = x.Quantity,
+                    UnitPrice = x.UnitPrice,
+                    TaxRatePercent = x.TaxRatePercent,
+                    LineNetAmount = x.LineNetAmount,
+                    LineTaxAmount = x.LineTaxAmount,
+                    LineTotalAmount = x.LineTotalAmount
+                })
+                .ToListAsync();
+        }
 
-public async Task<IEnumerable<PaymentListItemViewModel>> GetPaymentsAsync(Guid companyId)
-{
-    return await _dbContext.Payments
-        .AsNoTracking()
-        .Where(x => !x.IsDeleted && x.Invoice.BillToCompanyId == companyId)
-        .OrderByDescending(x => x.PaymentDateUtc)
-        .ThenByDescending(x => x.CreatedAtUtc)
-        .Select(x => new PaymentListItemViewModel
+        public async Task<IEnumerable<PaymentListItemViewModel>> GetPaymentsAsync(Guid companyId)
         {
-            Id = x.Id,
-            InvoiceId = x.InvoiceId,
-            InvoiceNo = x.Invoice.InvoiceNo,
-            PaymentDateUtc = x.PaymentDateUtc,
-            Amount = x.Amount,
-            Currency = x.Currency,
-            PaymentMethod = x.PaymentMethod.ToString(),
-            Status = x.Status.ToString(),
-            TransactionReference = x.TransactionReference,
-            Notes = x.Notes
-        })
-        .ToListAsync();
-}
+            return await _dbContext.Payments
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Invoice.BillToCompanyId == companyId)
+                .OrderByDescending(x => x.PaymentDateUtc)
+                .ThenByDescending(x => x.CreatedAtUtc)
+                .Select(x => new PaymentListItemViewModel
+                {
+                    Id = x.Id,
+                    InvoiceId = x.InvoiceId,
+                    InvoiceNo = x.Invoice.InvoiceNo,
+                    PaymentDateUtc = x.PaymentDateUtc,
+                    Amount = x.Amount,
+                    Currency = x.Currency,
+                    PaymentMethod = x.PaymentMethod.ToString(),
+                    Status = x.Status.ToString(),
+                    TransactionReference = x.TransactionReference,
+                    Notes = x.Notes
+                })
+                .ToListAsync();
+        }
 
-public async Task<IEnumerable<PaymentAllocationListItemViewModel>> GetPaymentAllocationsAsync(Guid companyId)
-{
-    return await _dbContext.PaymentAllocations
-        .AsNoTracking()
-        .Where(x => !x.IsDeleted && x.Invoice.BillToCompanyId == companyId && x.Payment.Invoice.BillToCompanyId == companyId)
-        .OrderByDescending(x => x.AllocatedAtUtc)
-        .ThenByDescending(x => x.CreatedAtUtc)
-        .Select(x => new PaymentAllocationListItemViewModel
+        public async Task<IEnumerable<PaymentAllocationListItemViewModel>> GetPaymentAllocationsAsync(Guid companyId)
         {
-            Id = x.Id,
-            PaymentId = x.PaymentId,
-            InvoiceId = x.InvoiceId,
-            PaymentInvoiceNo = x.Payment.Invoice.InvoiceNo,
-            InvoiceNo = x.Invoice.InvoiceNo,
-            AllocatedAmount = x.AllocatedAmount,
-            AllocatedAtUtc = x.AllocatedAtUtc,
-            Notes = x.Notes
-        })
-        .ToListAsync();
-}
+            return await _dbContext.PaymentAllocations
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Invoice.BillToCompanyId == companyId && x.Payment.Invoice.BillToCompanyId == companyId)
+                .OrderByDescending(x => x.AllocatedAtUtc)
+                .ThenByDescending(x => x.CreatedAtUtc)
+                .Select(x => new PaymentAllocationListItemViewModel
+                {
+                    Id = x.Id,
+                    PaymentId = x.PaymentId,
+                    InvoiceId = x.InvoiceId,
+                    PaymentInvoiceNo = x.Payment.Invoice.InvoiceNo,
+                    InvoiceNo = x.Invoice.InvoiceNo,
+                    AllocatedAmount = x.AllocatedAmount,
+                    AllocatedAtUtc = x.AllocatedAtUtc,
+                    Notes = x.Notes
+                })
+                .ToListAsync();
+        }
 
-public async Task<IEnumerable<CreditNoteListItemViewModel>> GetCreditNotesAsync(Guid companyId)
-{
-    return await _dbContext.CreditNotes
-        .AsNoTracking()
-        .Where(x => !x.IsDeleted && x.BillToCompanyId == companyId)
-        .OrderByDescending(x => x.IssueDateUtc)
-        .ThenByDescending(x => x.CreatedAtUtc)
-        .Select(x => new CreditNoteListItemViewModel
+        public async Task<IEnumerable<CreditNoteListItemViewModel>> GetCreditNotesAsync(Guid companyId)
         {
-            Id = x.Id,
-            InvoiceId = x.InvoiceId,
-            CreditNoteNo = x.CreditNoteNo,
-            InvoiceNo = x.Invoice.InvoiceNo,
-            IssueDateUtc = x.IssueDateUtc,
-            Currency = x.Currency,
-            Status = x.Status.ToString(),
-            NetAmount = x.NetAmount,
-            TaxAmount = x.TaxAmount,
-            TotalAmount = x.TotalAmount,
-            Reason = x.Reason,
-            Notes = x.Notes
-        })
-        .ToListAsync();
-}
+            return await _dbContext.CreditNotes
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.BillToCompanyId == companyId)
+                .OrderByDescending(x => x.IssueDateUtc)
+                .ThenByDescending(x => x.CreatedAtUtc)
+                .Select(x => new CreditNoteListItemViewModel
+                {
+                    Id = x.Id,
+                    InvoiceId = x.InvoiceId,
+                    CreditNoteNo = x.CreditNoteNo,
+                    InvoiceNo = x.Invoice.InvoiceNo,
+                    IssueDateUtc = x.IssueDateUtc,
+                    Currency = x.Currency,
+                    Status = x.Status.ToString(),
+                    NetAmount = x.NetAmount,
+                    TaxAmount = x.TaxAmount,
+                    TotalAmount = x.TotalAmount,
+                    Reason = x.Reason,
+                    Notes = x.Notes
+                })
+                .ToListAsync();
+        }
 
-public async Task<IEnumerable<TaxRateListItemViewModel>> GetTaxRatesAsync()
-{
-    return await _dbContext.TaxRates
-        .AsNoTracking()
-        .Where(x => !x.IsDeleted)
-        .OrderBy(x => x.CountryCode)
-        .ThenBy(x => x.Name)
-        .Select(x => new TaxRateListItemViewModel
+        public async Task<IEnumerable<TaxRateListItemViewModel>> GetTaxRatesAsync()
         {
-            Id = x.Id,
-            TaxType = x.TaxType.ToString(),
-            Name = x.Name,
-            CountryCode = x.CountryCode,
-            RatePercent = x.RatePercent,
-            ValidFromUtc = x.ValidFromUtc,
-            ValidToUtc = x.ValidToUtc,
-            IsActive = x.IsActive,
-            Notes = x.Notes
-        })
-        .ToListAsync();
-}
+            return await _dbContext.TaxRates
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted)
+                .OrderBy(x => x.CountryCode)
+                .ThenBy(x => x.Name)
+                .Select(x => new TaxRateListItemViewModel
+                {
+                    Id = x.Id,
+                    TaxType = x.TaxType.ToString(),
+                    Name = x.Name,
+                    CountryCode = x.CountryCode,
+                    RatePercent = x.RatePercent,
+                    ValidFromUtc = x.ValidFromUtc,
+                    ValidToUtc = x.ValidToUtc,
+                    IsActive = x.IsActive,
+                    Notes = x.Notes
+                })
+                .ToListAsync();
+        }
 
-public async Task<ChargeCreateViewModel> GetCreateChargeModelAsync(Guid companyId)
-{
-    var model = new ChargeCreateViewModel();
-    await PopulateChargeOptionsAsync(companyId, model);
-    return model;
-}
-
-public async Task<ChargeEditViewModel?> GetChargeForEditAsync(Guid companyId, Guid chargeId)
-{
-    var charge = await _dbContext.Charges
-        .AsNoTracking()
-        .Where(x => !x.IsDeleted && x.Id == chargeId && x.Shipment.CustomerCompanyId == companyId)
-        .Select(x => new ChargeEditViewModel
+        public async Task<ChargeCreateViewModel> GetCreateChargeModelAsync(Guid companyId)
         {
-            Id = x.Id,
-            ShipmentId = x.ShipmentId,
-            ShipmentLegId = x.ShipmentLegId,
-            ChargeCode = x.ChargeCode,
-            Description = x.Description,
-            Quantity = x.Quantity,
-            UnitPrice = x.UnitPrice,
-            Currency = x.Currency,
-            SourceType = x.SourceType,
-            IsTaxable = x.IsTaxable,
-            TaxRatePercent = x.TaxRatePercent,
-            Notes = x.Notes
-        })
-        .FirstOrDefaultAsync();
+            var model = new ChargeCreateViewModel();
+            await PopulateChargeOptionsAsync(companyId, model);
+            return model;
+        }
 
-    if (charge == null) return null;
-    await PopulateChargeOptionsAsync(companyId, charge);
-    return charge;
-}
-
-public async Task<Guid?> CreateChargeAsync(Guid companyId, ChargeCreateViewModel model)
-{
-    var shipmentExists = await _dbContext.Shipments.AnyAsync(x => !x.IsDeleted && x.Id == model.ShipmentId && x.CustomerCompanyId == companyId);
-    if (!shipmentExists) return null;
-
-    if (model.ShipmentLegId.HasValue)
-    {
-        var legExists = await _dbContext.ShipmentLegs.AnyAsync(x => !x.IsDeleted && x.Id == model.ShipmentLegId.Value && x.Shipment.CustomerCompanyId == companyId && x.ShipmentId == model.ShipmentId);
-        if (!legExists) return null;
-    }
-
-    var entity = new Charge
-    {
-        ShipmentId = model.ShipmentId,
-        ShipmentLegId = model.ShipmentLegId,
-        ChargeCode = model.ChargeCode.Trim(),
-        Description = model.Description.Trim(),
-        Quantity = model.Quantity,
-        UnitPrice = model.UnitPrice,
-        Currency = model.Currency.Trim().ToUpperInvariant(),
-        SourceType = model.SourceType,
-        IsTaxable = model.IsTaxable,
-        TaxRatePercent = model.TaxRatePercent,
-        Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim()
-    };
-
-    _dbContext.Charges.Add(entity);
-    await _dbContext.SaveChangesAsync();
-    return entity.Id;
-}
-
-public async Task<bool> UpdateChargeAsync(Guid companyId, ChargeEditViewModel model)
-{
-    var entity = await _dbContext.Charges
-        .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.Id && x.Shipment.CustomerCompanyId == companyId);
-
-    if (entity == null) return false;
-
-    var shipmentExists = await _dbContext.Shipments.AnyAsync(x => !x.IsDeleted && x.Id == model.ShipmentId && x.CustomerCompanyId == companyId);
-    if (!shipmentExists) return false;
-
-    if (model.ShipmentLegId.HasValue)
-    {
-        var legExists = await _dbContext.ShipmentLegs.AnyAsync(x => !x.IsDeleted && x.Id == model.ShipmentLegId.Value && x.Shipment.CustomerCompanyId == companyId && x.ShipmentId == model.ShipmentId);
-        if (!legExists) return false;
-    }
-
-    entity.ShipmentId = model.ShipmentId;
-    entity.ShipmentLegId = model.ShipmentLegId;
-    entity.ChargeCode = model.ChargeCode.Trim();
-    entity.Description = model.Description.Trim();
-    entity.Quantity = model.Quantity;
-    entity.UnitPrice = model.UnitPrice;
-    entity.Currency = model.Currency.Trim().ToUpperInvariant();
-    entity.SourceType = model.SourceType;
-    entity.IsTaxable = model.IsTaxable;
-    entity.TaxRatePercent = model.TaxRatePercent;
-    entity.Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim();
-    entity.UpdatedAtUtc = DateTime.UtcNow;
-
-    await _dbContext.SaveChangesAsync();
-    return true;
-}
-
-public async Task<bool> DeleteChargeAsync(Guid companyId, Guid chargeId)
-{
-    var entity = await _dbContext.Charges
-        .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == chargeId && x.Shipment.CustomerCompanyId == companyId);
-
-    if (entity == null) return false;
-    entity.IsDeleted = true;
-    entity.DeletedAtUtc = DateTime.UtcNow;
-    entity.UpdatedAtUtc = DateTime.UtcNow;
-    await _dbContext.SaveChangesAsync();
-    return true;
-}
-
-public async Task<ChargeRuleAppliedCreateViewModel> GetCreateChargeRuleAppliedModelAsync(Guid companyId)
-{
-    var model = new ChargeRuleAppliedCreateViewModel();
-    await PopulateChargeRuleAppliedOptionsAsync(companyId, model);
-    return model;
-}
-
-public async Task<ChargeRuleAppliedEditViewModel?> GetChargeRuleAppliedForEditAsync(Guid companyId, Guid chargeRuleAppliedId)
-{
-    var item = await _dbContext.ChargeRulesApplied
-        .AsNoTracking()
-        .Where(x => !x.IsDeleted && x.Id == chargeRuleAppliedId && x.Charge.Shipment.CustomerCompanyId == companyId)
-        .Select(x => new ChargeRuleAppliedEditViewModel
+        public async Task<ChargeEditViewModel?> GetChargeForEditAsync(Guid companyId, Guid chargeId)
         {
-            Id = x.Id,
-            ChargeId = x.ChargeId,
-            SourceEntityType = x.SourceEntityType,
-            SourceEntityId = x.SourceEntityId,
-            RuleCode = x.RuleCode,
-            RuleDescription = x.RuleDescription,
-            AppliedAmount = x.AppliedAmount,
-            Notes = x.Notes
-        })
-        .FirstOrDefaultAsync();
+            var charge = await _dbContext.Charges
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Id == chargeId && x.Shipment.CustomerCompanyId == companyId)
+                .Select(x => new ChargeEditViewModel
+                {
+                    Id = x.Id,
+                    ShipmentId = x.ShipmentId,
+                    ShipmentLegId = x.ShipmentLegId,
+                    ChargeCode = x.ChargeCode,
+                    Description = x.Description,
+                    Quantity = x.Quantity,
+                    UnitPrice = x.UnitPrice,
+                    Currency = x.Currency,
+                    SourceType = x.SourceType,
+                    IsTaxable = x.IsTaxable,
+                    TaxRatePercent = x.TaxRatePercent,
+                    Notes = x.Notes
+                })
+                .FirstOrDefaultAsync();
 
-    if (item == null) return null;
-    await PopulateChargeRuleAppliedOptionsAsync(companyId, item);
-    return item;
-}
+            if (charge == null) return null;
+            await PopulateChargeOptionsAsync(companyId, charge);
+            return charge;
+        }
 
-public async Task<Guid?> CreateChargeRuleAppliedAsync(Guid companyId, ChargeRuleAppliedCreateViewModel model)
-{
-    var chargeExists = await _dbContext.Charges.AnyAsync(x => !x.IsDeleted && x.Id == model.ChargeId && x.Shipment.CustomerCompanyId == companyId);
-    if (!chargeExists) return null;
-
-    var entity = new ChargeRuleApplied
-    {
-        ChargeId = model.ChargeId,
-        SourceEntityType = string.IsNullOrWhiteSpace(model.SourceEntityType) ? null : model.SourceEntityType.Trim(),
-        SourceEntityId = model.SourceEntityId,
-        RuleCode = string.IsNullOrWhiteSpace(model.RuleCode) ? null : model.RuleCode.Trim(),
-        RuleDescription = string.IsNullOrWhiteSpace(model.RuleDescription) ? null : model.RuleDescription.Trim(),
-        AppliedAmount = model.AppliedAmount,
-        Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim()
-    };
-
-    _dbContext.ChargeRulesApplied.Add(entity);
-    await _dbContext.SaveChangesAsync();
-    return entity.Id;
-}
-
-public async Task<bool> UpdateChargeRuleAppliedAsync(Guid companyId, ChargeRuleAppliedEditViewModel model)
-{
-    var entity = await _dbContext.ChargeRulesApplied
-        .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.Id && x.Charge.Shipment.CustomerCompanyId == companyId);
-
-    if (entity == null) return false;
-
-    var chargeExists = await _dbContext.Charges.AnyAsync(x => !x.IsDeleted && x.Id == model.ChargeId && x.Shipment.CustomerCompanyId == companyId);
-    if (!chargeExists) return false;
-
-    entity.ChargeId = model.ChargeId;
-    entity.SourceEntityType = string.IsNullOrWhiteSpace(model.SourceEntityType) ? null : model.SourceEntityType.Trim();
-    entity.SourceEntityId = model.SourceEntityId;
-    entity.RuleCode = string.IsNullOrWhiteSpace(model.RuleCode) ? null : model.RuleCode.Trim();
-    entity.RuleDescription = string.IsNullOrWhiteSpace(model.RuleDescription) ? null : model.RuleDescription.Trim();
-    entity.AppliedAmount = model.AppliedAmount;
-    entity.Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim();
-    entity.UpdatedAtUtc = DateTime.UtcNow;
-
-    await _dbContext.SaveChangesAsync();
-    return true;
-}
-
-public async Task<bool> DeleteChargeRuleAppliedAsync(Guid companyId, Guid chargeRuleAppliedId)
-{
-    var entity = await _dbContext.ChargeRulesApplied
-        .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == chargeRuleAppliedId && x.Charge.Shipment.CustomerCompanyId == companyId);
-
-    if (entity == null) return false;
-    entity.IsDeleted = true;
-    entity.DeletedAtUtc = DateTime.UtcNow;
-    entity.UpdatedAtUtc = DateTime.UtcNow;
-    await _dbContext.SaveChangesAsync();
-    return true;
-}
-
-public async Task<InvoiceEditViewModel?> GetInvoiceForEditAsync(Guid companyId, Guid invoiceId)
-{
-    return await _dbContext.Invoices
-        .AsNoTracking()
-        .Where(x => !x.IsDeleted && x.Id == invoiceId && x.BillToCompanyId == companyId)
-        .Select(x => new InvoiceEditViewModel
+        public async Task<Guid?> CreateChargeAsync(Guid companyId, ChargeCreateViewModel model)
         {
-            Id = x.Id,
-            InvoiceNo = x.InvoiceNo,
-            IssueDateUtc = x.IssueDateUtc,
-            DueDateUtc = x.DueDateUtc,
-            Currency = x.Currency,
-            Status = x.Status,
-            SubtotalAmount = x.SubtotalAmount,
-            TaxAmount = x.TaxAmount,
-            TotalAmount = x.TotalAmount,
-            Notes = x.Notes
-        })
-        .FirstOrDefaultAsync();
-}
+            var shipmentExists = await _dbContext.Shipments.AnyAsync(x => !x.IsDeleted && x.Id == model.ShipmentId && x.CustomerCompanyId == companyId);
+            if (!shipmentExists) return null;
 
-public async Task<Guid?> CreateInvoiceAsync(Guid companyId, InvoiceCreateViewModel model)
-{
-    var entity = new Invoice
-    {
-        InvoiceNo = model.InvoiceNo.Trim(),
-        BillToCompanyId = companyId,
-        IssueDateUtc = model.IssueDateUtc,
-        DueDateUtc = model.DueDateUtc,
-        Currency = model.Currency.Trim().ToUpperInvariant(),
-        Status = model.Status,
-        SubtotalAmount = model.SubtotalAmount,
-        TaxAmount = model.TaxAmount,
-        TotalAmount = model.TotalAmount,
-        Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim()
-    };
+            if (model.ShipmentLegId.HasValue)
+            {
+                var legExists = await _dbContext.ShipmentLegs.AnyAsync(x => !x.IsDeleted && x.Id == model.ShipmentLegId.Value && x.Shipment.CustomerCompanyId == companyId && x.ShipmentId == model.ShipmentId);
+                if (!legExists) return null;
+            }
 
-    _dbContext.Invoices.Add(entity);
-    await _dbContext.SaveChangesAsync();
-    return entity.Id;
-}
+            var entity = new Charge
+            {
+                ShipmentId = model.ShipmentId,
+                ShipmentLegId = model.ShipmentLegId,
+                ChargeCode = model.ChargeCode.Trim(),
+                Description = model.Description.Trim(),
+                Quantity = model.Quantity,
+                UnitPrice = model.UnitPrice,
+                Currency = model.Currency.Trim().ToUpperInvariant(),
+                SourceType = model.SourceType,
+                IsTaxable = model.IsTaxable,
+                TaxRatePercent = model.TaxRatePercent,
+                Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim()
+            };
 
-public async Task<bool> UpdateInvoiceAsync(Guid companyId, InvoiceEditViewModel model)
-{
-    var entity = await _dbContext.Invoices.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.Id && x.BillToCompanyId == companyId);
-    if (entity == null) return false;
+            _dbContext.Charges.Add(entity);
+            await _dbContext.SaveChangesAsync();
+            return entity.Id;
+        }
 
-    entity.InvoiceNo = model.InvoiceNo.Trim();
-    entity.IssueDateUtc = model.IssueDateUtc;
-    entity.DueDateUtc = model.DueDateUtc;
-    entity.Currency = model.Currency.Trim().ToUpperInvariant();
-    entity.Status = model.Status;
-    entity.SubtotalAmount = model.SubtotalAmount;
-    entity.TaxAmount = model.TaxAmount;
-    entity.TotalAmount = model.TotalAmount;
-    entity.Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim();
-    entity.UpdatedAtUtc = DateTime.UtcNow;
-
-    await _dbContext.SaveChangesAsync();
-    return true;
-}
-
-public async Task<bool> DeleteInvoiceAsync(Guid companyId, Guid invoiceId)
-{
-    var entity = await _dbContext.Invoices.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == invoiceId && x.BillToCompanyId == companyId);
-    if (entity == null) return false;
-    entity.IsDeleted = true;
-    entity.DeletedAtUtc = DateTime.UtcNow;
-    entity.UpdatedAtUtc = DateTime.UtcNow;
-    await _dbContext.SaveChangesAsync();
-    return true;
-}
-
-public async Task<InvoiceLineCreateViewModel> GetCreateInvoiceLineModelAsync(Guid companyId)
-{
-    var model = new InvoiceLineCreateViewModel();
-    await PopulateInvoiceLineOptionsAsync(companyId, model);
-    return model;
-}
-
-public async Task<InvoiceLineEditViewModel?> GetInvoiceLineForEditAsync(Guid companyId, Guid invoiceLineId)
-{
-    var item = await _dbContext.InvoiceLines
-        .AsNoTracking()
-        .Where(x => !x.IsDeleted && x.Id == invoiceLineId && x.Invoice.BillToCompanyId == companyId)
-        .Select(x => new InvoiceLineEditViewModel
+        public async Task<bool> UpdateChargeAsync(Guid companyId, ChargeEditViewModel model)
         {
-            Id = x.Id,
-            InvoiceId = x.InvoiceId,
-            ChargeId = x.ChargeId,
-            ShipmentId = x.ShipmentId,
-            LineNo = x.LineNo,
-            Description = x.Description,
-            Quantity = x.Quantity,
-            UnitPrice = x.UnitPrice,
-            TaxRatePercent = x.TaxRatePercent,
-            LineNetAmount = x.LineNetAmount,
-            LineTaxAmount = x.LineTaxAmount,
-            LineTotalAmount = x.LineTotalAmount
-        })
-        .FirstOrDefaultAsync();
+            var entity = await _dbContext.Charges
+                .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.Id && x.Shipment.CustomerCompanyId == companyId);
 
-    if (item == null) return null;
-    await PopulateInvoiceLineOptionsAsync(companyId, item);
-    return item;
-}
+            if (entity == null) return false;
 
-public async Task<Guid?> CreateInvoiceLineAsync(Guid companyId, InvoiceLineCreateViewModel model)
-{
-    var invoiceExists = await _dbContext.Invoices.AnyAsync(x => !x.IsDeleted && x.Id == model.InvoiceId && x.BillToCompanyId == companyId);
-    if (!invoiceExists) return null;
+            var shipmentExists = await _dbContext.Shipments.AnyAsync(x => !x.IsDeleted && x.Id == model.ShipmentId && x.CustomerCompanyId == companyId);
+            if (!shipmentExists) return false;
 
-    if (model.ChargeId.HasValue)
-    {
-        var chargeExists = await _dbContext.Charges.AnyAsync(x => !x.IsDeleted && x.Id == model.ChargeId.Value && x.Shipment.CustomerCompanyId == companyId);
-        if (!chargeExists) return null;
-    }
+            if (model.ShipmentLegId.HasValue)
+            {
+                var legExists = await _dbContext.ShipmentLegs.AnyAsync(x => !x.IsDeleted && x.Id == model.ShipmentLegId.Value && x.Shipment.CustomerCompanyId == companyId && x.ShipmentId == model.ShipmentId);
+                if (!legExists) return false;
+            }
 
-    if (model.ShipmentId.HasValue)
-    {
-        var shipmentExists = await _dbContext.Shipments.AnyAsync(x => !x.IsDeleted && x.Id == model.ShipmentId.Value && x.CustomerCompanyId == companyId);
-        if (!shipmentExists) return null;
-    }
+            entity.ShipmentId = model.ShipmentId;
+            entity.ShipmentLegId = model.ShipmentLegId;
+            entity.ChargeCode = model.ChargeCode.Trim();
+            entity.Description = model.Description.Trim();
+            entity.Quantity = model.Quantity;
+            entity.UnitPrice = model.UnitPrice;
+            entity.Currency = model.Currency.Trim().ToUpperInvariant();
+            entity.SourceType = model.SourceType;
+            entity.IsTaxable = model.IsTaxable;
+            entity.TaxRatePercent = model.TaxRatePercent;
+            entity.Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim();
+            entity.UpdatedAtUtc = DateTime.UtcNow;
 
-    var entity = new InvoiceLine
-    {
-        InvoiceId = model.InvoiceId,
-        ChargeId = model.ChargeId,
-        ShipmentId = model.ShipmentId,
-        LineNo = model.LineNo,
-        Description = model.Description.Trim(),
-        Quantity = model.Quantity,
-        UnitPrice = model.UnitPrice,
-        TaxRatePercent = model.TaxRatePercent,
-        LineNetAmount = model.LineNetAmount,
-        LineTaxAmount = model.LineTaxAmount,
-        LineTotalAmount = model.LineTotalAmount
-    };
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
 
-    _dbContext.InvoiceLines.Add(entity);
-    await _dbContext.SaveChangesAsync();
-    return entity.Id;
-}
-
-public async Task<bool> UpdateInvoiceLineAsync(Guid companyId, InvoiceLineEditViewModel model)
-{
-    var entity = await _dbContext.InvoiceLines
-        .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.Id && x.Invoice.BillToCompanyId == companyId);
-    if (entity == null) return false;
-
-    var invoiceExists = await _dbContext.Invoices.AnyAsync(x => !x.IsDeleted && x.Id == model.InvoiceId && x.BillToCompanyId == companyId);
-    if (!invoiceExists) return false;
-
-    if (model.ChargeId.HasValue)
-    {
-        var chargeExists = await _dbContext.Charges.AnyAsync(x => !x.IsDeleted && x.Id == model.ChargeId.Value && x.Shipment.CustomerCompanyId == companyId);
-        if (!chargeExists) return false;
-    }
-
-    if (model.ShipmentId.HasValue)
-    {
-        var shipmentExists = await _dbContext.Shipments.AnyAsync(x => !x.IsDeleted && x.Id == model.ShipmentId.Value && x.CustomerCompanyId == companyId);
-        if (!shipmentExists) return false;
-    }
-
-    entity.InvoiceId = model.InvoiceId;
-    entity.ChargeId = model.ChargeId;
-    entity.ShipmentId = model.ShipmentId;
-    entity.LineNo = model.LineNo;
-    entity.Description = model.Description.Trim();
-    entity.Quantity = model.Quantity;
-    entity.UnitPrice = model.UnitPrice;
-    entity.TaxRatePercent = model.TaxRatePercent;
-    entity.LineNetAmount = model.LineNetAmount;
-    entity.LineTaxAmount = model.LineTaxAmount;
-    entity.LineTotalAmount = model.LineTotalAmount;
-    entity.UpdatedAtUtc = DateTime.UtcNow;
-
-    await _dbContext.SaveChangesAsync();
-    return true;
-}
-
-public async Task<bool> DeleteInvoiceLineAsync(Guid companyId, Guid invoiceLineId)
-{
-    var entity = await _dbContext.InvoiceLines
-        .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == invoiceLineId && x.Invoice.BillToCompanyId == companyId);
-    if (entity == null) return false;
-    entity.IsDeleted = true;
-    entity.DeletedAtUtc = DateTime.UtcNow;
-    entity.UpdatedAtUtc = DateTime.UtcNow;
-    await _dbContext.SaveChangesAsync();
-    return true;
-}
-
-public async Task<PaymentCreateViewModel> GetCreatePaymentModelAsync(Guid companyId)
-{
-    var model = new PaymentCreateViewModel();
-    await PopulatePaymentOptionsAsync(companyId, model);
-    return model;
-}
-
-public async Task<PaymentEditViewModel?> GetPaymentForEditAsync(Guid companyId, Guid paymentId)
-{
-    var item = await _dbContext.Payments
-        .AsNoTracking()
-        .Where(x => !x.IsDeleted && x.Id == paymentId && x.Invoice.BillToCompanyId == companyId)
-        .Select(x => new PaymentEditViewModel
+        public async Task<bool> DeleteChargeAsync(Guid companyId, Guid chargeId)
         {
-            Id = x.Id,
-            InvoiceId = x.InvoiceId,
-            PaymentDateUtc = x.PaymentDateUtc,
-            Amount = x.Amount,
-            Currency = x.Currency,
-            PaymentMethod = x.PaymentMethod,
-            Status = x.Status,
-            TransactionReference = x.TransactionReference,
-            Notes = x.Notes
-        })
-        .FirstOrDefaultAsync();
+            var entity = await _dbContext.Charges
+                .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == chargeId && x.Shipment.CustomerCompanyId == companyId);
 
-    if (item == null) return null;
-    await PopulatePaymentOptionsAsync(companyId, item);
-    return item;
-}
+            if (entity == null) return false;
+            entity.IsDeleted = true;
+            entity.DeletedAtUtc = DateTime.UtcNow;
+            entity.UpdatedAtUtc = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
 
-public async Task<Guid?> CreatePaymentAsync(Guid companyId, PaymentCreateViewModel model)
-{
-    var invoiceExists = await _dbContext.Invoices.AnyAsync(x => !x.IsDeleted && x.Id == model.InvoiceId && x.BillToCompanyId == companyId);
-    if (!invoiceExists) return null;
-
-    var entity = new Payment
-    {
-        InvoiceId = model.InvoiceId,
-        PaymentDateUtc = model.PaymentDateUtc,
-        Amount = model.Amount,
-        Currency = model.Currency.Trim().ToUpperInvariant(),
-        PaymentMethod = model.PaymentMethod,
-        Status = model.Status,
-        TransactionReference = string.IsNullOrWhiteSpace(model.TransactionReference) ? null : model.TransactionReference.Trim(),
-        Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim()
-    };
-
-    _dbContext.Payments.Add(entity);
-    await _dbContext.SaveChangesAsync();
-    return entity.Id;
-}
-
-public async Task<bool> UpdatePaymentAsync(Guid companyId, PaymentEditViewModel model)
-{
-    var entity = await _dbContext.Payments
-        .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.Id && x.Invoice.BillToCompanyId == companyId);
-    if (entity == null) return false;
-
-    var invoiceExists = await _dbContext.Invoices.AnyAsync(x => !x.IsDeleted && x.Id == model.InvoiceId && x.BillToCompanyId == companyId);
-    if (!invoiceExists) return false;
-
-    entity.InvoiceId = model.InvoiceId;
-    entity.PaymentDateUtc = model.PaymentDateUtc;
-    entity.Amount = model.Amount;
-    entity.Currency = model.Currency.Trim().ToUpperInvariant();
-    entity.PaymentMethod = model.PaymentMethod;
-    entity.Status = model.Status;
-    entity.TransactionReference = string.IsNullOrWhiteSpace(model.TransactionReference) ? null : model.TransactionReference.Trim();
-    entity.Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim();
-    entity.UpdatedAtUtc = DateTime.UtcNow;
-
-    await _dbContext.SaveChangesAsync();
-    return true;
-}
-
-public async Task<bool> DeletePaymentAsync(Guid companyId, Guid paymentId)
-{
-    var entity = await _dbContext.Payments
-        .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == paymentId && x.Invoice.BillToCompanyId == companyId);
-    if (entity == null) return false;
-    entity.IsDeleted = true;
-    entity.DeletedAtUtc = DateTime.UtcNow;
-    entity.UpdatedAtUtc = DateTime.UtcNow;
-    await _dbContext.SaveChangesAsync();
-    return true;
-}
-
-public async Task<PaymentAllocationCreateViewModel> GetCreatePaymentAllocationModelAsync(Guid companyId)
-{
-    var model = new PaymentAllocationCreateViewModel();
-    await PopulatePaymentAllocationOptionsAsync(companyId, model);
-    return model;
-}
-
-public async Task<PaymentAllocationEditViewModel?> GetPaymentAllocationForEditAsync(Guid companyId, Guid paymentAllocationId)
-{
-    var item = await _dbContext.PaymentAllocations
-        .AsNoTracking()
-        .Where(x => !x.IsDeleted && x.Id == paymentAllocationId && x.Invoice.BillToCompanyId == companyId && x.Payment.Invoice.BillToCompanyId == companyId)
-        .Select(x => new PaymentAllocationEditViewModel
+        public async Task<ChargeRuleAppliedCreateViewModel> GetCreateChargeRuleAppliedModelAsync(Guid companyId)
         {
-            Id = x.Id,
-            PaymentId = x.PaymentId,
-            InvoiceId = x.InvoiceId,
-            AllocatedAmount = x.AllocatedAmount,
-            AllocatedAtUtc = x.AllocatedAtUtc,
-            Notes = x.Notes
-        })
-        .FirstOrDefaultAsync();
+            var model = new ChargeRuleAppliedCreateViewModel();
+            await PopulateChargeRuleAppliedOptionsAsync(companyId, model);
+            return model;
+        }
 
-    if (item == null) return null;
-    await PopulatePaymentAllocationOptionsAsync(companyId, item);
-    return item;
-}
-
-public async Task<Guid?> CreatePaymentAllocationAsync(Guid companyId, PaymentAllocationCreateViewModel model)
-{
-    var paymentExists = await _dbContext.Payments.AnyAsync(x => !x.IsDeleted && x.Id == model.PaymentId && x.Invoice.BillToCompanyId == companyId);
-    var invoiceExists = await _dbContext.Invoices.AnyAsync(x => !x.IsDeleted && x.Id == model.InvoiceId && x.BillToCompanyId == companyId);
-    if (!paymentExists || !invoiceExists) return null;
-
-    var entity = new PaymentAllocation
-    {
-        PaymentId = model.PaymentId,
-        InvoiceId = model.InvoiceId,
-        AllocatedAmount = model.AllocatedAmount,
-        AllocatedAtUtc = model.AllocatedAtUtc,
-        Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim()
-    };
-
-    _dbContext.PaymentAllocations.Add(entity);
-    await _dbContext.SaveChangesAsync();
-    return entity.Id;
-}
-
-public async Task<bool> UpdatePaymentAllocationAsync(Guid companyId, PaymentAllocationEditViewModel model)
-{
-    var entity = await _dbContext.PaymentAllocations
-        .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.Id && x.Invoice.BillToCompanyId == companyId && x.Payment.Invoice.BillToCompanyId == companyId);
-    if (entity == null) return false;
-
-    var paymentExists = await _dbContext.Payments.AnyAsync(x => !x.IsDeleted && x.Id == model.PaymentId && x.Invoice.BillToCompanyId == companyId);
-    var invoiceExists = await _dbContext.Invoices.AnyAsync(x => !x.IsDeleted && x.Id == model.InvoiceId && x.BillToCompanyId == companyId);
-    if (!paymentExists || !invoiceExists) return false;
-
-    entity.PaymentId = model.PaymentId;
-    entity.InvoiceId = model.InvoiceId;
-    entity.AllocatedAmount = model.AllocatedAmount;
-    entity.AllocatedAtUtc = model.AllocatedAtUtc;
-    entity.Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim();
-    entity.UpdatedAtUtc = DateTime.UtcNow;
-
-    await _dbContext.SaveChangesAsync();
-    return true;
-}
-
-public async Task<bool> DeletePaymentAllocationAsync(Guid companyId, Guid paymentAllocationId)
-{
-    var entity = await _dbContext.PaymentAllocations
-        .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == paymentAllocationId && x.Invoice.BillToCompanyId == companyId && x.Payment.Invoice.BillToCompanyId == companyId);
-    if (entity == null) return false;
-    entity.IsDeleted = true;
-    entity.DeletedAtUtc = DateTime.UtcNow;
-    entity.UpdatedAtUtc = DateTime.UtcNow;
-    await _dbContext.SaveChangesAsync();
-    return true;
-}
-
-public async Task<CreditNoteCreateViewModel> GetCreateCreditNoteModelAsync(Guid companyId)
-{
-    var model = new CreditNoteCreateViewModel();
-    await PopulateCreditNoteOptionsAsync(companyId, model);
-    return model;
-}
-
-public async Task<CreditNoteEditViewModel?> GetCreditNoteForEditAsync(Guid companyId, Guid creditNoteId)
-{
-    var item = await _dbContext.CreditNotes
-        .AsNoTracking()
-        .Where(x => !x.IsDeleted && x.Id == creditNoteId && x.BillToCompanyId == companyId)
-        .Select(x => new CreditNoteEditViewModel
+        public async Task<ChargeRuleAppliedEditViewModel?> GetChargeRuleAppliedForEditAsync(Guid companyId, Guid chargeRuleAppliedId)
         {
-            Id = x.Id,
-            CreditNoteNo = x.CreditNoteNo,
-            InvoiceId = x.InvoiceId,
-            IssueDateUtc = x.IssueDateUtc,
-            Currency = x.Currency,
-            Status = x.Status,
-            NetAmount = x.NetAmount,
-            TaxAmount = x.TaxAmount,
-            TotalAmount = x.TotalAmount,
-            Reason = x.Reason,
-            Notes = x.Notes
-        })
-        .FirstOrDefaultAsync();
+            var item = await _dbContext.ChargeRulesApplied
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Id == chargeRuleAppliedId && x.Charge.Shipment.CustomerCompanyId == companyId)
+                .Select(x => new ChargeRuleAppliedEditViewModel
+                {
+                    Id = x.Id,
+                    ChargeId = x.ChargeId,
+                    SourceEntityType = x.SourceEntityType,
+                    SourceEntityId = x.SourceEntityId,
+                    RuleCode = x.RuleCode,
+                    RuleDescription = x.RuleDescription,
+                    AppliedAmount = x.AppliedAmount,
+                    Notes = x.Notes
+                })
+                .FirstOrDefaultAsync();
 
-    if (item == null) return null;
-    await PopulateCreditNoteOptionsAsync(companyId, item);
-    return item;
-}
+            if (item == null) return null;
+            await PopulateChargeRuleAppliedOptionsAsync(companyId, item);
+            return item;
+        }
 
-public async Task<Guid?> CreateCreditNoteAsync(Guid companyId, CreditNoteCreateViewModel model)
-{
-    var invoiceExists = await _dbContext.Invoices.AnyAsync(x => !x.IsDeleted && x.Id == model.InvoiceId && x.BillToCompanyId == companyId);
-    if (!invoiceExists) return null;
+        public async Task<Guid?> CreateChargeRuleAppliedAsync(Guid companyId, ChargeRuleAppliedCreateViewModel model)
+        {
+            var chargeExists = await _dbContext.Charges.AnyAsync(x => !x.IsDeleted && x.Id == model.ChargeId && x.Shipment.CustomerCompanyId == companyId);
+            if (!chargeExists) return null;
 
-    var entity = new CreditNote
-    {
-        CreditNoteNo = model.CreditNoteNo.Trim(),
-        InvoiceId = model.InvoiceId,
-        BillToCompanyId = companyId,
-        IssueDateUtc = model.IssueDateUtc,
-        Currency = model.Currency.Trim().ToUpperInvariant(),
-        Status = model.Status,
-        NetAmount = model.NetAmount,
-        TaxAmount = model.TaxAmount,
-        TotalAmount = model.TotalAmount,
-        Reason = string.IsNullOrWhiteSpace(model.Reason) ? null : model.Reason.Trim(),
-        Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim()
-    };
+            var entity = new ChargeRuleApplied
+            {
+                ChargeId = model.ChargeId,
+                SourceEntityType = string.IsNullOrWhiteSpace(model.SourceEntityType) ? null : model.SourceEntityType.Trim(),
+                SourceEntityId = model.SourceEntityId,
+                RuleCode = string.IsNullOrWhiteSpace(model.RuleCode) ? null : model.RuleCode.Trim(),
+                RuleDescription = string.IsNullOrWhiteSpace(model.RuleDescription) ? null : model.RuleDescription.Trim(),
+                AppliedAmount = model.AppliedAmount,
+                Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim()
+            };
 
-    _dbContext.CreditNotes.Add(entity);
-    await _dbContext.SaveChangesAsync();
-    return entity.Id;
-}
+            _dbContext.ChargeRulesApplied.Add(entity);
+            await _dbContext.SaveChangesAsync();
+            return entity.Id;
+        }
 
-public async Task<bool> UpdateCreditNoteAsync(Guid companyId, CreditNoteEditViewModel model)
-{
-    var entity = await _dbContext.CreditNotes.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.Id && x.BillToCompanyId == companyId);
-    if (entity == null) return false;
+        public async Task<bool> UpdateChargeRuleAppliedAsync(Guid companyId, ChargeRuleAppliedEditViewModel model)
+        {
+            var entity = await _dbContext.ChargeRulesApplied
+                .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.Id && x.Charge.Shipment.CustomerCompanyId == companyId);
 
-    var invoiceExists = await _dbContext.Invoices.AnyAsync(x => !x.IsDeleted && x.Id == model.InvoiceId && x.BillToCompanyId == companyId);
-    if (!invoiceExists) return false;
+            if (entity == null) return false;
 
-    entity.CreditNoteNo = model.CreditNoteNo.Trim();
-    entity.InvoiceId = model.InvoiceId;
-    entity.IssueDateUtc = model.IssueDateUtc;
-    entity.Currency = model.Currency.Trim().ToUpperInvariant();
-    entity.Status = model.Status;
-    entity.NetAmount = model.NetAmount;
-    entity.TaxAmount = model.TaxAmount;
-    entity.TotalAmount = model.TotalAmount;
-    entity.Reason = string.IsNullOrWhiteSpace(model.Reason) ? null : model.Reason.Trim();
-    entity.Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim();
-    entity.UpdatedAtUtc = DateTime.UtcNow;
+            var chargeExists = await _dbContext.Charges.AnyAsync(x => !x.IsDeleted && x.Id == model.ChargeId && x.Shipment.CustomerCompanyId == companyId);
+            if (!chargeExists) return false;
 
-    await _dbContext.SaveChangesAsync();
-    return true;
-}
+            entity.ChargeId = model.ChargeId;
+            entity.SourceEntityType = string.IsNullOrWhiteSpace(model.SourceEntityType) ? null : model.SourceEntityType.Trim();
+            entity.SourceEntityId = model.SourceEntityId;
+            entity.RuleCode = string.IsNullOrWhiteSpace(model.RuleCode) ? null : model.RuleCode.Trim();
+            entity.RuleDescription = string.IsNullOrWhiteSpace(model.RuleDescription) ? null : model.RuleDescription.Trim();
+            entity.AppliedAmount = model.AppliedAmount;
+            entity.Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim();
+            entity.UpdatedAtUtc = DateTime.UtcNow;
 
-public async Task<bool> DeleteCreditNoteAsync(Guid companyId, Guid creditNoteId)
-{
-    var entity = await _dbContext.CreditNotes.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == creditNoteId && x.BillToCompanyId == companyId);
-    if (entity == null) return false;
-    entity.IsDeleted = true;
-    entity.DeletedAtUtc = DateTime.UtcNow;
-    entity.UpdatedAtUtc = DateTime.UtcNow;
-    await _dbContext.SaveChangesAsync();
-    return true;
-}
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
 
-private async Task PopulateChargeOptionsAsync(Guid companyId, ChargeCreateViewModel model)
-{
-    model.ShipmentOptions = await _dbContext.Shipments.AsNoTracking()
-        .Where(x => !x.IsDeleted && x.CustomerCompanyId == companyId)
-        .OrderByDescending(x => x.CreatedAtUtc)
-        .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.ShipmentNo })
-        .ToListAsync();
+        public async Task<bool> DeleteChargeRuleAppliedAsync(Guid companyId, Guid chargeRuleAppliedId)
+        {
+            var entity = await _dbContext.ChargeRulesApplied
+                .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == chargeRuleAppliedId && x.Charge.Shipment.CustomerCompanyId == companyId);
 
-    model.ShipmentLegOptions = await _dbContext.ShipmentLegs.AsNoTracking()
-        .Where(x => !x.IsDeleted && x.Shipment.CustomerCompanyId == companyId)
-        .OrderByDescending(x => x.CreatedAtUtc)
-        .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.LegNo.ToString() })
-        .ToListAsync();
-}
+            if (entity == null) return false;
+            entity.IsDeleted = true;
+            entity.DeletedAtUtc = DateTime.UtcNow;
+            entity.UpdatedAtUtc = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
 
-private async Task PopulateChargeRuleAppliedOptionsAsync(Guid companyId, ChargeRuleAppliedCreateViewModel model)
-{
-    model.ChargeOptions = await _dbContext.Charges.AsNoTracking()
-        .Where(x => !x.IsDeleted && x.Shipment.CustomerCompanyId == companyId)
-        .OrderByDescending(x => x.CreatedAtUtc)
-        .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = $"{x.Shipment.ShipmentNo} | {x.ChargeCode} | {x.Description}" })
-        .ToListAsync();
-}
+        public async Task<InvoiceEditViewModel?> GetInvoiceForEditAsync(Guid companyId, Guid invoiceId)
+        {
+            return await _dbContext.Invoices
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Id == invoiceId && x.BillToCompanyId == companyId)
+                .Select(x => new InvoiceEditViewModel
+                {
+                    Id = x.Id,
+                    InvoiceNo = x.InvoiceNo,
+                    IssueDateUtc = x.IssueDateUtc,
+                    DueDateUtc = x.DueDateUtc,
+                    Currency = x.Currency,
+                    Status = x.Status,
+                    SubtotalAmount = x.SubtotalAmount,
+                    TaxAmount = x.TaxAmount,
+                    TotalAmount = x.TotalAmount,
+                    Notes = x.Notes
+                })
+                .FirstOrDefaultAsync();
+        }
 
-private async Task PopulateInvoiceLineOptionsAsync(Guid companyId, InvoiceLineCreateViewModel model)
-{
-    model.InvoiceOptions = await _dbContext.Invoices.AsNoTracking()
-        .Where(x => !x.IsDeleted && x.BillToCompanyId == companyId)
-        .OrderByDescending(x => x.IssueDateUtc)
-        .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.InvoiceNo })
-        .ToListAsync();
+        public async Task<Guid?> CreateInvoiceAsync(Guid companyId, InvoiceCreateViewModel model)
+        {
+            var entity = new Invoice
+            {
+                InvoiceNo = model.InvoiceNo.Trim(),
+                BillToCompanyId = companyId,
+                IssueDateUtc = model.IssueDateUtc,
+                DueDateUtc = model.DueDateUtc,
+                Currency = model.Currency.Trim().ToUpperInvariant(),
+                Status = model.Status,
+                SubtotalAmount = model.SubtotalAmount,
+                TaxAmount = model.TaxAmount,
+                TotalAmount = model.TotalAmount,
+                Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim()
+            };
 
-    model.ChargeOptions = await _dbContext.Charges.AsNoTracking()
-        .Where(x => !x.IsDeleted && x.Shipment.CustomerCompanyId == companyId)
-        .OrderByDescending(x => x.CreatedAtUtc)
-        .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = $"{x.Shipment.ShipmentNo} | {x.ChargeCode}" })
-        .ToListAsync();
+            _dbContext.Invoices.Add(entity);
+            await _dbContext.SaveChangesAsync();
+            return entity.Id;
+        }
 
-    model.ShipmentOptions = await _dbContext.Shipments.AsNoTracking()
-        .Where(x => !x.IsDeleted && x.CustomerCompanyId == companyId)
-        .OrderByDescending(x => x.CreatedAtUtc)
-        .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.ShipmentNo })
-        .ToListAsync();
-}
+        public async Task<bool> UpdateInvoiceAsync(Guid companyId, InvoiceEditViewModel model)
+        {
+            var entity = await _dbContext.Invoices.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.Id && x.BillToCompanyId == companyId);
+            if (entity == null) return false;
 
-private async Task PopulatePaymentOptionsAsync(Guid companyId, PaymentCreateViewModel model)
-{
-    model.InvoiceOptions = await _dbContext.Invoices.AsNoTracking()
-        .Where(x => !x.IsDeleted && x.BillToCompanyId == companyId)
-        .OrderByDescending(x => x.IssueDateUtc)
-        .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.InvoiceNo })
-        .ToListAsync();
-}
+            entity.InvoiceNo = model.InvoiceNo.Trim();
+            entity.IssueDateUtc = model.IssueDateUtc;
+            entity.DueDateUtc = model.DueDateUtc;
+            entity.Currency = model.Currency.Trim().ToUpperInvariant();
+            entity.Status = model.Status;
+            entity.SubtotalAmount = model.SubtotalAmount;
+            entity.TaxAmount = model.TaxAmount;
+            entity.TotalAmount = model.TotalAmount;
+            entity.Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim();
+            entity.UpdatedAtUtc = DateTime.UtcNow;
 
-private async Task PopulatePaymentAllocationOptionsAsync(Guid companyId, PaymentAllocationCreateViewModel model)
-{
-    model.PaymentOptions = await _dbContext.Payments.AsNoTracking()
-        .Where(x => !x.IsDeleted && x.Invoice.BillToCompanyId == companyId)
-        .OrderByDescending(x => x.PaymentDateUtc)
-        .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = $"{x.Invoice.InvoiceNo} | {x.PaymentDateUtc:dd.MM.yyyy} | {x.Amount:F2} {x.Currency}" })
-        .ToListAsync();
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
 
-    model.InvoiceOptions = await _dbContext.Invoices.AsNoTracking()
-        .Where(x => !x.IsDeleted && x.BillToCompanyId == companyId)
-        .OrderByDescending(x => x.IssueDateUtc)
-        .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.InvoiceNo })
-        .ToListAsync();
-}
+        public async Task<bool> DeleteInvoiceAsync(Guid companyId, Guid invoiceId)
+        {
+            var entity = await _dbContext.Invoices.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == invoiceId && x.BillToCompanyId == companyId);
+            if (entity == null) return false;
+            entity.IsDeleted = true;
+            entity.DeletedAtUtc = DateTime.UtcNow;
+            entity.UpdatedAtUtc = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
 
-private async Task PopulateCreditNoteOptionsAsync(Guid companyId, CreditNoteCreateViewModel model)
-{
-    model.InvoiceOptions = await _dbContext.Invoices.AsNoTracking()
-        .Where(x => !x.IsDeleted && x.BillToCompanyId == companyId)
-        .OrderByDescending(x => x.IssueDateUtc)
-        .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.InvoiceNo })
-        .ToListAsync();
-}
+        public async Task<InvoiceLineCreateViewModel> GetCreateInvoiceLineModelAsync(Guid companyId)
+        {
+            var model = new InvoiceLineCreateViewModel();
+            await PopulateInvoiceLineOptionsAsync(companyId, model);
+            return model;
+        }
 
-#endregion
+        public async Task<InvoiceLineEditViewModel?> GetInvoiceLineForEditAsync(Guid companyId, Guid invoiceLineId)
+        {
+            var item = await _dbContext.InvoiceLines
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Id == invoiceLineId && x.Invoice.BillToCompanyId == companyId)
+                .Select(x => new InvoiceLineEditViewModel
+                {
+                    Id = x.Id,
+                    InvoiceId = x.InvoiceId,
+                    ChargeId = x.ChargeId,
+                    ShipmentId = x.ShipmentId,
+                    LineNo = x.LineNo,
+                    Description = x.Description,
+                    Quantity = x.Quantity,
+                    UnitPrice = x.UnitPrice,
+                    TaxRatePercent = x.TaxRatePercent,
+                    LineNetAmount = x.LineNetAmount,
+                    LineTaxAmount = x.LineTaxAmount,
+                    LineTotalAmount = x.LineTotalAmount
+                })
+                .FirstOrDefaultAsync();
+
+            if (item == null) return null;
+            await PopulateInvoiceLineOptionsAsync(companyId, item);
+            return item;
+        }
+
+        public async Task<Guid?> CreateInvoiceLineAsync(Guid companyId, InvoiceLineCreateViewModel model)
+        {
+            var invoiceExists = await _dbContext.Invoices.AnyAsync(x => !x.IsDeleted && x.Id == model.InvoiceId && x.BillToCompanyId == companyId);
+            if (!invoiceExists) return null;
+
+            if (model.ChargeId.HasValue)
+            {
+                var chargeExists = await _dbContext.Charges.AnyAsync(x => !x.IsDeleted && x.Id == model.ChargeId.Value && x.Shipment.CustomerCompanyId == companyId);
+                if (!chargeExists) return null;
+            }
+
+            if (model.ShipmentId.HasValue)
+            {
+                var shipmentExists = await _dbContext.Shipments.AnyAsync(x => !x.IsDeleted && x.Id == model.ShipmentId.Value && x.CustomerCompanyId == companyId);
+                if (!shipmentExists) return null;
+            }
+
+            var entity = new InvoiceLine
+            {
+                InvoiceId = model.InvoiceId,
+                ChargeId = model.ChargeId,
+                ShipmentId = model.ShipmentId,
+                LineNo = model.LineNo,
+                Description = model.Description.Trim(),
+                Quantity = model.Quantity,
+                UnitPrice = model.UnitPrice,
+                TaxRatePercent = model.TaxRatePercent,
+                LineNetAmount = model.LineNetAmount,
+                LineTaxAmount = model.LineTaxAmount,
+                LineTotalAmount = model.LineTotalAmount
+            };
+
+            _dbContext.InvoiceLines.Add(entity);
+            await _dbContext.SaveChangesAsync();
+            return entity.Id;
+        }
+
+        public async Task<bool> UpdateInvoiceLineAsync(Guid companyId, InvoiceLineEditViewModel model)
+        {
+            var entity = await _dbContext.InvoiceLines
+                .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.Id && x.Invoice.BillToCompanyId == companyId);
+            if (entity == null) return false;
+
+            var invoiceExists = await _dbContext.Invoices.AnyAsync(x => !x.IsDeleted && x.Id == model.InvoiceId && x.BillToCompanyId == companyId);
+            if (!invoiceExists) return false;
+
+            if (model.ChargeId.HasValue)
+            {
+                var chargeExists = await _dbContext.Charges.AnyAsync(x => !x.IsDeleted && x.Id == model.ChargeId.Value && x.Shipment.CustomerCompanyId == companyId);
+                if (!chargeExists) return false;
+            }
+
+            if (model.ShipmentId.HasValue)
+            {
+                var shipmentExists = await _dbContext.Shipments.AnyAsync(x => !x.IsDeleted && x.Id == model.ShipmentId.Value && x.CustomerCompanyId == companyId);
+                if (!shipmentExists) return false;
+            }
+
+            entity.InvoiceId = model.InvoiceId;
+            entity.ChargeId = model.ChargeId;
+            entity.ShipmentId = model.ShipmentId;
+            entity.LineNo = model.LineNo;
+            entity.Description = model.Description.Trim();
+            entity.Quantity = model.Quantity;
+            entity.UnitPrice = model.UnitPrice;
+            entity.TaxRatePercent = model.TaxRatePercent;
+            entity.LineNetAmount = model.LineNetAmount;
+            entity.LineTaxAmount = model.LineTaxAmount;
+            entity.LineTotalAmount = model.LineTotalAmount;
+            entity.UpdatedAtUtc = DateTime.UtcNow;
+
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteInvoiceLineAsync(Guid companyId, Guid invoiceLineId)
+        {
+            var entity = await _dbContext.InvoiceLines
+                .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == invoiceLineId && x.Invoice.BillToCompanyId == companyId);
+            if (entity == null) return false;
+            entity.IsDeleted = true;
+            entity.DeletedAtUtc = DateTime.UtcNow;
+            entity.UpdatedAtUtc = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<PaymentCreateViewModel> GetCreatePaymentModelAsync(Guid companyId)
+        {
+            var model = new PaymentCreateViewModel();
+            await PopulatePaymentOptionsAsync(companyId, model);
+            return model;
+        }
+
+        public async Task<PaymentEditViewModel?> GetPaymentForEditAsync(Guid companyId, Guid paymentId)
+        {
+            var item = await _dbContext.Payments
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Id == paymentId && x.Invoice.BillToCompanyId == companyId)
+                .Select(x => new PaymentEditViewModel
+                {
+                    Id = x.Id,
+                    InvoiceId = x.InvoiceId,
+                    PaymentDateUtc = x.PaymentDateUtc,
+                    Amount = x.Amount,
+                    Currency = x.Currency,
+                    PaymentMethod = x.PaymentMethod,
+                    Status = x.Status,
+                    TransactionReference = x.TransactionReference,
+                    Notes = x.Notes
+                })
+                .FirstOrDefaultAsync();
+
+            if (item == null) return null;
+            await PopulatePaymentOptionsAsync(companyId, item);
+            return item;
+        }
+
+        public async Task<Guid?> CreatePaymentAsync(Guid companyId, PaymentCreateViewModel model)
+        {
+            var invoiceExists = await _dbContext.Invoices.AnyAsync(x => !x.IsDeleted && x.Id == model.InvoiceId && x.BillToCompanyId == companyId);
+            if (!invoiceExists) return null;
+
+            var entity = new Payment
+            {
+                InvoiceId = model.InvoiceId,
+                PaymentDateUtc = model.PaymentDateUtc,
+                Amount = model.Amount,
+                Currency = model.Currency.Trim().ToUpperInvariant(),
+                PaymentMethod = model.PaymentMethod,
+                Status = model.Status,
+                TransactionReference = string.IsNullOrWhiteSpace(model.TransactionReference) ? null : model.TransactionReference.Trim(),
+                Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim()
+            };
+
+            _dbContext.Payments.Add(entity);
+            await _dbContext.SaveChangesAsync();
+            return entity.Id;
+        }
+
+        public async Task<bool> UpdatePaymentAsync(Guid companyId, PaymentEditViewModel model)
+        {
+            var entity = await _dbContext.Payments
+                .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.Id && x.Invoice.BillToCompanyId == companyId);
+            if (entity == null) return false;
+
+            var invoiceExists = await _dbContext.Invoices.AnyAsync(x => !x.IsDeleted && x.Id == model.InvoiceId && x.BillToCompanyId == companyId);
+            if (!invoiceExists) return false;
+
+            entity.InvoiceId = model.InvoiceId;
+            entity.PaymentDateUtc = model.PaymentDateUtc;
+            entity.Amount = model.Amount;
+            entity.Currency = model.Currency.Trim().ToUpperInvariant();
+            entity.PaymentMethod = model.PaymentMethod;
+            entity.Status = model.Status;
+            entity.TransactionReference = string.IsNullOrWhiteSpace(model.TransactionReference) ? null : model.TransactionReference.Trim();
+            entity.Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim();
+            entity.UpdatedAtUtc = DateTime.UtcNow;
+
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeletePaymentAsync(Guid companyId, Guid paymentId)
+        {
+            var entity = await _dbContext.Payments
+                .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == paymentId && x.Invoice.BillToCompanyId == companyId);
+            if (entity == null) return false;
+            entity.IsDeleted = true;
+            entity.DeletedAtUtc = DateTime.UtcNow;
+            entity.UpdatedAtUtc = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<PaymentAllocationCreateViewModel> GetCreatePaymentAllocationModelAsync(Guid companyId)
+        {
+            var model = new PaymentAllocationCreateViewModel();
+            await PopulatePaymentAllocationOptionsAsync(companyId, model);
+            return model;
+        }
+
+        public async Task<PaymentAllocationEditViewModel?> GetPaymentAllocationForEditAsync(Guid companyId, Guid paymentAllocationId)
+        {
+            var item = await _dbContext.PaymentAllocations
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Id == paymentAllocationId && x.Invoice.BillToCompanyId == companyId && x.Payment.Invoice.BillToCompanyId == companyId)
+                .Select(x => new PaymentAllocationEditViewModel
+                {
+                    Id = x.Id,
+                    PaymentId = x.PaymentId,
+                    InvoiceId = x.InvoiceId,
+                    AllocatedAmount = x.AllocatedAmount,
+                    AllocatedAtUtc = x.AllocatedAtUtc,
+                    Notes = x.Notes
+                })
+                .FirstOrDefaultAsync();
+
+            if (item == null) return null;
+            await PopulatePaymentAllocationOptionsAsync(companyId, item);
+            return item;
+        }
+
+        public async Task<Guid?> CreatePaymentAllocationAsync(Guid companyId, PaymentAllocationCreateViewModel model)
+        {
+            var paymentExists = await _dbContext.Payments.AnyAsync(x => !x.IsDeleted && x.Id == model.PaymentId && x.Invoice.BillToCompanyId == companyId);
+            var invoiceExists = await _dbContext.Invoices.AnyAsync(x => !x.IsDeleted && x.Id == model.InvoiceId && x.BillToCompanyId == companyId);
+            if (!paymentExists || !invoiceExists) return null;
+
+            var entity = new PaymentAllocation
+            {
+                PaymentId = model.PaymentId,
+                InvoiceId = model.InvoiceId,
+                AllocatedAmount = model.AllocatedAmount,
+                AllocatedAtUtc = model.AllocatedAtUtc,
+                Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim()
+            };
+
+            _dbContext.PaymentAllocations.Add(entity);
+            await _dbContext.SaveChangesAsync();
+            return entity.Id;
+        }
+
+        public async Task<bool> UpdatePaymentAllocationAsync(Guid companyId, PaymentAllocationEditViewModel model)
+        {
+            var entity = await _dbContext.PaymentAllocations
+                .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.Id && x.Invoice.BillToCompanyId == companyId && x.Payment.Invoice.BillToCompanyId == companyId);
+            if (entity == null) return false;
+
+            var paymentExists = await _dbContext.Payments.AnyAsync(x => !x.IsDeleted && x.Id == model.PaymentId && x.Invoice.BillToCompanyId == companyId);
+            var invoiceExists = await _dbContext.Invoices.AnyAsync(x => !x.IsDeleted && x.Id == model.InvoiceId && x.BillToCompanyId == companyId);
+            if (!paymentExists || !invoiceExists) return false;
+
+            entity.PaymentId = model.PaymentId;
+            entity.InvoiceId = model.InvoiceId;
+            entity.AllocatedAmount = model.AllocatedAmount;
+            entity.AllocatedAtUtc = model.AllocatedAtUtc;
+            entity.Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim();
+            entity.UpdatedAtUtc = DateTime.UtcNow;
+
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeletePaymentAllocationAsync(Guid companyId, Guid paymentAllocationId)
+        {
+            var entity = await _dbContext.PaymentAllocations
+                .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == paymentAllocationId && x.Invoice.BillToCompanyId == companyId && x.Payment.Invoice.BillToCompanyId == companyId);
+            if (entity == null) return false;
+            entity.IsDeleted = true;
+            entity.DeletedAtUtc = DateTime.UtcNow;
+            entity.UpdatedAtUtc = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<CreditNoteCreateViewModel> GetCreateCreditNoteModelAsync(Guid companyId)
+        {
+            var model = new CreditNoteCreateViewModel();
+            await PopulateCreditNoteOptionsAsync(companyId, model);
+            return model;
+        }
+
+        public async Task<CreditNoteEditViewModel?> GetCreditNoteForEditAsync(Guid companyId, Guid creditNoteId)
+        {
+            var item = await _dbContext.CreditNotes
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Id == creditNoteId && x.BillToCompanyId == companyId)
+                .Select(x => new CreditNoteEditViewModel
+                {
+                    Id = x.Id,
+                    CreditNoteNo = x.CreditNoteNo,
+                    InvoiceId = x.InvoiceId,
+                    IssueDateUtc = x.IssueDateUtc,
+                    Currency = x.Currency,
+                    Status = x.Status,
+                    NetAmount = x.NetAmount,
+                    TaxAmount = x.TaxAmount,
+                    TotalAmount = x.TotalAmount,
+                    Reason = x.Reason,
+                    Notes = x.Notes
+                })
+                .FirstOrDefaultAsync();
+
+            if (item == null) return null;
+            await PopulateCreditNoteOptionsAsync(companyId, item);
+            return item;
+        }
+
+        public async Task<Guid?> CreateCreditNoteAsync(Guid companyId, CreditNoteCreateViewModel model)
+        {
+            var invoiceExists = await _dbContext.Invoices.AnyAsync(x => !x.IsDeleted && x.Id == model.InvoiceId && x.BillToCompanyId == companyId);
+            if (!invoiceExists) return null;
+
+            var entity = new CreditNote
+            {
+                CreditNoteNo = model.CreditNoteNo.Trim(),
+                InvoiceId = model.InvoiceId,
+                BillToCompanyId = companyId,
+                IssueDateUtc = model.IssueDateUtc,
+                Currency = model.Currency.Trim().ToUpperInvariant(),
+                Status = model.Status,
+                NetAmount = model.NetAmount,
+                TaxAmount = model.TaxAmount,
+                TotalAmount = model.TotalAmount,
+                Reason = string.IsNullOrWhiteSpace(model.Reason) ? null : model.Reason.Trim(),
+                Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim()
+            };
+
+            _dbContext.CreditNotes.Add(entity);
+            await _dbContext.SaveChangesAsync();
+            return entity.Id;
+        }
+
+        public async Task<bool> UpdateCreditNoteAsync(Guid companyId, CreditNoteEditViewModel model)
+        {
+            var entity = await _dbContext.CreditNotes.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.Id && x.BillToCompanyId == companyId);
+            if (entity == null) return false;
+
+            var invoiceExists = await _dbContext.Invoices.AnyAsync(x => !x.IsDeleted && x.Id == model.InvoiceId && x.BillToCompanyId == companyId);
+            if (!invoiceExists) return false;
+
+            entity.CreditNoteNo = model.CreditNoteNo.Trim();
+            entity.InvoiceId = model.InvoiceId;
+            entity.IssueDateUtc = model.IssueDateUtc;
+            entity.Currency = model.Currency.Trim().ToUpperInvariant();
+            entity.Status = model.Status;
+            entity.NetAmount = model.NetAmount;
+            entity.TaxAmount = model.TaxAmount;
+            entity.TotalAmount = model.TotalAmount;
+            entity.Reason = string.IsNullOrWhiteSpace(model.Reason) ? null : model.Reason.Trim();
+            entity.Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim();
+            entity.UpdatedAtUtc = DateTime.UtcNow;
+
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteCreditNoteAsync(Guid companyId, Guid creditNoteId)
+        {
+            var entity = await _dbContext.CreditNotes.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == creditNoteId && x.BillToCompanyId == companyId);
+            if (entity == null) return false;
+            entity.IsDeleted = true;
+            entity.DeletedAtUtc = DateTime.UtcNow;
+            entity.UpdatedAtUtc = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        private async Task PopulateChargeOptionsAsync(Guid companyId, ChargeCreateViewModel model)
+        {
+            model.ShipmentOptions = await _dbContext.Shipments.AsNoTracking()
+                .Where(x => !x.IsDeleted && x.CustomerCompanyId == companyId)
+                .OrderByDescending(x => x.CreatedAtUtc)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.ShipmentNo })
+                .ToListAsync();
+
+            model.ShipmentLegOptions = await _dbContext.ShipmentLegs.AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Shipment.CustomerCompanyId == companyId)
+                .OrderByDescending(x => x.CreatedAtUtc)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.LegNo.ToString() })
+                .ToListAsync();
+        }
+
+        private async Task PopulateChargeRuleAppliedOptionsAsync(Guid companyId, ChargeRuleAppliedCreateViewModel model)
+        {
+            model.ChargeOptions = await _dbContext.Charges.AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Shipment.CustomerCompanyId == companyId)
+                .OrderByDescending(x => x.CreatedAtUtc)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = $"{x.Shipment.ShipmentNo} | {x.ChargeCode} | {x.Description}" })
+                .ToListAsync();
+        }
+
+        private async Task PopulateInvoiceLineOptionsAsync(Guid companyId, InvoiceLineCreateViewModel model)
+        {
+            model.InvoiceOptions = await _dbContext.Invoices.AsNoTracking()
+                .Where(x => !x.IsDeleted && x.BillToCompanyId == companyId)
+                .OrderByDescending(x => x.IssueDateUtc)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.InvoiceNo })
+                .ToListAsync();
+
+            model.ChargeOptions = await _dbContext.Charges.AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Shipment.CustomerCompanyId == companyId)
+                .OrderByDescending(x => x.CreatedAtUtc)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = $"{x.Shipment.ShipmentNo} | {x.ChargeCode}" })
+                .ToListAsync();
+
+            model.ShipmentOptions = await _dbContext.Shipments.AsNoTracking()
+                .Where(x => !x.IsDeleted && x.CustomerCompanyId == companyId)
+                .OrderByDescending(x => x.CreatedAtUtc)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.ShipmentNo })
+                .ToListAsync();
+        }
+
+        private async Task PopulatePaymentOptionsAsync(Guid companyId, PaymentCreateViewModel model)
+        {
+            model.InvoiceOptions = await _dbContext.Invoices.AsNoTracking()
+                .Where(x => !x.IsDeleted && x.BillToCompanyId == companyId)
+                .OrderByDescending(x => x.IssueDateUtc)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.InvoiceNo })
+                .ToListAsync();
+        }
+
+        private async Task PopulatePaymentAllocationOptionsAsync(Guid companyId, PaymentAllocationCreateViewModel model)
+        {
+            model.PaymentOptions = await _dbContext.Payments.AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Invoice.BillToCompanyId == companyId)
+                .OrderByDescending(x => x.PaymentDateUtc)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = $"{x.Invoice.InvoiceNo} | {x.PaymentDateUtc:dd.MM.yyyy} | {x.Amount:F2} {x.Currency}" })
+                .ToListAsync();
+
+            model.InvoiceOptions = await _dbContext.Invoices.AsNoTracking()
+                .Where(x => !x.IsDeleted && x.BillToCompanyId == companyId)
+                .OrderByDescending(x => x.IssueDateUtc)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.InvoiceNo })
+                .ToListAsync();
+        }
+
+        private async Task PopulateCreditNoteOptionsAsync(Guid companyId, CreditNoteCreateViewModel model)
+        {
+            model.InvoiceOptions = await _dbContext.Invoices.AsNoTracking()
+                .Where(x => !x.IsDeleted && x.BillToCompanyId == companyId)
+                .OrderByDescending(x => x.IssueDateUtc)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.InvoiceNo })
+                .ToListAsync();
+        }
+
+        #endregion
 
         //Status History
 

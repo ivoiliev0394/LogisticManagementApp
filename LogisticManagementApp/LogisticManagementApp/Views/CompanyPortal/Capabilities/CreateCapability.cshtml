@@ -1,0 +1,84 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Capabilities.CompanyCapabilityCreateViewModel
+@using LogisticManagementApp.Domain.Enums.Companies
+
+@{
+    ViewData["Title"] = "Добави capability";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card">
+            <div class="card-body p-4">
+
+                <div class="mb-4">
+                    <span class="badge bg-success mb-2">Нов запис</span>
+                    <h2 class="h4 mb-1">Добави възможност</h2>
+                    <p class="text-muted mb-0">Създаване на нова capability за фирмата.</p>
+                </div>
+
+                <form asp-action="CreateCapability" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="CapabilityType" class="form-label">Тип</label>
+                        <select asp-for="CapabilityType"
+                                asp-items="Html.GetEnumSelectList<CompanyCapabilityType>()"
+                                class="form-select">
+                        </select>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input asp-for="IsEnabled" class="form-check-input" />
+                        <label asp-for="IsEnabled" class="form-check-label">Активна</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ValidFromUtc" class="form-label">Валидна от</label>
+                        <input asp-for="ValidFromUtc" class="form-control js-datetime" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ValidToUtc" class="form-label">Валидна до</label>
+                        <input asp-for="ValidToUtc" class="form-control js-datetime" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Notes" class="form-label">Бележки</label>
+                        <textarea asp-for="Notes" class="form-control"></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">Запази</button>
+                        <a asp-action="Capabilities" class="btn btn-outline-light">Отказ</a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            flatpickr(".js-datetime", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                time_24hr: true,
+                appendTo: document.body,
+                position: "auto",
+                monthSelectorType: "static"
+            });
+        });
+    </script>
+}

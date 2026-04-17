@@ -1,0 +1,100 @@
+@model LogisticManagementApp.Models.CompanyPortal.Assets.Air.FlightSegmentCreateViewModel
+
+@{
+    ViewData["Title"] = "Нов flight segment";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+
+                <h2 class="h4 mb-3">Нов flight segment</h2>
+
+                <form asp-action="CreateFlightSegment" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-4">
+                            <label asp-for="FlightId" class="form-label">Flight</label>
+                            <select asp-for="FlightId"
+                                    asp-items="Model.FlightOptions"
+                                    class="form-select">
+                                <option value="">-- Избери --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="SegmentNo" class="form-label"></label>
+                            <input asp-for="SegmentNo" class="form-control" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="OriginLocationId" class="form-label">Origin</label>
+                            <select asp-for="OriginLocationId"
+                                    asp-items="Model.LocationOptions"
+                                    class="form-select">
+                                <option value="">-- Избери --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="DestinationLocationId" class="form-label">Destination</label>
+                            <select asp-for="DestinationLocationId"
+                                    asp-items="Model.LocationOptions"
+                                    class="form-select">
+                                <option value="">-- Избери --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ScheduledDepartureUtc" class="form-label"></label>
+                            <input asp-for="ScheduledDepartureUtc" type="datetime-local" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ScheduledArrivalUtc" class="form-label"></label>
+                            <input asp-for="ScheduledArrivalUtc" type="datetime-local" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ActualDepartureUtc" class="form-label"></label>
+                            <input asp-for="ActualDepartureUtc" type="datetime-local" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ActualArrivalUtc" class="form-label"></label>
+                            <input asp-for="ActualArrivalUtc" type="datetime-local" class="form-control" />
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button class="btn btn-success" type="submit">Запази</button>
+                        <a asp-action="FlightSegments" class="btn btn-outline-light">Назад</a>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

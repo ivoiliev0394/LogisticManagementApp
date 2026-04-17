@@ -1,0 +1,311 @@
+﻿@{
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+
+    string GetNavClass(params string[] actions)
+    {
+        return actions.Contains(action)
+            ? "btn btn-success w-100 text-start"
+            : "btn btn-outline-light w-100 text-start";
+    }
+}
+
+<div class="card company-sidebar">
+    <div class="card-body p-3 company-sidebar-body">
+        <div class="mb-3">
+            <div class="fw-bold text-muted">Навигация</div>
+            <div class="fw-semibold text-muted">Управление на фирмата</div>
+        </div>
+
+        <div class="d-grid gap-2">
+
+            <a asp-controller="Company"
+                   asp-action="Profile"
+                   class="@GetNavClass("Profile", "EditProfile")">
+                Моята фирма
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="Branches"
+                   class="@GetNavClass("Branches", "CreateBranch", "EditBranch")">
+                Клонове
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="Contacts"
+                   class="@GetNavClass("Contacts", "CreateContact", "EditContact")">
+                Контакти
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="Capabilities"
+                   class="@GetNavClass("Capabilities", "CreateCapability", "EditCapability")">
+                Възможности
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="Orders"
+                   class="@GetNavClass("Orders", "OrderDetails", "CreateOrder", "EditOrder", "CreateOrderLine", "EditOrderLine")">
+                Поръчки
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="Shipments"
+                   class="@GetNavClass("Shipments", "ShipmentDetails")">
+                Shipments
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="Operations"
+                   class="@GetNavClass(
+                                                  "Operations",
+                                                  "Notifications", "CreateNotification", "EditNotification",
+                                                  "NotificationSubscriptions", "CreateNotificationSubscription", "EditNotificationSubscription",
+                                                  "AuditLogs",
+                                                  "SavedFilters", "CreateSavedFilter", "EditSavedFilter",
+                                                  "CompanyDashboardConfigs", "CreateCompanyDashboardConfig", "EditCompanyDashboardConfig",
+                                                  "Bookings", "CreateBooking", "EditBooking",
+                                                  "BookingLegs", "CreateBookingLeg", "EditBookingLeg",
+                                                  "Consolidations",
+                                                  "ConsolidationShipments", "CreateConsolidationShipment", "EditConsolidationShipment",
+                                                  "ResourceCalendars", "CreateResourceCalendar", "EditResourceCalendar",
+                                                  "ResourceAvailabilities", "CreateResourceAvailability", "EditResourceAvailability",
+                                                  "CapacityReservations", "CreateCapacityReservation", "EditCapacityReservation",
+                                                  "Assignments", "CreateAssignment", "EditAssignment",
+                                                  "UtilizationSnapshots"
+                                              )">
+                Operations
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="RouteManagement"
+                   class="@GetNavClass(
+                                                  "RouteManagement", "Routes", "CreateRoute", "EditRoute",
+                                                  "RouteStops", "CreateRouteStop", "EditRouteStop",
+                                                  "RoutePlans", "CreateRoutePlan", "EditRoutePlan",
+                                                  "RoutePlanStops", "CreateRoutePlanStop", "EditRoutePlanStop",
+                                                  "RoutePlanShipments", "CreateRoutePlanShipment", "EditRoutePlanShipment"
+                                              )">
+                Routes
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="SharedLocations"
+                   class="@GetNavClass("SharedLocations", "Addresses", "Locations", "Warehouses", "Terminals", "Docks")">
+                Shared / Locations
+            </a>
+
+            <div class="mt-3 pt-2 border-top">
+                <div class="small fw-bold text-muted text-uppercase mb-2">Assets</div>
+            </div>
+
+            <a asp-controller="Company"
+                   asp-action="Assets"
+                   class="@GetNavClass(
+                                                  "Assets", "SeaAssets", "RoadAssets", "AirAssets", "RailAssets", "CargoUnitAssets",
+                                                  "Vessels", "CreateVessel", "EditVessel",
+                                                  "VesselPositions", "CreateVesselPosition", "EditVesselPosition",
+                                                  "Voyages", "CreateVoyage", "EditVoyage",
+                                                  "VoyageStops", "CreateVoyageStop", "EditVoyageStop",
+                                                  "VesselCrewMembers", "CreateVesselCrewMember", "EditVesselCrewMember",
+                                                  "CrewAssignments", "CreateCrewAssignment", "EditCrewAssignment",
+                                                  "Vehicles", "CreateVehicle", "EditVehicle",
+                                                  "Drivers", "CreateDriver", "EditDriver",
+                                                  "Trips", "CreateTrip", "EditTrip",
+                                                  "TripStops", "CreateTripStop", "EditTripStop",
+                                                  "TripShipments", "CreateTripShipment", "EditTripShipment",
+                                                  "Aircraft", "CreateAircraft", "EditAircraft",
+                                                  "Flights", "CreateFlight", "EditFlight",
+                                                  "FlightSegments", "CreateFlightSegment", "EditFlightSegment",
+                                                  "AirCrewMembers", "CreateAirCrewMember", "EditAirCrewMember",
+                                                  "AirCrewAssignments", "CreateAirCrewAssignment", "EditAirCrewAssignment",
+                                                  "ULDs", "CreateULD", "EditULD",
+                                                  "Trains", "CreateTrain", "EditTrain",
+                                                  "RailCars", "CreateRailCar", "EditRailCar",
+                                                  "RailServices", "CreateRailService", "EditRailService",
+                                                  "RailMovements", "CreateRailMovement", "EditRailMovement",
+                                                  "Containers", "CreateContainer", "EditContainer",
+                                                  "ContainerSeals", "CreateContainerSeal", "EditContainerSeal"
+                                              )">
+                Assets
+            </a>
+
+            <div class="mt-3 pt-2 border-top">
+                <div class="small fw-bold text-muted text-uppercase mb-2">Pricing</div>
+            </div>
+
+            <a asp-controller="Company"
+                   asp-action="ServiceLevels"
+                   class="@GetNavClass("ServiceLevels")">
+                Service Levels
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="GeoZones"
+                   class="@GetNavClass("GeoZones")">
+                Geo Zones
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="ZoneRules"
+                   class="@GetNavClass("ZoneRules")">
+                Zone Rules
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="Tariffs"
+                   class="@GetNavClass("Tariffs")">
+                Tariffs
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="TariffRates"
+                   class="@GetNavClass("TariffRates")">
+                Tariff Rates
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="Surcharges"
+                   class="@GetNavClass("Surcharges")">
+                Surcharges
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="TariffSurcharges"
+                   class="@GetNavClass("TariffSurcharges")">
+                Tariff Surcharges
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="Agreements"
+                   class="@GetNavClass("Agreements")">
+                Agreements
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="DiscountRules"
+                   class="@GetNavClass("DiscountRules")">
+                Discount Rules
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="PricingQuotes"
+                   class="@GetNavClass("PricingQuotes")">
+                Pricing Quotes
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="PricingQuoteLines"
+                   class="@GetNavClass("PricingQuoteLines")">
+                Pricing Quote Lines
+            </a>
+
+            <div class="mt-3 pt-2 border-top">
+                <div class="small fw-bold text-muted text-uppercase mb-2">Billing / Finance</div>
+            </div>
+
+            <a asp-controller="Company"
+                   asp-action="Charges"
+                   class="@GetNavClass("Charges", "CreateCharge", "EditCharge")">
+                Charges
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="ChargeRulesApplied"
+                   class="@GetNavClass("ChargeRulesApplied", "CreateChargeRuleApplied", "EditChargeRuleApplied")">
+                Charge Rules Applied
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="Invoices"
+                   class="@GetNavClass("Invoices", "CreateInvoice", "EditInvoice")">
+                Invoices
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="InvoiceLines"
+                   class="@GetNavClass("InvoiceLines", "CreateInvoiceLine", "EditInvoiceLine")">
+                Invoice Lines
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="Payments"
+                   class="@GetNavClass("Payments", "CreatePayment", "EditPayment")">
+                Payments
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="PaymentAllocations"
+                   class="@GetNavClass("PaymentAllocations", "CreatePaymentAllocation", "EditPaymentAllocation")">
+                Payment Allocations
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="CreditNotes"
+                   class="@GetNavClass("CreditNotes", "CreateCreditNote", "EditCreditNote")">
+                Credit Notes
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="TaxRates"
+                   class="@GetNavClass("TaxRates")">
+                Tax Rates
+            </a>
+
+            <div class="mt-3 pt-2 border-top">
+                <div class="small fw-bold text-muted text-uppercase mb-2">Documents</div>
+            </div>
+
+            <a asp-controller="Company"
+                   asp-action="FileResources"
+                   class="@GetNavClass("FileResources")">
+                File Resources
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="Documents"
+                   class="@GetNavClass("Documents", "CreateDocument", "EditDocument")">
+                Documents
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="DocumentVersions"
+                   class="@GetNavClass("DocumentVersions", "CreateDocumentVersion", "EditDocumentVersion")">
+                Document Versions
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="DocumentTemplates"
+                   class="@GetNavClass("DocumentTemplates", "CreateDocumentTemplate", "EditDocumentTemplate")">
+                Document Templates
+            </a>
+
+            <div class="mt-3 pt-2 border-top">
+                <div class="small fw-bold text-muted text-uppercase mb-2">Compliance / Shipment Documents</div>
+            </div>
+
+            <a asp-controller="Company"
+                   asp-action="DangerousGoodsDeclarations"
+                   class="@GetNavClass("DangerousGoodsDeclarations", "CreateDangerousGoodsDeclaration", "EditDangerousGoodsDeclaration")">
+                DG Declarations
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="TemperatureRequirements"
+                   class="@GetNavClass("TemperatureRequirements", "CreateTemperatureRequirement", "EditTemperatureRequirement")">
+                Temperature Requirements
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="ComplianceChecks"
+                   class="@GetNavClass("ComplianceChecks", "CreateComplianceCheck", "EditComplianceCheck")">
+                Compliance Checks
+            </a>
+
+            <a asp-controller="Company"
+                   asp-action="DGDocuments"
+                   class="@GetNavClass("DGDocuments", "CreateDGDocument", "EditDGDocument")">
+                DG Documents
+            </a>
+        </div>
+    </div>
+</div>

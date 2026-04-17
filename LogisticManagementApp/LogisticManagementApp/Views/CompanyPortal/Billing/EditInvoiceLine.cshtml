@@ -1,0 +1,114 @@
+@model LogisticManagementApp.Models.CompanyPortal.Billing.InvoiceLineEditViewModel
+
+@{
+    ViewData["Title"] = "Редакция на invoice line";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+
+                <h2 class="h4 mb-3">Редакция на invoice line</h2>
+
+                <form asp-action="EditInvoiceLine" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <input asp-for="Id" type="hidden" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label asp-for="InvoiceId" class="form-label"></label>
+                            <select asp-for="InvoiceId"
+                                    asp-items="Model.InvoiceOptions"
+                                    class="form-select">
+                                <option value="">Избери invoice</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="ChargeId" class="form-label"></label>
+                            <select asp-for="ChargeId"
+                                    asp-items="Model.ChargeOptions"
+                                    class="form-select">
+                                <option value="">Без charge</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="ShipmentId" class="form-label"></label>
+                            <select asp-for="ShipmentId"
+                                    asp-items="Model.ShipmentOptions"
+                                    class="form-select">
+                                <option value="">Без shipment</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="LineNo" class="form-label"></label>
+                            <input asp-for="LineNo" class="form-control" />
+                        </div>
+
+                        <div class="col-md-9">
+                            <label asp-for="Description" class="form-label"></label>
+                            <input asp-for="Description" class="form-control" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="Quantity" class="form-label"></label>
+                            <input asp-for="Quantity" class="form-control" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="UnitPrice" class="form-label"></label>
+                            <input asp-for="UnitPrice" class="form-control" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="TaxRatePercent" class="form-label"></label>
+                            <input asp-for="TaxRatePercent" class="form-control" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="LineNetAmount" class="form-label"></label>
+                            <input asp-for="LineNetAmount" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="LineTaxAmount" class="form-label"></label>
+                            <input asp-for="LineTaxAmount" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="LineTotalAmount" class="form-label"></label>
+                            <input asp-for="LineTotalAmount" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button class="btn btn-success" type="submit">
+                            Запази
+                        </button>
+
+                        <a asp-action="InvoiceLines" class="btn btn-outline-light">
+                            Назад
+                        </a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

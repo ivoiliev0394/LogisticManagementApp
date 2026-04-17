@@ -1,0 +1,97 @@
+@model LogisticManagementApp.Models.CompanyPortal.Assets.Road.TripShipmentEditViewModel
+
+@{
+    ViewData["Title"] = "Редакция на trip shipment";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="h4 mb-3">Редакция на trip shipment</h2>
+
+                <form asp-action="EditTripShipment" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <input asp-for="Id" type="hidden" />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="TripId" class="form-label">Trip</label>
+                            <select asp-for="TripId"
+                                    asp-items="Model.TripOptions"
+                                    class="form-select">
+                                <option value="">-- Избери --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ShipmentId" class="form-label">Shipment</label>
+                            <select asp-for="ShipmentId"
+                                    asp-items="Model.ShipmentOptions"
+                                    class="form-select">
+                                <option value="">-- Избери --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="ShipmentLegId" class="form-label">Shipment leg</label>
+                            <select asp-for="ShipmentLegId"
+                                    asp-items="Model.ShipmentLegOptions"
+                                    class="form-select">
+                                <option value="">-- Няма --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="PickupTripStopId" class="form-label">Pickup stop</label>
+                            <select asp-for="PickupTripStopId"
+                                    asp-items="Model.TripStopOptions"
+                                    class="form-select">
+                                <option value="">-- Няма --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="DeliveryTripStopId" class="form-label">Delivery stop</label>
+                            <select asp-for="DeliveryTripStopId"
+                                    asp-items="Model.TripStopOptions"
+                                    class="form-select">
+                                <option value="">-- Няма --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Priority" class="form-label"></label>
+                            <input asp-for="Priority" class="form-control" />
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes"
+                                      class="form-control"
+                                      rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button class="btn btn-success" type="submit">Запази</button>
+                        <a asp-action="TripShipments" class="btn btn-outline-light">Назад</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

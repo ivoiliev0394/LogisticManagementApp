@@ -1,6 +1,8 @@
 ﻿using LogisticManagementApp.Applicationn.Interfaces.ClientPortal;
+using LogisticManagementApp.Domain.Identity;
 using LogisticManagementApp.Models.ClientPortal;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -11,19 +13,27 @@ namespace LogisticManagementApp.Controllers
     {
         private readonly IClientPortalService _clientPortalService;
         private readonly IClientAddressService _clientAddressService;
-
+        private readonly UserManager<ApplicationUser> _userManager;
         public ClientPortalController(
             IClientPortalService clientPortalService,
-            IClientAddressService clientAddressService)
+            IClientAddressService clientAddressService,
+            UserManager<ApplicationUser> userManager)
         {
             _clientPortalService = clientPortalService;
             _clientAddressService = clientAddressService;
+            _userManager = userManager;
+        }
+
+        private async Task<string?> GetCurrentUserIdAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            return user?.Id;
         }
 
         [HttpGet]
         public async Task<IActionResult> Dashboard()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = await GetCurrentUserIdAsync();
 
             if (string.IsNullOrWhiteSpace(userId))
             {
@@ -37,7 +47,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> MyOrders()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = await GetCurrentUserIdAsync();
 
             if (string.IsNullOrWhiteSpace(userId))
             {
@@ -51,7 +61,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> MyShipments()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = await GetCurrentUserIdAsync();
 
             if (string.IsNullOrWhiteSpace(userId))
             {
@@ -65,7 +75,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> MyAddresses()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = await GetCurrentUserIdAsync();
 
             if (string.IsNullOrWhiteSpace(userId))
             {
@@ -86,7 +96,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAddress(ClientAddressFormViewModel model)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = await GetCurrentUserIdAsync();
 
             if (string.IsNullOrWhiteSpace(userId))
             {
@@ -105,7 +115,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditAddress(Guid id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = await GetCurrentUserIdAsync();
 
             if (string.IsNullOrWhiteSpace(userId))
             {
@@ -126,7 +136,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAddress(ClientAddressFormViewModel model)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = await GetCurrentUserIdAsync();
 
             if (string.IsNullOrWhiteSpace(userId))
             {
@@ -152,7 +162,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteAddress(Guid id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = await GetCurrentUserIdAsync();
 
             if (string.IsNullOrWhiteSpace(userId))
             {
@@ -173,7 +183,7 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SetDefaultAddress(Guid id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = await GetCurrentUserIdAsync();
 
             if (string.IsNullOrWhiteSpace(userId))
             {
@@ -193,7 +203,7 @@ namespace LogisticManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> TrackShipment(Guid shipmentId)
         {
-            var clientUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var clientUserId = await GetCurrentUserIdAsync();
 
             if (string.IsNullOrWhiteSpace(clientUserId))
             {

@@ -1,0 +1,68 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Contacts.CompanyContactCreateViewModel
+
+@{
+    ViewData["Title"] = "Създаване на контакт";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <h2 class="h4 mb-1">Създаване на контакт</h2>
+                    <p class="text-muted mb-0">Добавете ново контактно лице към фирмата.</p>
+                </div>
+
+                <form asp-action="CreateContact" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label">Име и фамилия</label>
+                        <input asp-for="FullName" class="form-control" />
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Имейл</label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Phone" class="form-label">Телефон</label>
+                        <input asp-for="Phone" class="form-control" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="RoleTitle" class="form-label">Длъжност</label>
+                        <input asp-for="RoleTitle" class="form-control" />
+                        <span asp-validation-for="RoleTitle" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input asp-for="IsPrimary" class="form-check-input" />
+                        <label asp-for="IsPrimary" class="form-check-label">Основен контакт</label>
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2">
+                        <button type="submit" class="btn btn-success">Запази</button>
+                        <a asp-action="Contacts" class="btn btn-outline-light">Назад</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

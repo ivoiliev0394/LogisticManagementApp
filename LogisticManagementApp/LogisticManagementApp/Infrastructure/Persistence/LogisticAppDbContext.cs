@@ -168,8 +168,9 @@ namespace LogisticManagementApp.Infrastructure.Persistence
         public DbSet<RoutePlanShipment> RoutePlanShipments { get; set; }
 
 
-        // Identity
+
         public DbSet<UserSession> UserSessions { get; set; }
+
 
 
         override protected void OnModelCreating(ModelBuilder modelBuilder)

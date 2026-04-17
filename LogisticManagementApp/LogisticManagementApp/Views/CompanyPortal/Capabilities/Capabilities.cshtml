@@ -1,0 +1,89 @@
+﻿@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Capabilities.CompanyCapabilityListItemViewModel>
+
+@{
+    ViewData["Title"] = "Capabilities";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div>
+                        <h2 class="h4 mb-1">Capabilities</h2>
+                        <p class="text-muted mb-0">Управлявайте услугите и възможностите на фирмата.</p>
+                    </div>
+
+                    <a asp-action="CreateCapability" class="btn btn-primary">
+                        Добави capability
+                    </a>
+                </div>
+
+                <partial name="_StatusMessage" />
+
+                @if (!Model.Any())
+                {
+                    <div class="alert alert-info mb-0">
+                        Все още няма добавени capabilities.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive" data-table-pagination-wrapper>
+                        <table class="table align-middle mb-0" data-table-pagination="true" data-page-size="5">
+                            <thead>
+                                <tr>
+                                    <th>Тип</th>
+                                    <th>Активен</th>
+                                    <th>Валиден от</th>
+                                    <th>Валиден до</th>
+                                    <th>Бележки</th>
+                                    <th class="text-end">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var capability in Model)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@capability.CapabilityType</td>
+                                        <td>@(capability.IsEnabled ? "Да" : "Не")</td>
+                                        <td>@(capability.ValidFromUtc?.ToString("dd.MM.yyyy HH:mm") ?? "-")</td>
+                                        <td>@(capability.ValidToUtc?.ToString("dd.MM.yyyy HH:mm") ?? "-")</td>
+                                        <td>@(string.IsNullOrWhiteSpace(capability.Notes) ? "-" : capability.Notes)</td>
+                                        <td class="text-end">
+                                            <div class="d-flex flex-column flex-md-row gap-2 justify-content-md-end">
+                                                <a asp-action="EditCapability"
+                                                       asp-route-id="@capability.Id"
+                                                       class="btn btn-sm btn-warning">
+                                                    Редакция
+                                                </a>
+
+                                                <form asp-action="DeleteCapability"
+                                                      asp-route-id="@capability.Id"
+                                                      method="post"
+                                                      class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-danger"
+                                                            onclick="return confirm('Сигурни ли сте, че искате да изтриете тази възможност?');">
+                                                        Изтриване
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

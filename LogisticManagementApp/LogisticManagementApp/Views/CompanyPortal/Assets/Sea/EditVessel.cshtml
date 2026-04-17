@@ -1,0 +1,95 @@
+@model LogisticManagementApp.Models.CompanyPortal.Assets.Sea.VesselEditViewModel
+
+@{
+    ViewData["Title"] = "Редакция на vessel";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="h4 mb-3">Редакция на vessel</h2>
+
+                <form asp-action="EditVessel" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <input asp-for="Id" type="hidden" />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="ImoNumber" class="form-label"></label>
+                            <input asp-for="ImoNumber" class="form-control" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="MmsiNumber" class="form-label"></label>
+                            <input asp-for="MmsiNumber" class="form-control" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="VesselType" class="form-label"></label>
+                            <select asp-for="VesselType"
+                                    asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Assets.VesselType>()"
+                                    class="form-select"></select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Status" class="form-label"></label>
+                            <select asp-for="Status"
+                                    asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Assets.AssetStatus>()"
+                                    class="form-select"></select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="CapacityTeu" class="form-label"></label>
+                            <input asp-for="CapacityTeu" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="DeadweightTons" class="form-label"></label>
+                            <input asp-for="DeadweightTons" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-check mt-4 pt-2">
+                                <input asp-for="IsActive" class="form-check-input" />
+                                <label asp-for="IsActive" class="form-check-label">
+                                    Активен
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes"
+                                      class="form-control"
+                                      rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button class="btn btn-success" type="submit">Запази</button>
+                        <a asp-action="Vessels" class="btn btn-outline-light">Назад</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

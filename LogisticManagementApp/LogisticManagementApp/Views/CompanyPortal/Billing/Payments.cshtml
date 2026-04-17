@@ -1,0 +1,124 @@
+@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Billing.PaymentListItemViewModel>
+
+@{
+    ViewData["Title"] = "Payments";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div>
+                        <h2 class="h4 mb-1">Payments</h2>
+                        <p class="text-muted mb-0">
+                            Плащания по company invoices.
+                        </p>
+                    </div>
+
+                    <a asp-action="CreatePayment" class="btn btn-success">
+                        Ново payment
+                    </a>
+                </div>
+
+                <partial name="_StatusMessage" />
+
+                @if (!Model.Any())
+                {
+                    <div class="alert alert-info mb-0">
+                        Няма налични записи.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive" data-table-pagination-wrapper>
+                        <table class="table align-middle mb-0"
+                               data-table-pagination="true"
+                               data-page-size="10">
+
+                            <thead>
+                                <tr>
+                                    <th>Invoice</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Currency</th>
+                                    <th>Method</th>
+                                    <th>Status</th>
+                                    <th>Reference</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">
+                                            @item.InvoiceNo
+                                        </td>
+
+                                        <td>
+                                            @item.PaymentDateUtc.ToString("dd.MM.yyyy HH:mm")
+                                        </td>
+
+                                        <td>
+                                            @item.Amount.ToString("F2")
+                                        </td>
+
+                                        <td>
+                                            @item.Currency
+                                        </td>
+
+                                        <td>
+                                            @item.PaymentMethod
+                                        </td>
+
+                                        <td>
+                                            @item.Status
+                                        </td>
+
+                                        <td>
+                                            @(item.TransactionReference ?? "-")
+                                        </td>
+
+                                        <td class="text-end">
+                                            <div class="d-flex gap-2 justify-content-end">
+                                                <a asp-action="EditPayment"
+                                                       asp-route-id="@item.Id"
+                                                       class="btn btn-sm btn-outline-light">
+                                                    Редакция
+                                                </a>
+
+                                                <form asp-action="DeletePayment"
+                                                      method="post"
+                                                      class="d-inline">
+                                                    @Html.AntiForgeryToken()
+
+                                                    <input type="hidden" name="id" value="@item.Id" />
+
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-outline-danger">
+                                                        Изтрий
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
