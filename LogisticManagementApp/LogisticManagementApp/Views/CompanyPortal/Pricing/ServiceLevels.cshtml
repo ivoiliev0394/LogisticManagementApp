@@ -1,0 +1,86 @@
+@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Pricing.ServiceLevelListItemViewModel>
+
+@{
+    ViewData["Title"] = "Service Levels";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div>
+                        <h2 class="h4 mb-1">Service Levels</h2>
+                        <p class="text-muted mb-0">
+                            Преглед на наличните service levels в системата.
+                        </p>
+                    </div>
+                </div>
+
+                <partial name="_StatusMessage" />
+
+                @if (!Model.Any())
+                {
+                    <div class="alert alert-info mb-0">
+                        Няма налични записи.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive" data-table-pagination-wrapper>
+                        <table class="table align-middle mb-0"
+                               data-table-pagination="true"
+                               data-page-size="10">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Transport</th>
+                                    <th>Max kg</th>
+                                    <th>Transit days</th>
+                                    <th>Active</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">
+                                            @item.Code
+                                        </td>
+
+                                        <td>@item.Name</td>
+
+                                        <td>@item.ServiceLevelType</td>
+
+                                        <td>@item.TransportMode</td>
+
+                                        <td>
+                                            @(item.MaxWeightKg?.ToString("0.##") ?? "-")
+                                        </td>
+
+                                        <td>
+                                            @(item.EstimatedTransitDays?.ToString() ?? "-")
+                                        </td>
+
+                                        <td>
+                                            @(item.IsActive ? "Да" : "Не")
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

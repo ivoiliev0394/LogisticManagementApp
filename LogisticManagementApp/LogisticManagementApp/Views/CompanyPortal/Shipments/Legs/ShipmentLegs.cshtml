@@ -1,0 +1,108 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Shipments.Legs.CompanyShipmentLegsViewModel
+
+@{
+    ViewData["Title"] = "Shipment Legs";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                    <div>
+                        <h2 class="h4 mb-1">Shipment Legs</h2>
+                        <p class="text-muted mb-0">@Model.ShipmentNo</p>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        @if (Model.CanManageLegs)
+                        {
+                            <a asp-action="CreateShipmentLeg"
+                                   asp-route-shipmentId="@Model.ShipmentId"
+                                   class="btn btn-primary">
+                                Добави leg
+                            </a>
+                        }
+
+                        <a asp-action="ShipmentDetails"
+                               asp-route-id="@Model.ShipmentId"
+                               class="btn btn-outline-light">
+                            Назад към shipment
+                        </a>
+                    </div>
+                </div>
+
+                @if (Model.Legs.Any())
+                {
+                    <div class="table-responsive" data-table-pagination-wrapper>
+                        <table class="table align-middle" data-table-pagination="true" data-page-size="5">
+                            <thead>
+                                <tr>
+                                    <th>Leg</th>
+                                    <th>Mode</th>
+                                    <th>Route</th>
+                                    <th>Status</th>
+                                    <th>Schedule</th>
+                                    <th>Carrier Ref</th>
+                                    <th class="text-end">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Legs)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">Leg #@item.LegNo</div>
+                                            <div class="small text-muted">History: @item.StatusHistoryCount</div>
+                                        </td>
+                                        <td>@item.Mode</td>
+                                        <td>
+                                            <div>@item.OriginLocation</div>
+                                            <div class="small text-muted">→ @item.DestinationLocation</div>
+                                        </td>
+                                        <td>
+                                            <span class="status-badge status-inprogress">@item.Status</span>
+                                        </td>
+                                        <td>
+                                            <div class="small">ETD: @(item.ETD_Utc?.ToString("dd.MM.yyyy HH:mm") ?? "-")</div>
+                                            <div class="small">ETA: @(item.ETA_Utc?.ToString("dd.MM.yyyy HH:mm") ?? "-")</div>
+                                        </td>
+                                        <td>@(item.CarrierReference ?? "-")</td>
+                                        <td class="text-end">
+                                            <div class="d-flex justify-content-end flex-wrap gap-2">
+                                                <a asp-action="ShipmentLegDetails"
+                                                       asp-route-id="@item.Id"
+                                                       class="btn btn-sm btn-outline-light">
+                                                    Детайли
+                                                </a>
+
+                                                @if (Model.CanManageLegs)
+                                                {
+                                                    <a asp-action="EditShipmentLeg"
+                                                           asp-route-id="@item.Id"
+                                                           class="btn btn-sm btn-outline-light">
+                                                        Редакция
+                                                    </a>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-muted">Няма добавени shipment legs.</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

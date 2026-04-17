@@ -1,0 +1,125 @@
+@model LogisticManagementApp.Models.CompanyPortal.Routes.RoutePlanStopCreateViewModel
+
+@{
+    ViewData["Title"] = "Нов route plan stop";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="h4 mb-3">Нов route plan stop</h2>
+
+                <form asp-action="CreateRoutePlanStop" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="RoutePlanId" class="form-label"></label>
+                            <select asp-for="RoutePlanId"
+                                    asp-items="Model.RoutePlanOptions"
+                                    class="form-select">
+                                <option value="">Избери route plan</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="RouteStopId" class="form-label"></label>
+                            <select asp-for="RouteStopId"
+                                    asp-items="Model.RouteStopOptions"
+                                    class="form-select">
+                                <option value="">Без linked route stop</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="LocationId" class="form-label"></label>
+                            <select asp-for="LocationId"
+                                    asp-items="Model.LocationOptions"
+                                    class="form-select">
+                                <option value="">Избери location</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="SequenceNo" class="form-label"></label>
+                            <input asp-for="SequenceNo"
+                                   type="number"
+                                   min="1"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="StopType" class="form-label"></label>
+                            <select asp-for="StopType"
+                                    asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Routes.RouteStopType>()"
+                                    class="form-select">
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="PlannedArrivalUtc" class="form-label"></label>
+                            <input asp-for="PlannedArrivalUtc"
+                                   type="datetime-local"
+                                   step="60"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="PlannedDepartureUtc" class="form-label"></label>
+                            <input asp-for="PlannedDepartureUtc"
+                                   type="datetime-local"
+                                   step="60"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ActualArrivalUtc" class="form-label"></label>
+                            <input asp-for="ActualArrivalUtc"
+                                   type="datetime-local"
+                                   step="60"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ActualDepartureUtc" class="form-label"></label>
+                            <input asp-for="ActualDepartureUtc"
+                                   type="datetime-local"
+                                   step="60"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes"
+                                      class="form-control"
+                                      rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button class="btn btn-success" type="submit">
+                            Запази
+                        </button>
+
+                        <a asp-action="RoutePlanStops" class="btn btn-outline-light">
+                            Назад
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

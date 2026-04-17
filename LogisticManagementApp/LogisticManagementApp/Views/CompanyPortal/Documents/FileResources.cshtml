@@ -1,0 +1,65 @@
+﻿@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Documents.FileResourceListItemViewModel>
+
+@{
+    ViewData["Title"] = "File Resources";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h2 class="h4 mb-1">File Resources</h2>
+                        <p class="text-muted mb-0">Read-only списък с качените файлови ресурси.</p>
+                    </div>
+                </div>
+
+                @if (Model == null || !Model.Any())
+                {
+                    <div class="alert alert-info mb-0">
+                        Няма налични file resources.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Име на файл</th>
+                                    <th>Content Type</th>
+                                    <th>Размер</th>
+                                    <th>Storage Key</th>
+                                    <th>Качен на</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.FileName</td>
+                                        <td>@item.ContentType</td>
+                                        <td>@item.SizeBytes</td>
+                                        <td>@item.StorageKey</td>
+                                        <td>@item.UploadedAtUtc.ToString("dd.MM.yyyy HH:mm")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                <div class="mt-4">
+                    <a asp-action="Documents" class="btn btn-outline-light">Към Documents</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

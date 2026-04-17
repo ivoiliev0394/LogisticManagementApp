@@ -1,0 +1,93 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Shipments.CompanyShipmentsViewModel
+
+@{
+    ViewData["Title"] = "Shipments";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                    <div>
+                        <h2 class="h4 mb-1">Shipments</h2>
+                        <p class="text-muted mb-0">Всички shipment-и, до които фирмата има достъп.</p>
+                    </div>
+
+                    <a asp-action="CreateShipment" class="btn btn-primary">
+                        Нов shipment
+                    </a>
+                </div>
+
+                @if (Model.Shipments.Any())
+                {
+                    <div class="table-responsive" data-table-pagination-wrapper>
+                        <table class="table align-middle" data-table-pagination="true" data-page-size="5">
+                            <thead>
+                                <tr>
+                                    <th>Shipment</th>
+                                    <th>Order</th>
+                                    <th>Status</th>
+                                    <th>Mode</th>
+                                    <th>Pickup</th>
+                                    <th>Delivery</th>
+                                    <th>Summary</th>
+                                    <th class="text-end">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Shipments)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">@item.ShipmentNo</div>
+                                            <div class="small text-muted">Ref: @(item.CustomerReference ?? "-")</div>
+                                        </td>
+                                        <td>@(item.OrderNo ?? "-")</td>
+                                        <td>
+                                            <span class="status-badge status-inprogress">@item.Status</span>
+                                        </td>
+                                        <td>@item.PrimaryMode</td>
+                                        <td>@(item.PickupAddress ?? "-")</td>
+                                        <td>@(item.DeliveryAddress ?? "-")</td>
+                                        <td>
+                                            <div class="small">Legs: @item.LegsCount</div>
+                                            <div class="small">Tracking: @item.TrackingEventsCount</div>
+                                            <div class="small">Packages: @item.PackagesCount</div>
+                                            <div class="small">Cargo: @item.CargoItemsCount</div>
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="d-flex flex-wrap justify-content-end gap-2">
+                                                <a asp-action="ShipmentDetails"
+                                                       asp-route-id="@item.Id"
+                                                       class="btn btn-sm btn-outline-light">
+                                                    Детайли
+                                                </a>
+
+                                                <a asp-action="EditShipment"
+                                                       asp-route-id="@item.Id"
+                                                       class="btn btn-sm btn-outline-light">
+                                                    Редакция
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-muted">Няма shipment-и за тази фирма.</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

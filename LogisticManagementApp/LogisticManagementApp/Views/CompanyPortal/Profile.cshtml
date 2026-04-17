@@ -1,0 +1,104 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.CompanyProfileViewModel
+
+@{
+    ViewData["Title"] = "Моята фирма";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card text-muted">
+            <div class="card-body p-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div>
+                        <span class="badge bg-success mb-2">Профил</span>
+                        <h2 class="h4 mb-1">Моята фирма</h2>
+                        <p class="text-muted mb-0">
+                            Преглед и редакция на основната фирмена информация.
+                        </p>
+                    </div>
+
+                    <a asp-action="EditProfile" class="btn btn-primary">
+                        Редактирай профила
+                    </a>
+                </div>
+
+                <partial name="_StatusMessage" />
+
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <div class="stat-card h-100">
+                            <div class="small text-muted mb-1">Име на фирма</div>
+                            <div class="fw-semibold">@Model.Name</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="stat-card h-100">
+                            <div class="small text-muted mb-1">Булстат / VAT</div>
+                            <div class="fw-semibold">
+                                @(string.IsNullOrWhiteSpace(Model.TaxNumber) ? "-" : Model.TaxNumber)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="stat-card h-100">
+                            <div class="small text-muted mb-1">Тип компания</div>
+                            <div class="fw-semibold">@Model.CompanyType</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="stat-card h-100">
+                            <div class="small text-muted mb-1">Статус</div>
+                            <div class="fw-semibold">
+                                @if (Model.IsActive)
+                                {
+                                    <span class="badge bg-success">Активна</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Неактивна</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="stat-card">
+                            <div class="small text-muted mb-1">Уебсайт</div>
+                            <div class="fw-semibold">
+                                @(string.IsNullOrWhiteSpace(Model.Website) ? "-" : Model.Website)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="stat-card">
+                            <div class="small text-muted mb-1">Бележки</div>
+                            <div class="fw-semibold">
+                                @(string.IsNullOrWhiteSpace(Model.Notes) ? "-" : Model.Notes)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex flex-column flex-sm-row gap-2">
+                    <a asp-action="EditProfile" class="btn btn-primary">
+                        Промени данните
+                    </a>
+
+                    <a asp-action="Branches" class="btn btn-outline-light">
+                        Виж клоновете
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

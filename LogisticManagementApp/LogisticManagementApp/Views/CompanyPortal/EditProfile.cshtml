@@ -1,0 +1,73 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.EditCompanyProfileViewModel
+@using LogisticManagementApp.Domain.Enums.Companies
+
+@{
+    ViewData["Title"] = "Редакция на фирма";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <h2 class="h4 mb-1">Редакция на фирма</h2>
+                    <p class="text-muted mb-0">Променете основната информация за вашата фирма.</p>
+                </div>
+
+                <form asp-action="EditProfile" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Име</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TaxNumber" class="form-label">Булстат / VAT</label>
+                        <input asp-for="TaxNumber" class="form-control" />
+                        <span asp-validation-for="TaxNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CompanyType" class="form-label">Тип</label>
+                        <select asp-for="CompanyType"
+                                asp-items="Html.GetEnumSelectList<CompanyType>()"
+                                class="form-select">
+                        </select>
+                        <span asp-validation-for="CompanyType" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Website" class="form-label">Уебсайт</label>
+                        <input asp-for="Website" class="form-control" />
+                        <span asp-validation-for="Website" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Notes" class="form-label">Бележки</label>
+                        <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2">
+                        <button type="submit" class="btn btn-success">Запази</button>
+                        <a asp-action="Profile" class="btn btn-outline-light">Назад</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

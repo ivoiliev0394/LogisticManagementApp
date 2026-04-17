@@ -1,0 +1,269 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Shipments.CompanyShipmentDetailsViewModel
+
+@{
+    ViewData["Title"] = "Shipment Details";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card company-details-card">
+            <div class="card-body p-4 p-xxl-5">
+                <div class="d-flex flex-wrap gap-2">
+
+                    <a asp-action="ShipmentStatusHistory"
+                           asp-route-shipmentId="@Model.Id"
+                           class="btn btn-outline-light btn-sm">
+                        Status History
+                    </a>
+
+                    <a asp-action="ShipmentParties"
+                           asp-route-shipmentId="@Model.Id"
+                           class="btn btn-outline-light btn-sm">
+                        Parties
+                    </a>
+
+                    <a asp-action="ShipmentLegs"
+                           asp-route-shipmentId="@Model.Id"
+                           class="btn btn-outline-light btn-sm">
+                        Legs
+                    </a>
+
+                    <a asp-action="TrackingEvents"
+                           asp-route-shipmentId="@Model.Id"
+                           class="btn btn-outline-light btn-sm">
+                        Tracking Events
+                    </a>
+                    
+                    <a asp-action="ProofOfDeliveries"
+                           asp-route-shipmentId="@Model.Id"
+                           class="btn btn-outline-light btn-sm">
+                        Proof Of Deliveries
+                    </a>
+
+                    <a asp-action="Packages"
+                           asp-route-shipmentId="@Model.Id"
+                           class="btn btn-outline-light btn-sm">
+                        Packages
+                    </a>
+
+                    <a asp-action="CargoItems"
+                           asp-route-shipmentId="@Model.Id"
+                           class="btn btn-outline-light btn-sm">
+                        Cargo Items
+                    </a>
+
+                    <a asp-action="ShipmentReferences"
+                           asp-route-shipmentId="@Model.Id"
+                           class="btn btn-outline-light btn-sm">
+                        References
+                    </a>
+
+                    <a asp-action="ShipmentTags"
+                           asp-route-shipmentId="@Model.Id"
+                           class="btn btn-outline-light btn-sm">
+                        Tags
+                    </a>
+
+                    <a asp-action="ShipmentVoyages"
+                           asp-route-shipmentId="@Model.Id"
+                           class="btn btn-outline-light btn-sm">
+                        Voyages
+                    </a>
+
+                    <a asp-action="ShipmentTrips"
+                           asp-route-shipmentId="@Model.Id"
+                           class="btn btn-outline-light btn-sm">
+                        Trips
+                    </a>
+
+                    <a asp-action="ShipmentContainers"
+                           asp-route-shipmentId="@Model.Id"
+                           class="btn btn-outline-light btn-sm">
+                        Containers
+                    </a>
+
+                    <a asp-action="ShipmentUlds"
+                           asp-route-shipmentId="@Model.Id"
+                           class="btn btn-outline-light btn-sm">
+                        ULDs
+                    </a>
+
+                </div>
+                <br />
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                    <div>
+                        <span class="badge bg-success mb-2">Shipment</span>
+                        <h1 class="h3 mb-1">@Model.ShipmentNo</h1>
+                        <p class="text-muted mb-0">Order: @(Model.OrderNo ?? "-")</p>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <a asp-action="EditShipment" asp-route-id="@Model.Id" class="btn btn-outline-light">
+                            Редакция
+                        </a>
+
+                        <form asp-action="DeleteShipment" asp-route-id="@Model.Id" method="post"
+                              onsubmit="return confirm('Сигурен ли си, че искаш да изтриеш този shipment?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-outline-light">Изтрий</button>
+                        </form>
+
+                        <a asp-action="Shipments" class="btn btn-outline-light">Назад</a>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="small text-muted">Статус</div>
+                            <div class="details-value">@Model.Status</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="small text-muted">Mode</div>
+                            <div class="details-value">@Model.PrimaryMode</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="small text-muted">Incoterm</div>
+                            <div class="details-value">@(Model.Incoterm ?? "-")</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="small text-muted">Declared value</div>
+                            <div class="details-value">
+                                @(Model.DeclaredValue?.ToString("0.##") ?? "-") @(Model.Currency ?? "")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card company-inner-card mb-4">
+                    <div class="card-body p-4">
+                        <h3 class="h5 mb-3">Основна информация</h3>
+
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <div class="small text-muted">Sender address</div>
+                                <div class="details-value">@(Model.SenderAddress ?? "-")</div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="small text-muted">Receiver address</div>
+                                <div class="details-value">@(Model.ReceiverAddress ?? "-")</div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="small text-muted">Customer reference</div>
+                                <div class="details-value">@(Model.CustomerReference ?? "-")</div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="small text-muted">Order</div>
+                                <div class="details-value">@(Model.OrderNo ?? "-")</div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="small text-muted">Бележки</div>
+                                <div class="details-value">@(Model.Notes ?? "-")</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model.CanEditStatus)
+                {
+                    <div class="card company-inner-card mb-4">
+                        <div class="card-body p-4">
+                            <h3 class="h5 mb-3">Смяна на shipment status</h3>
+
+                            <form asp-action="UpdateShipmentStatus" asp-route-id="@Model.Id" method="post">
+                                @Html.AntiForgeryToken()
+
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Нов статус</label>
+                                        <select name="newStatus" class="form-select">
+                                            <option>Draft</option>
+                                            <option>Created</option>
+                                            <option>Booked</option>
+                                            <option>ReadyForPickup</option>
+                                            <option>PickedUp</option>
+                                            <option>InTransit</option>
+                                            <option>ArrivedAtHub</option>
+                                            <option>OutForDelivery</option>
+                                            <option>Delivered</option>
+                                            <option>Exception</option>
+                                            <option>Cancelled</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Причина</label>
+                                        <input name="reason"
+                                               class="form-control"
+                                               placeholder="Пример: Updated by company operations team" />
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-success w-100">Запази</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                }
+
+                <div class="card company-inner-card mb-4" id="status-history">
+                    <div class="card-body p-4">
+                        <h3 class="h5 mb-3">Shipment Status History</h3>
+
+                        @if (Model.StatusHistories.Any())
+                        {
+                            <div class="company-timeline">
+                                @foreach (var item in Model.StatusHistories)
+                                {
+                                    <div class="company-timeline-item">
+                                        <div class="company-timeline-dot"></div>
+                                        <div class="company-timeline-content">
+                                            <div class="status-history-transition mb-1">
+                                                <span class="status-badge status-draft">@item.OldStatus</span>
+                                                <span class="status-history-arrow">→</span>
+                                                <span class="status-badge status-inprogress">@item.NewStatus</span>
+                                            </div>
+
+                                            <div class="small text-muted mb-1">
+                                                @item.ChangedAtUtc.ToString("dd.MM.yyyy HH:mm")
+                                            </div>
+
+                                            <div class="status-history-reason">
+                                                @(string.IsNullOrWhiteSpace(item.Reason) ? "-" : item.Reason)
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-muted">Няма записана история на статусите.</div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

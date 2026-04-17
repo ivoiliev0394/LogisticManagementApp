@@ -1,0 +1,72 @@
+﻿@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Operations.AuditLogListItemViewModel>
+
+@{
+    ViewData["Title"] = "Audit Logs";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                    <div>
+                        <h2 class="h4 mb-1">Audit Logs</h2>
+                        <p class="text-muted mb-0">
+                            Read-only следа от действия.
+                        </p>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <a asp-action="Operations" class="btn btn-outline-light">
+                            Към Operations
+                        </a>
+                    </div>
+                </div>
+
+                @if (Model.Any())
+                {
+                    <div class="table-responsive" data-table-pagination-wrapper>
+                        <table class="table align-middle"
+                               data-table-pagination="true"
+                               data-page-size="5">
+                            <thead>
+                                <tr>
+                                    <th>Action</th>
+                                    <th>Entity</th>
+                                    <th>User</th>
+                                    <th>At</th>
+                                    <th>IP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.ActionType</td>
+                                        <td>
+                                            <div class="fw-semibold">@item.EntityType</div>
+                                            <div class="small text-muted">@item.EntityId</div>
+                                        </td>
+                                        <td>@(item.UserName ?? "-")</td>
+                                        <td>@item.ActionAtUtc.ToString("yyyy-MM-dd HH:mm")</td>
+                                        <td>@(item.IpAddress ?? "-")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-muted">Няма записи.</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

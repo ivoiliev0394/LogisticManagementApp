@@ -1,0 +1,186 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Shipments.Legs.CompanyShipmentLegDetailsViewModel
+@using LogisticManagementApp.Domain.Enums.Shipments
+
+@{
+    ViewData["Title"] = "Shipment Leg Details";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card company-details-card">
+            <div class="card-body p-4 p-xxl-5">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                    <div>
+                        <span class="badge bg-success mb-2">Shipment Leg</span>
+                        <h1 class="h3 mb-1">Leg #@Model.LegNo</h1>
+                        <p class="text-muted mb-0">@Model.ShipmentNo</p>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        @if (Model.CanManageLeg)
+                        {
+                            <a asp-action="EditShipmentLeg" asp-route-id="@Model.Id" class="btn btn-outline-light">
+                                Редакция
+                            </a>
+
+                            <form asp-action="DeleteShipmentLeg"
+                                  asp-route-id="@Model.Id"
+                                  asp-route-shipmentId="@Model.ShipmentId"
+                                  method="post"
+                                  onsubmit="return confirm('Сигурен ли си, че искаш да изтриеш този shipment leg?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-outline-light">Изтрий</button>
+                            </form>
+                        }
+
+                        <a asp-action="ShipmentLegs" asp-route-shipmentId="@Model.ShipmentId" class="btn btn-outline-light">
+                            Назад
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="small text-muted">Status</div>
+                            <div class="details-value">@Model.Status</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="small text-muted">Mode</div>
+                            <div class="details-value">@Model.Mode</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="small text-muted">Origin</div>
+                            <div class="details-value">@Model.OriginLocation</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="small text-muted">Destination</div>
+                            <div class="details-value">@Model.DestinationLocation</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card company-inner-card mb-4">
+                    <div class="card-body p-4">
+                        <h3 class="h5 mb-3">Schedule & execution</h3>
+
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <div class="small text-muted">ETD UTC</div>
+                                <div class="details-value">@(Model.ETD_Utc?.ToString("dd.MM.yyyy HH:mm") ?? "-")</div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="small text-muted">ETA UTC</div>
+                                <div class="details-value">@(Model.ETA_Utc?.ToString("dd.MM.yyyy HH:mm") ?? "-")</div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="small text-muted">ATD UTC</div>
+                                <div class="details-value">@(Model.ATD_Utc?.ToString("dd.MM.yyyy HH:mm") ?? "-")</div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="small text-muted">ATA UTC</div>
+                                <div class="details-value">@(Model.ATA_Utc?.ToString("dd.MM.yyyy HH:mm") ?? "-")</div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="small text-muted">Carrier reference</div>
+                                <div class="details-value">@(Model.CarrierReference ?? "-")</div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="small text-muted">Notes</div>
+                                <div class="details-value">@(Model.Notes ?? "-")</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model.CanManageLeg)
+                {
+                    <div class="card company-inner-card mb-4">
+                        <div class="card-body p-4">
+                            <h3 class="h5 mb-3">Смяна на leg status</h3>
+
+                            <form asp-action="UpdateShipmentLegStatus" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="ShipmentId" value="@Model.ShipmentId" />
+                                <input type="hidden" name="ShipmentLegId" value="@Model.Id" />
+
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Нов статус</label>
+                                        <select name="NewStatus" asp-items="Html.GetEnumSelectList<LegStatus>()" class="form-select"></select>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Причина</label>
+                                        <input name="Reason" class="form-control" placeholder="Updated by company operations team" />
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-success w-100">Запази</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                }
+
+                <div class="card company-inner-card" id="leg-status-history">
+                    <div class="card-body p-4">
+                        <h3 class="h5 mb-3">Leg Status History</h3>
+
+                        @if (Model.StatusHistories.Any())
+                        {
+                            <div class="company-timeline">
+                                @foreach (var item in Model.StatusHistories)
+                                {
+                                    <div class="company-timeline-item">
+                                        <div class="company-timeline-dot"></div>
+                                        <div class="company-timeline-content">
+                                            <div class="status-history-transition mb-1">
+                                                <span class="status-badge status-draft">@item.OldStatus</span>
+                                                <span class="status-history-arrow">→</span>
+                                                <span class="status-badge status-inprogress">@item.NewStatus</span>
+                                            </div>
+
+                                            <div class="small text-muted mb-1">
+                                                @item.ChangedAtUtc.ToString("dd.MM.yyyy HH:mm")
+                                            </div>
+
+                                            <div class="status-history-reason">
+                                                @(string.IsNullOrWhiteSpace(item.Reason) ? "-" : item.Reason)
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-muted">Няма записана history за този leg.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

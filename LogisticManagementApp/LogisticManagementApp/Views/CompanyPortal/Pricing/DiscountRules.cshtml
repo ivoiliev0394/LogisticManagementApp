@@ -1,0 +1,131 @@
+@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Pricing.DiscountRuleListItemViewModel>
+
+@{
+    ViewData["Title"] = "Discount Rules";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div>
+                        <h2 class="h4 mb-1">Discount Rules</h2>
+                        <p class="text-muted mb-0">
+                            Отстъпки по договор, service level и зона за текущата компания.
+                        </p>
+                    </div>
+
+                    <a asp-action="CreateDiscountRule" class="btn btn-success">
+                        Нов discount rule
+                    </a>
+                </div>
+
+                <partial name="_StatusMessage" />
+
+                @if (!Model.Any())
+                {
+                    <div class="alert alert-info mb-0">
+                        Няма налични записи.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive" data-table-pagination-wrapper>
+                        <table class="table align-middle mb-0"
+                               data-table-pagination="true"
+                               data-page-size="10">
+                            <thead>
+                                <tr>
+                                    <th>Agreement</th>
+                                    <th>Service Level</th>
+                                    <th>Geo Zone</th>
+                                    <th>Type</th>
+                                    <th>Value</th>
+                                    <th>Min shipment</th>
+                                    <th>Max shipment</th>
+                                    <th>Valid</th>
+                                    <th>Active</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">
+                                            @item.AgreementNumber
+                                        </td>
+
+                                        <td>
+                                            @(item.ServiceLevelCode ?? "-")
+                                        </td>
+
+                                        <td>
+                                            @(item.GeoZoneCode ?? "-")
+                                        </td>
+
+                                        <td>
+                                            @item.DiscountType
+                                        </td>
+
+                                        <td>
+                                            @item.Value.ToString("0.00")
+                                        </td>
+
+                                        <td>
+                                            @(item.MinShipmentValue?.ToString("0.00") ?? "-")
+                                        </td>
+
+                                        <td>
+                                            @(item.MaxShipmentValue?.ToString("0.00") ?? "-")
+                                        </td>
+
+                                        <td>
+                                            @(item.ValidFromUtc?.ToString("dd.MM.yyyy") ?? "-")
+                                            -
+                                            @(item.ValidToUtc?.ToString("dd.MM.yyyy") ?? "-")
+                                        </td>
+
+                                        <td>
+                                            @(item.IsActive ? "Да" : "Не")
+                                        </td>
+
+                                        <td class="text-end">
+                                            <div class="d-flex gap-2 justify-content-end">
+                                                <a asp-action="EditDiscountRule"
+                                                       asp-route-id="@item.Id"
+                                                       class="btn btn-sm btn-outline-light">
+                                                    Редакция
+                                                </a>
+
+                                                <form asp-action="DeleteDiscountRule"
+                                                      method="post"
+                                                      class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="id" value="@item.Id" />
+
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-outline-danger">
+                                                        Изтрий
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

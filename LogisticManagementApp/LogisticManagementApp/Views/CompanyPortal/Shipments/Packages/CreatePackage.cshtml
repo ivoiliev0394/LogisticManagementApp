@@ -1,0 +1,84 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Shipments.Packages.CompanyPackageCreateViewModel
+@using LogisticManagementApp.Domain.Enums.Shipments
+
+@{
+    ViewData["Title"] = "Нов Package";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <h2 class="h4 mb-1">Нов Package</h2>
+                    <p class="text-muted mb-0">@Model.ShipmentNo</p>
+                </div>
+
+                <form asp-action="CreatePackage" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="ShipmentId" type="hidden" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label asp-for="PackageNo" class="form-label"></label>
+                            <input asp-for="PackageNo" class="form-control" placeholder="PKG-0001" />
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="PackageType" class="form-label"></label>
+                            <select asp-for="PackageType" class="form-select"
+                                    asp-items="Html.GetEnumSelectList<PackageType>()"></select>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="WeightKg" class="form-label"></label>
+                            <input asp-for="WeightKg" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="VolumeCbm" class="form-label"></label>
+                            <input asp-for="VolumeCbm" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label asp-for="LengthCm" class="form-label"></label>
+                            <input asp-for="LengthCm" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label asp-for="WidthCm" class="form-label"></label>
+                            <input asp-for="WidthCm" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label asp-for="HeightCm" class="form-label"></label>
+                            <input asp-for="HeightCm" class="form-control" />
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex flex-column flex-sm-row gap-2">
+                        <button type="submit" class="btn btn-primary">Запази</button>
+                        <a asp-action="Packages"
+                               asp-route-shipmentId="@Model.ShipmentId"
+                               class="btn btn-outline-light">
+                            Назад
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

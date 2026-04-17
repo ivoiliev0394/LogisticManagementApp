@@ -1,0 +1,317 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Orders.CompanyOrderDetailsViewModel
+
+@{
+    ViewData["Title"] = "Детайли за поръчка";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xxl-2">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xxl-10">
+        <div class="card company-details-card">
+            <div class="card-body p-4 p-xl-5">
+                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+                    <div>
+                        <span class="badge bg-success mb-2">Order details</span>
+                        <h2 class="h4 mb-1">@Model.OrderNo</h2>
+                        <p class="text-muted mb-0">Подробна информация за поръчката, нейните линии и статус история.</p>
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2">
+                        <a asp-action="Orders" class="btn btn-outline-light">Назад</a>
+
+                        @if (Model.CanEdit)
+                        {
+                            <a asp-action="EditOrder"
+                                   asp-route-id="@Model.Id"
+                                   class="btn btn-primary">
+                                Редакция
+                            </a>
+                        }
+                    </div>
+                </div>
+
+                <partial name="_StatusMessage" />
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="stat-card h-100">
+                            <div class="small text-muted mb-2">Статус на поръчката</div>
+                            <div class="details-value">
+                                <span class="status-badge status-@Model.Status.ToLowerInvariant()">
+                                    @Model.Status
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="stat-card h-100">
+                            <div class="small text-muted mb-2">Приоритет</div>
+                            <div class="details-value">@Model.Priority</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="stat-card h-100">
+                            <div class="small text-muted mb-2">Shipment</div>
+                            <div class="details-value">@(Model.ShipmentNo ?? "-")</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="stat-card h-100">
+                            <div class="small text-muted mb-2">Pickup дата</div>
+                            <div class="details-value">
+                                @(Model.RequestedPickupDateUtc?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "-")
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-xl-6">
+                        <div class="stat-card h-100">
+                            <div class="small text-muted mb-2">Pickup адрес</div>
+                            <div class="details-value">@(Model.PickupAddress ?? "-")</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-xl-6">
+                        <div class="stat-card h-100">
+                            <div class="small text-muted mb-2">Delivery адрес</div>
+                            <div class="details-value">@(Model.DeliveryAddress ?? "-")</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-xl-6">
+                        <div class="stat-card h-100">
+                            <div class="small text-muted mb-2">Клиентска референция</div>
+                            <div class="details-value">@(Model.CustomerReference ?? "-")</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-xl-6">
+                        <div class="stat-card h-100">
+                            <div class="small text-muted mb-2">Бележки</div>
+                            <div class="details-value">@(Model.Notes ?? "-")</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 mb-4">
+                    @if (Model.CanManageLines)
+                    {
+                        <a asp-action="CreateOrderLine"
+                               asp-route-orderId="@Model.Id"
+                               class="btn btn-primary">
+                            Добави ред
+                        </a>
+                    }
+
+                    @if (Model.CanSubmit)
+                    {
+                        <form asp-action="SubmitOrder" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success">
+                                Submit
+                            </button>
+                        </form>
+                    }
+
+                    @if (Model.CanConfirm)
+                    {
+                        <form asp-action="ConfirmOrder" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success">
+                                Confirm
+                            </button>
+                        </form>
+                    }
+
+                    @if (Model.CanStartProgress)
+                    {
+                        <form asp-action="MarkOrderInProgress" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success">
+                                Start processing
+                            </button>
+                        </form>
+                    }
+
+                    @if (Model.CanComplete)
+                    {
+                        <form asp-action="CompleteOrder" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success">
+                                Complete
+                            </button>
+                        </form>
+                    }
+
+                    @if (Model.CanCancel)
+                    {
+                        <form asp-action="CancelOrder" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit"
+                                    class="btn btn-outline-light"
+                                    onclick="return confirm('Сигурни ли сте, че искате да откажете поръчката?');">
+                                Cancel
+                            </button>
+                        </form>
+                    }
+
+                    @if (Model.CanDelete)
+                    {
+                        <form asp-action="DeleteOrder" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit"
+                                    class="btn btn-danger"
+                                    onclick="return confirm('Сигурни ли сте, че искате да изтриете поръчката?');">
+                                Изтрий
+                            </button>
+                        </form>
+                    }
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="card company-inner-card h-100">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h3 class="h5 mb-0">Order lines</h3>
+                                    <span class="badge bg-success">@Model.Lines.Count</span>
+                                </div>
+
+                                @if (Model.Lines.Any())
+                                {
+                                    <div class="table-responsive order-lines-table">
+                                        <table class="table align-middle company-details-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Описание</th>
+                                                    <th>Количество</th>
+                                                    <th>Тегло</th>
+                                                    <th>Обем</th>
+                                                    <th>DG</th>
+                                                    <th class="text-end">Действия</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var line in Model.Lines)
+                                                {
+                                                    <tr>
+                                                        <td>@line.LineNo</td>
+                                                        <td>
+                                                            <div class="fw-semibold">@line.Description</div>
+                                                            <div class="small text-muted">
+                                                                HS: @(line.HsCode ?? "-") | Origin: @(line.OriginCountry ?? "-")
+                                                            </div>
+                                                        </td>
+                                                        <td>@(line.Quantity?.ToString("0.##") ?? "-") @(line.QuantityUnit ?? "")</td>
+                                                        <td>@(line.GrossWeightKg?.ToString("0.##") ?? "-") kg</td>
+                                                        <td>@(line.VolumeCbm?.ToString("0.###") ?? "-") cbm</td>
+                                                        <td>
+                                                            @if (line.IsDangerousGoods)
+                                                            {
+                                                                <span class="badge bg-danger">Да</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="badge bg-secondary">Не</span>
+                                                            }
+                                                        </td>
+                                                        <td class="text-end">
+                                                            @if (Model.CanManageLines)
+                                                            {
+                                                                <div class="d-flex flex-column flex-md-row gap-2 justify-content-md-end">
+                                                                    <a asp-action="EditOrderLine"
+                                                                           asp-route-id="@line.Id"
+                                                                           class="btn btn-sm btn-warning">
+                                                                        Редакция
+                                                                    </a>
+
+                                                                    <form asp-action="DeleteOrderLine"
+                                                                          asp-route-id="@line.Id"
+                                                                          asp-route-orderId="@Model.Id"
+                                                                          method="post"
+                                                                          class="d-inline">
+                                                                        @Html.AntiForgeryToken()
+                                                                        <button type="submit"
+                                                                                class="btn btn-sm btn-danger"
+                                                                                onclick="return confirm('Сигурни ли сте, че искате да изтриете този ред?');">
+                                                                            Изтриване
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-muted">Няма добавени order lines.</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="card company-inner-card h-100">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h3 class="h5 mb-0">Status history</h3>
+                                    <span class="badge bg-success">@Model.StatusHistory.Count</span>
+                                </div>
+
+                                @if (Model.StatusHistory.Any())
+                                {
+                                    <div class="company-timeline">
+                                        @foreach (var item in Model.StatusHistory)
+                                        {
+                                            <div class="company-timeline-item">
+                                                <div class="company-timeline-dot"></div>
+                                                <div class="company-timeline-content">
+                                                    <div class="status-history-transition mb-2">
+                                                        <span class="status-badge status-@item.OldStatus.ToLowerInvariant()">
+                                                            @item.OldStatus
+                                                        </span>
+
+                                                        <span class="status-history-arrow">→</span>
+
+                                                        <span class="status-badge status-@item.NewStatus.ToLowerInvariant()">
+                                                            @item.NewStatus
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="small text-muted mb-1">
+                                                        @item.ChangedAtUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                                    </div>
+
+                                                    <div class="status-history-reason">
+                                                        @(string.IsNullOrWhiteSpace(item.Reason) ? "Няма причина/бележка." : item.Reason)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-muted">Няма записана статус история.</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

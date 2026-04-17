@@ -1,0 +1,121 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Shipments.Party.CompanyShipmentPartyEditViewModel
+@using LogisticManagementApp.Domain.Enums.Shipments
+
+@{
+    ViewData["Title"] = "Редакция на Shipment Party";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <h2 class="h4 mb-1">Редакция на Shipment Party</h2>
+                    <p class="text-muted mb-0">@Model.ShipmentNo</p>
+                </div>
+
+                <form asp-action="EditShipmentParty" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="Id" type="hidden" />
+                    <input asp-for="ShipmentId" type="hidden" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label asp-for="CompanyId" class="form-label"></label>
+                            <select asp-for="CompanyId" asp-items="Model.CompanyOptions" class="form-select" id="shipmentPartyCompanyId">
+                                <option value="">Изберете компания</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="Role" class="form-label"></label>
+                            <select asp-for="Role" asp-items="Html.GetEnumSelectList<PartyRole>()" class="form-select"></select>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="CompanyContactId" class="form-label"></label>
+                            <select asp-for="CompanyContactId" asp-items="Model.ContactOptions" class="form-select" id="shipmentPartyContactId">
+                                <option value="">Без контакт</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex flex-column flex-sm-row gap-2">
+                        <button type="submit" class="btn btn-primary">Запази</button>
+                        <a asp-action="ShipmentParties"
+                               asp-route-shipmentId="@Model.ShipmentId"
+                               class="btn btn-outline-light">
+                            Назад
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (function () {
+            const companySelect = document.getElementById('shipmentPartyCompanyId');
+            const contactSelect = document.getElementById('shipmentPartyContactId');
+
+            if (!companySelect || !contactSelect) {
+                return;
+            }
+
+            async function loadContacts(companyId, selectedContactId) {
+                contactSelect.innerHTML = '<option value="">Без контакт</option>';
+
+                if (!companyId) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/Company/GetShipmentPartyContacts?companyId=${companyId}`);
+
+                    if (!response.ok) {
+                        return;
+                    }
+
+                    const data = await response.json();
+
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.value;
+                        option.text = item.text;
+
+                        if (selectedContactId && selectedContactId === item.value) {
+                            option.selected = true;
+                        }
+
+                        contactSelect.appendChild(option);
+                    });
+                } catch (e) {
+                    console.error('Failed to load shipment party contacts.', e);
+                }
+            }
+
+            companySelect.addEventListener('change', function () {
+                loadContacts(this.value, null);
+            });
+
+            const initialCompanyId = companySelect.value;
+            const initialContactId = '@(Model.CompanyContactId?.ToString() ?? "")';
+
+            if (initialCompanyId) {
+                loadContacts(initialCompanyId, initialContactId);
+            }
+        })();
+    </script>
+}

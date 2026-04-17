@@ -1,0 +1,65 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Shipments.Statuses.CompanyShipmentStatusHistoryViewModel
+
+@{
+    ViewData["Title"] = "Status History";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card">
+            <div class="card-body p-4">
+
+                <div class="d-flex justify-content-between mb-4">
+                    <div>
+                        <h2 class="h4">Status History</h2>
+                        <p class="text-muted">@Model.ShipmentNo</p>
+                    </div>
+
+                    <a asp-action="ShipmentDetails"
+                           asp-route-id="@Model.ShipmentId"
+                           class="btn btn-outline-light">
+                        Назад
+                    </a>
+                </div>
+
+                @if (Model.Items.Any())
+                {
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Old Status</th>
+                                <th>New Status</th>
+                                <th>Changed At</th>
+                                <th>Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>@item.OldStatus</td>
+                                    <td>@item.NewStatus</td>
+                                    <td>@item.ChangedAtUtc.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>@(string.IsNullOrWhiteSpace(item.Reason) ? "-" : item.Reason)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="text-muted">
+                        Няма статус история.
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

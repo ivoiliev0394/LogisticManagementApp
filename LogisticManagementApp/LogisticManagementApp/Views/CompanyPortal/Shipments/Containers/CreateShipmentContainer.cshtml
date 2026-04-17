@@ -1,0 +1,79 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Shipments.Containers.CompanyShipmentContainerCreateViewModel
+
+@{
+    ViewData["Title"] = "Нов Shipment Container";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <h2 class="h4 mb-1">Нов Shipment Container</h2>
+                    <p class="text-muted mb-0">@Model.ShipmentNo</p>
+                </div>
+
+                <form asp-action="CreateShipmentContainer" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="ShipmentId" type="hidden" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label asp-for="ContainerId" class="form-label"></label>
+                            <select asp-for="ContainerId" class="form-select">
+                                <option value="">-- Избери container --</option>
+                                @foreach (var option in Model.ContainerOptions)
+                                {
+                                    <option value="@option.Id">@option.DisplayName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="ShipmentLegId" class="form-label"></label>
+                            <select asp-for="ShipmentLegId" class="form-select">
+                                <option value="">-- Без leg --</option>
+                                @foreach (var option in Model.ShipmentLegOptions)
+                                {
+                                    <option value="@option.Id">@option.DisplayName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="GrossWeightKg" class="form-label"></label>
+                            <input asp-for="GrossWeightKg" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="SealNumber" class="form-label"></label>
+                            <input asp-for="SealNumber" class="form-control" />
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex flex-column flex-sm-row gap-2">
+                        <button type="submit" class="btn btn-primary">Запази</button>
+                        <a asp-action="ShipmentContainers"
+                               asp-route-shipmentId="@Model.ShipmentId"
+                               class="btn btn-outline-light">
+                            Назад
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

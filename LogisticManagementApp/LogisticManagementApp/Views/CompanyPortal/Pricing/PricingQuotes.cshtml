@@ -1,0 +1,129 @@
+@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Pricing.PricingQuoteListItemViewModel>
+
+@{
+    ViewData["Title"] = "Pricing Quotes";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div>
+                        <h2 class="h4 mb-1">Pricing Quotes</h2>
+                        <p class="text-muted mb-0">
+                            Оферти за ценообразуване на текущата компания.
+                        </p>
+                    </div>
+
+                    <a asp-action="CreatePricingQuote" class="btn btn-success">
+                        Нов pricing quote
+                    </a>
+                </div>
+
+                <partial name="_StatusMessage" />
+
+                @if (!Model.Any())
+                {
+                    <div class="alert alert-info mb-0">
+                        Няма налични записи.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive" data-table-pagination-wrapper>
+                        <table class="table align-middle mb-0"
+                               data-table-pagination="true"
+                               data-page-size="10">
+                            <thead>
+                                <tr>
+                                    <th>Quote</th>
+                                    <th>Agreement</th>
+                                    <th>Service Level</th>
+                                    <th>Status</th>
+                                    <th>Currency</th>
+                                    <th>Valid until</th>
+                                    <th>Net</th>
+                                    <th>Tax</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">
+                                            @item.QuoteNumber
+                                        </td>
+
+                                        <td>
+                                            @(item.AgreementNumber ?? "-")
+                                        </td>
+
+                                        <td>
+                                            @(item.ServiceLevelCode ?? "-")
+                                        </td>
+
+                                        <td>
+                                            @item.Status
+                                        </td>
+
+                                        <td>
+                                            @item.Currency
+                                        </td>
+
+                                        <td>
+                                            @(item.ValidUntilUtc?.ToString("dd.MM.yyyy") ?? "-")
+                                        </td>
+
+                                        <td>
+                                            @item.NetAmount.ToString("0.00")
+                                        </td>
+
+                                        <td>
+                                            @item.TaxAmount.ToString("0.00")
+                                        </td>
+
+                                        <td>
+                                            @item.TotalAmount.ToString("0.00")
+                                        </td>
+
+                                        <td class="text-end">
+                                            <div class="d-flex gap-2 justify-content-end">
+                                                <a asp-action="EditPricingQuote"
+                                                       asp-route-id="@item.Id"
+                                                       class="btn btn-sm btn-outline-light">
+                                                    Редакция
+                                                </a>
+
+                                                <form asp-action="DeletePricingQuote"
+                                                      method="post"
+                                                      class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="id" value="@item.Id" />
+
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-outline-danger">
+                                                        Изтрий
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

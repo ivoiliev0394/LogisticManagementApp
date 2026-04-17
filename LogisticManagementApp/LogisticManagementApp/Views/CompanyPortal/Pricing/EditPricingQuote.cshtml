@@ -1,0 +1,137 @@
+@model LogisticManagementApp.Models.CompanyPortal.Pricing.PricingQuoteEditViewModel
+@using LogisticManagementApp.Domain.Enums.Pricing
+
+@{
+    ViewData["Title"] = "Редакция на pricing quote";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="h4 mb-3">Редакция на pricing quote</h2>
+
+                <form asp-action="EditPricingQuote" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="Id" type="hidden" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label asp-for="QuoteNumber" class="form-label"></label>
+                            <input asp-for="QuoteNumber" class="form-control" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="AgreementId" class="form-label">Agreement</label>
+                            <select asp-for="AgreementId"
+                                    asp-items="Model.AgreementOptions"
+                                    class="form-select">
+                                <option value="">-- Няма --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="ServiceLevelId" class="form-label">Service Level</label>
+                            <select asp-for="ServiceLevelId"
+                                    asp-items="Model.ServiceLevelOptions"
+                                    class="form-select">
+                                <option value="">-- Няма --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="OrderId" class="form-label">Order</label>
+                            <select asp-for="OrderId"
+                                    asp-items="Model.OrderOptions"
+                                    class="form-select">
+                                <option value="">-- Няма --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="ShipmentId" class="form-label">Shipment</label>
+                            <select asp-for="ShipmentId"
+                                    asp-items="Model.ShipmentOptions"
+                                    class="form-select">
+                                <option value="">-- Няма --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Status" class="form-label"></label>
+                            <select asp-for="Status"
+                                    asp-items="Html.GetEnumSelectList<PricingQuoteStatus>()"
+                                    class="form-select">
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="Currency" class="form-label"></label>
+                            <input asp-for="Currency" class="form-control" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="ValidUntilUtc" class="form-label"></label>
+                            <input asp-for="ValidUntilUtc"
+                                   type="date"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <label asp-for="NetAmount" class="form-label"></label>
+                            <input asp-for="NetAmount"
+                                   type="number"
+                                   step="0.01"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <label asp-for="TaxAmount" class="form-label"></label>
+                            <input asp-for="TaxAmount"
+                                   type="number"
+                                   step="0.01"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <label asp-for="TotalAmount" class="form-label"></label>
+                            <input asp-for="TotalAmount"
+                                   type="number"
+                                   step="0.01"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes"
+                                      class="form-control"
+                                      rows="4"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button class="btn btn-success" type="submit">
+                            Запази
+                        </button>
+
+                        <a asp-action="PricingQuotes" class="btn btn-outline-light">
+                            Назад
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,79 @@
+@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.SharedLocations.TerminalListItemViewModel>
+
+@{
+    ViewData["Title"] = "Terminals";
+}
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                    <div>
+                        <h2 class="h4 mb-1">Terminals</h2>
+                        <p class="text-muted mb-0">Read-only списък с terminals.</p>
+                    </div>
+
+                    <a asp-action="SharedLocations" class="btn btn-outline-light">
+                        Към Shared / Locations
+                    </a>
+                </div>
+
+                @if (Model.Any())
+                {
+                    <div class="table-responsive" data-table-pagination-wrapper>
+                        <table class="table align-middle"
+                               data-table-pagination="true"
+                               data-page-size="8">
+                            <thead>
+                                <tr>
+                                    <th>Location</th>
+                                    <th>Type</th>
+                                    <th>Code</th>
+                                    <th>Capacity</th>
+                                    <th>Flags</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">@item.LocationDisplay</div>
+                                            <div class="small text-muted">
+                                                @(item.OperatingHours ?? item.Notes ?? "-")
+                                            </div>
+                                        </td>
+
+                                        <td>@item.TerminalType</td>
+
+                                        <td>@(item.TerminalCode ?? "-")</td>
+
+                                        <td>
+                                            @(item.CapacityCbm?.ToString() ?? "-") cbm /
+                                            @(item.CapacityTons?.ToString() ?? "-") t
+                                        </td>
+
+                                        <td>
+                                            Bonded: @(item.IsBonded ? "Да" : "Не")<br />
+                                            Active: @(item.IsActive ? "Да" : "Не")
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-muted">Няма записи.</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

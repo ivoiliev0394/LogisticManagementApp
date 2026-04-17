@@ -1,0 +1,104 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Shipments.TrackingEvents.CompanyTrackingEventsViewModel
+
+@{
+    ViewData["Title"] = "Tracking Events";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                    <div>
+                        <h2 class="h4 mb-1">Tracking Events</h2>
+                        <p class="text-muted mb-0">@Model.ShipmentNo</p>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        @if (Model.CanManageTrackingEvents)
+                        {
+                            <a asp-action="CreateTrackingEvent"
+                                   asp-route-shipmentId="@Model.ShipmentId"
+                                   class="btn btn-primary">
+                                Добави tracking event
+                            </a>
+                        }
+
+                        <a asp-action="ShipmentDetails"
+                               asp-route-id="@Model.ShipmentId"
+                               class="btn btn-outline-light">
+                            Назад към shipment
+                        </a>
+                    </div>
+                </div>
+
+                @if (Model.TrackingEvents.Any())
+                {
+                    <div class="table-responsive" data-table-pagination-wrapper>
+                        <table class="table align-middle" data-table-pagination="true" data-page-size="5">
+                            <thead>
+                                <tr>
+                                    <th>Event Type</th>
+                                    <th>Event Time UTC</th>
+                                    <th>Location</th>
+                                    <th>Details</th>
+                                    <th>Source</th>
+                                    <th class="text-end">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.TrackingEvents)
+                                {
+                                    <tr>
+                                        <td>@item.EventType</td>
+                                        <td>@item.EventTimeUtc.ToString("dd.MM.yyyy HH:mm")</td>
+                                        <td>@(item.LocationName ?? "-")</td>
+                                        <td>@(string.IsNullOrWhiteSpace(item.Details) ? "-" : item.Details)</td>
+                                        <td>@(string.IsNullOrWhiteSpace(item.Source) ? "-" : item.Source)</td>
+                                        <td class="text-end">
+                                            @if (Model.CanManageTrackingEvents)
+                                            {
+                                                <div class="d-flex justify-content-end flex-wrap gap-2">
+                                                    <a asp-action="EditTrackingEvent"
+                                                           asp-route-id="@item.Id"
+                                                           class="btn btn-sm btn-outline-light">
+                                                        Редакция
+                                                    </a>
+
+                                                    <form asp-action="DeleteTrackingEvent"
+                                                          asp-route-id="@item.Id"
+                                                          asp-route-shipmentId="@Model.ShipmentId"
+                                                          method="post"
+                                                          onsubmit="return confirm('Сигурен ли си, че искаш да изтриеш този tracking event?');">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-sm btn-outline-light">
+                                                            Изтрий
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Read only</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-muted">Няма tracking events за този shipment.</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

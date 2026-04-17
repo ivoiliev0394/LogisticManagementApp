@@ -1,0 +1,63 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Shipments.ProofOfDelivery.CompanyProofOfDeliveryEditViewModel
+
+@{
+    ViewData["Title"] = "Редакция на Proof Of Delivery";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <h2 class="h4 mb-1">Редакция на Proof Of Delivery</h2>
+                    <p class="text-muted mb-0">@Model.ShipmentNo</p>
+                </div>
+
+                <form asp-action="EditProofOfDelivery" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="Id" type="hidden" />
+                    <input asp-for="ShipmentId" type="hidden" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label asp-for="DeliveredAtUtc" class="form-label"></label>
+                            <input asp-for="DeliveredAtUtc" class="form-control" type="datetime-local" />
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="ReceiverName" class="form-label"></label>
+                            <input asp-for="ReceiverName" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="SignatureFileResourceId" class="form-label"></label>
+                            <input asp-for="SignatureFileResourceId" class="form-control" />
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex flex-column flex-sm-row gap-2">
+                        <button type="submit" class="btn btn-primary">Запази</button>
+                        <a asp-action="ProofOfDeliveries"
+                               asp-route-shipmentId="@Model.ShipmentId"
+                               class="btn btn-outline-light">
+                            Назад
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

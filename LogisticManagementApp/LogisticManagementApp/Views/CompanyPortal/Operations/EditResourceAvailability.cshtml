@@ -1,0 +1,98 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Operations.ResourceAvailabilityEditViewModel
+
+@{
+    ViewData["Title"] = "Редакция на resource availability";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="h4 mb-3">Редакция на resource availability</h2>
+
+                <form asp-action="EditResourceAvailability" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="Id" type="hidden" />
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="text-danger mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label asp-for="ResourceType" class="form-label"></label>
+                            <select asp-for="ResourceType"
+                                    asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Operations.ResourceType>()"
+                                    class="form-select">
+                            </select>
+                        </div>
+
+                        <div class="col-md-8">
+                            <label asp-for="ResourceId" class="form-label"></label>
+                            <select asp-for="ResourceId"
+                                    asp-items="Model.ResourceOptions"
+                                    class="form-select">
+                                <option value="">Избери resource</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="AvailableFromUtc" class="form-label"></label>
+                            <input asp-for="AvailableFromUtc"
+                                   type="datetime-local"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="AvailableToUtc" class="form-label"></label>
+                            <input asp-for="AvailableToUtc"
+                                   type="datetime-local"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Status" class="form-label"></label>
+                            <select asp-for="Status"
+                                    asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Operations.AvailabilityStatus>()"
+                                    class="form-select">
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Reason" class="form-label"></label>
+                            <input asp-for="Reason"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes"
+                                      class="form-control"
+                                      rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button class="btn btn-success" type="submit">
+                            Запази
+                        </button>
+
+                        <a asp-action="ResourceAvailabilities"
+                               class="btn btn-outline-light">
+                            Назад
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

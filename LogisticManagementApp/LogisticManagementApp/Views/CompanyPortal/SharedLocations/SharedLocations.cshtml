@@ -1,0 +1,48 @@
+@model LogisticManagementApp.Models.CompanyPortal.SharedLocations.CompanySharedLocationsHomeViewModel
+
+@{
+    ViewData["Title"] = "Shared / Locations";
+}
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                    <div>
+                        <h2 class="h4 mb-1">Shared / Location Tables</h2>
+                        <p class="text-muted mb-0">
+                            Общи таблици за четене, които company portal използва в shipments, routes и assets.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    @foreach (var card in Model.Cards)
+                    {
+                        <div class="col-12 col-md-6">
+                            <div class="stat-card h-100 d-flex flex-column">
+                                <div class="fw-semibold mb-2 text-muted">@card.Title</div>
+
+                                <div class="text-muted mb-3">
+                                    @card.Description
+                                </div>
+
+                                <div class="mt-auto">
+                                    <a asp-action="@card.ActionName"
+                                           class="btn btn-outline-light">
+                                        Отвори
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

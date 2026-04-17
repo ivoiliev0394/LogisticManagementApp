@@ -1,0 +1,124 @@
+﻿@model LogisticManagementApp.Models.CompanyPortal.Shipments.CargoItems.CompanyCargoItemEditViewModel
+@using LogisticManagementApp.Domain.Enums.Shipments
+
+@{
+    ViewData["Title"] = "Редакция на Cargo Item";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <h2 class="h4 mb-1">Редакция на Cargo Item</h2>
+                    <p class="text-muted mb-0">@Model.ShipmentNo</p>
+                </div>
+
+                <form asp-action="EditCargoItem" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="Id" type="hidden" />
+                    <input asp-for="ShipmentId" type="hidden" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label asp-for="Description" class="form-label"></label>
+                            <input asp-for="Description" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="CargoItemType" class="form-label"></label>
+                            <select asp-for="CargoItemType" class="form-select"
+                                    asp-items="Html.GetEnumSelectList<CargoItemType>()"></select>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <label asp-for="Quantity" class="form-label"></label>
+                            <input asp-for="Quantity" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <label asp-for="UnitOfMeasure" class="form-label"></label>
+                            <input asp-for="UnitOfMeasure" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label asp-for="GrossWeightKg" class="form-label"></label>
+                            <input asp-for="GrossWeightKg" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label asp-for="NetWeightKg" class="form-label"></label>
+                            <input asp-for="NetWeightKg" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label asp-for="VolumeCbm" class="form-label"></label>
+                            <input asp-for="VolumeCbm" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label asp-for="LengthCm" class="form-label"></label>
+                            <input asp-for="LengthCm" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label asp-for="WidthCm" class="form-label"></label>
+                            <input asp-for="WidthCm" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label asp-for="HeightCm" class="form-label"></label>
+                            <input asp-for="HeightCm" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="HsCode" class="form-label"></label>
+                            <input asp-for="HsCode" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="OriginCountry" class="form-label"></label>
+                            <input asp-for="OriginCountry" class="form-control" />
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="form-check mt-2">
+                                <input asp-for="IsStackable" class="form-check-input" />
+                                <label asp-for="IsStackable" class="form-check-label"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="form-check mt-2">
+                                <input asp-for="IsFragile" class="form-check-input" />
+                                <label asp-for="IsFragile" class="form-check-label"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex flex-column flex-sm-row gap-2">
+                        <button type="submit" class="btn btn-primary">Запази</button>
+                        <a asp-action="CargoItems"
+                               asp-route-shipmentId="@Model.ShipmentId"
+                               class="btn btn-outline-light">
+                            Назад
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

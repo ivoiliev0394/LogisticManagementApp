@@ -1,0 +1,69 @@
+﻿@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Operations.ConsolidationListItemViewModel>
+
+@{
+    ViewData["Title"] = "Consolidations";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                    <div>
+                        <h2 class="h4 mb-1">Consolidations</h2>
+                        <p class="text-muted mb-0">
+                            Read-only consolidations, видими през shipment ownership.
+                        </p>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <a asp-action="Operations" class="btn btn-outline-light">
+                            Към Operations
+                        </a>
+                    </div>
+                </div>
+
+                @if (Model.Any())
+                {
+                    <div class="table-responsive" data-table-pagination-wrapper>
+                        <table class="table align-middle"
+                               data-table-pagination="true"
+                               data-page-size="5">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Mode</th>
+                                    <th>Master Ref</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@item.ConsolidationNo</td>
+                                        <td>@item.ConsolidationType</td>
+                                        <td>@item.Status</td>
+                                        <td>@item.TransportMode</td>
+                                        <td>@(item.MasterReference ?? "-")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-muted">Няма записи.</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
