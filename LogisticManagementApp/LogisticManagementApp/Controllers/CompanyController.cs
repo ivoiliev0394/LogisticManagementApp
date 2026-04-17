@@ -1,0 +1,4008 @@
+﻿using LogisticManagementApp.Applicationn.Interfaces.CompanyPortal;
+using LogisticManagementApp.Models.CompanyPortal;
+using LogisticManagementApp.Models.CompanyPortal.Branches;
+using LogisticManagementApp.Models.CompanyPortal.Capabilities;
+using LogisticManagementApp.Models.CompanyPortal.Billing;
+using LogisticManagementApp.Models.CompanyPortal.Contacts;
+using LogisticManagementApp.Models.CompanyPortal.Orders;
+using LogisticManagementApp.Models.CompanyPortal.Pricing;
+using LogisticManagementApp.Models.CompanyPortal.Shipments;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.CargoItems;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Containers;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Legs;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.PackageItems;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Packages;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Party;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.ProofOfDelivery;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.References;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Tags;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.TrackingEvents;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Trips;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Ulds;
+using LogisticManagementApp.Models.CompanyPortal.Shipments.Voyages;
+using LogisticManagementApp.Models.CompanyPortal.Routes;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using LogisticManagementApp.Domain.Enums.Billing;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace LogisticManagementApp.Controllers
+{
+    [Authorize(Roles = "Company")]
+    public partial class CompanyController : Controller
+    {
+        private readonly ICompanyPortalService _companyPortalService;
+
+        public CompanyController(ICompanyPortalService companyPortalService)
+        {
+            _companyPortalService = companyPortalService;
+        }
+
+        // ============================================================
+        // COMPANY PROFILE
+        // Управление на фирмения профил на текущата company:
+        // преглед на профил, зареждане на форма за редакция
+        // и запис на основната фирмена информация.
+        // ============================================================
+
+        #region Helpers
+
+        /// <summary>
+        /// Взима CompanyId от claims на логнатия потребител.
+        /// </summary>
+        private Guid? GetCurrentCompanyId()
+        {
+            var companyIdValue = User.FindFirst("CompanyId")?.Value;
+
+            if (Guid.TryParse(companyIdValue, out var companyId))
+            {
+                return companyId;
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        #region Profile
+
+        /// <summary>
+        /// Показва профила на текущата фирма.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            var model = await _companyPortalService.GetMyCompanyAsync(companyId.Value);
+
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            return View("~/Views/CompanyPortal/Profile.cshtml", model);
+        }
+
+        /// <summary>
+        /// Зарежда форма за редакция на профила.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> EditProfile()
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            var model = await _companyPortalService.GetEditCompanyAsync(companyId.Value);
+
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            return View("~/Views/CompanyPortal/EditProfile.cshtml", model);
+        }
+
+        /// <summary>
+        /// Записва редакция на профила.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfile(EditCompanyProfileViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/CompanyPortal/EditProfile.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateMyCompanyAsync(companyId.Value, model);
+
+            if (!success)
+            {
+                return NotFound();
+            }
+
+            TempData["SuccessMessage"] = "Фирменият профил беше обновен успешно.";
+            return RedirectToAction(nameof(Profile));
+        }
+
+        #endregion
+
+        // ============================================================
+        // COMPANY BRANCHES
+        // Управление на клоновете на фирмата:
+        // списък, създаване, редакция и изтриване на branch записи.
+        // ============================================================
+
+        #region Branches
+
+        /// <summary>
+        /// Показва всички клонове на фирмата.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> Branches()
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            var model = await _companyPortalService.GetMyBranchesAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Branches/Branches.cshtml", model);
+        }
+
+        /// <summary>
+        /// Зарежда форма за създаване на клон.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> CreateBranch()
+        {
+            var model = new CompanyBranchCreateViewModel
+            {
+                AddressOptions = await _companyPortalService.GetAddressOptionsAsync()
+            };
+
+            return View("~/Views/CompanyPortal/Branches/CreateBranch.cshtml", model);
+        }
+
+        /// <summary>
+        /// Създава нов клон.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateBranch(CompanyBranchCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.AddressOptions = await _companyPortalService.GetAddressOptionsAsync();
+                return View("~/Views/CompanyPortal/Branches/CreateBranch.cshtml", model);
+            }
+
+            await _companyPortalService.CreateBranchAsync(companyId.Value, model);
+            TempData["SuccessMessage"] = "Клонът беше създаден успешно.";
+
+            return RedirectToAction(nameof(Branches));
+        }
+
+        /// <summary>
+        /// Зарежда форма за редакция на клон.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> EditBranch(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            var model = await _companyPortalService.GetBranchForEditAsync(companyId.Value, id);
+
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            model.AddressOptions = await _companyPortalService.GetAddressOptionsAsync();
+
+            return View("~/Views/CompanyPortal/Branches/EditBranch.cshtml", model);
+        }
+
+        /// <summary>
+        /// Записва редакция на клон.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditBranch(CompanyBranchEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.AddressOptions = await _companyPortalService.GetAddressOptionsAsync();
+                return View("~/Views/CompanyPortal/Branches/EditBranch.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateBranchAsync(companyId.Value, model);
+
+            if (!success)
+            {
+                model.AddressOptions = await _companyPortalService.GetAddressOptionsAsync();
+                return View("~/Views/CompanyPortal/Branches/EditBranch.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Клонът беше обновен успешно.";
+            return RedirectToAction(nameof(Branches));
+        }
+
+        /// <summary>
+        /// Изтрива клон.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteBranch(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            var success = await _companyPortalService.DeleteBranchAsync(companyId.Value, id);
+
+            if (!success)
+            {
+                return NotFound();
+            }
+
+            TempData["SuccessMessage"] = "Клонът беше изтрит успешно.";
+            return RedirectToAction(nameof(Branches));
+        }
+
+        #endregion
+
+        // ============================================================
+        // COMPANY CONTACTS
+        // Управление на контактите на фирмата:
+        // списък, добавяне, редакция и изтриване на company contacts.
+        // ============================================================
+
+        #region Contacts
+
+        /// <summary>
+        /// Показва контактите на фирмата.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> Contacts()
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            var model = await _companyPortalService.GetMyContactsAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Contacts/Contacts.cshtml", model);
+        }
+
+        /// <summary>
+        /// Зарежда форма за нов контакт.
+        /// </summary>
+        [HttpGet]
+        public IActionResult CreateContact()
+        {
+            return View("~/Views/CompanyPortal/Contacts/CreateContact.cshtml", new CompanyContactCreateViewModel());
+        }
+
+        /// <summary>
+        /// Създава нов контакт.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateContact(CompanyContactCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/CompanyPortal/Contacts/CreateContact.cshtml", model);
+            }
+
+            await _companyPortalService.CreateContactAsync(companyId.Value, model);
+            TempData["SuccessMessage"] = "Контактът беше създаден успешно.";
+
+            return RedirectToAction(nameof(Contacts));
+        }
+
+        /// <summary>
+        /// Зарежда форма за редакция на контакт.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> EditContact(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            var model = await _companyPortalService.GetContactForEditAsync(companyId.Value, id);
+
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            return View("~/Views/CompanyPortal/Contacts/EditContact.cshtml", model);
+        }
+
+        /// <summary>
+        /// Записва редакция на контакт.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditContact(CompanyContactEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/CompanyPortal/Contacts/EditContact.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateContactAsync(companyId.Value, model);
+
+            if (!success)
+            {
+                return View("~/Views/CompanyPortal/Contacts/EditContact.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Контактът беше обновен успешно.";
+            return RedirectToAction(nameof(Contacts));
+        }
+
+        /// <summary>
+        /// Изтрива контакт.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteContact(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            var success = await _companyPortalService.DeleteContactAsync(companyId.Value, id);
+
+            if (!success)
+            {
+                return NotFound();
+            }
+
+            TempData["SuccessMessage"] = "Контактът беше изтрит успешно.";
+            return RedirectToAction(nameof(Contacts));
+        }
+
+        #endregion
+
+        // ============================================================
+        // COMPANY CAPABILITIES
+        // Управление на capability записите на фирмата:
+        // създаване, редакция, изтриване и визуализация на активните
+        // възможности/услуги, които company-то предлага.
+        // ============================================================
+
+        #region Capabilities
+
+        /// <summary>
+        /// Показва capability записите на фирмата.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> Capabilities()
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            var model = await _companyPortalService.GetMyCapabilitiesAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Capabilities/Capabilities.cshtml", model);
+        }
+
+        /// <summary>
+        /// Зарежда форма за нов capability запис.
+        /// </summary>
+        [HttpGet]
+        public IActionResult CreateCapability()
+        {
+            return View("~/Views/CompanyPortal/Capabilities/CreateCapability.cshtml", new CompanyCapabilityCreateViewModel());
+        }
+
+        /// <summary>
+        /// Създава capability запис.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateCapability(CompanyCapabilityCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/CompanyPortal/Capabilities/CreateCapability.cshtml", model);
+            }
+
+            var success = await _companyPortalService.CreateCapabilityAsync(companyId.Value, model);
+
+            if (!success)
+            {
+                ModelState.AddModelError(string.Empty, "Неуспешно създаване. Проверете датите или дали capability вече съществува.");
+                return View("~/Views/CompanyPortal/Capabilities/CreateCapability.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Capability беше добавен успешно.";
+            return RedirectToAction(nameof(Capabilities));
+        }
+
+        /// <summary>
+        /// Зарежда форма за редакция на capability.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> EditCapability(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            var model = await _companyPortalService.GetCapabilityForEditAsync(companyId.Value, id);
+
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            return View("~/Views/CompanyPortal/Capabilities/EditCapability.cshtml", model);
+        }
+
+        /// <summary>
+        /// Записва редакция на capability.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCapability(CompanyCapabilityEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/CompanyPortal/Capabilities/EditCapability.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateCapabilityAsync(companyId.Value, model);
+
+            if (!success)
+            {
+                ModelState.AddModelError(string.Empty, "Неуспешна редакция. Проверете датите или дали capability вече съществува.");
+                return View("~/Views/CompanyPortal/Capabilities/EditCapability.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Capability беше обновен успешно.";
+            return RedirectToAction(nameof(Capabilities));
+        }
+
+        /// <summary>
+        /// Изтрива capability запис.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCapability(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            var success = await _companyPortalService.DeleteCapabilityAsync(companyId.Value, id);
+
+            if (!success)
+            {
+                return NotFound();
+            }
+
+            TempData["SuccessMessage"] = "Capability беше изтрит успешно.";
+            return RedirectToAction(nameof(Capabilities));
+        }
+
+        #endregion
+
+        // ============================================================
+        // COMPANY ORDERS
+        // Управление на поръчките в company portal:
+        // списък, детайли, създаване, редакция, изтриване,
+        // workflow actions по статуса и работа с order lines.
+        // ============================================================
+
+        #region Orders
+
+        /// <summary>
+        /// Показва всички поръчки на фирмата.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> Orders()
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetMyOrdersAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Orders/Orders.cshtml", model);
+        }
+
+        /// <summary>
+        /// Показва детайли за конкретна поръчка.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> OrderDetails(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetOrderDetailsAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Orders/OrderDetails.cshtml", model);
+        }
+
+        /// <summary>
+        /// Зарежда форма за създаване на поръчка.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> CreateOrder()
+        {
+            var model = await _companyPortalService.GetCreateOrderModelAsync();
+            return View("~/Views/CompanyPortal/Orders/CreateOrder.cshtml", model);
+        }
+
+        /// <summary>
+        /// Създава нова поръчка.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateOrder(CompanyOrderCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                model.AddressOptions = await _companyPortalService.GetAddressOptionsAsync();
+                return View("~/Views/CompanyPortal/Orders/CreateOrder.cshtml", model);
+            }
+
+            var orderId = await _companyPortalService.CreateOrderAsync(companyId.Value, model);
+            TempData["SuccessMessage"] = "Поръчката беше създадена успешно.";
+            return RedirectToAction(nameof(OrderDetails), new { id = orderId });
+        }
+
+        /// <summary>
+        /// Зарежда форма за редакция на поръчка.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> EditOrder(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetOrderForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Orders/EditOrder.cshtml", model);
+        }
+
+        /// <summary>
+        /// Записва редакция на поръчка.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditOrder(CompanyOrderEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                model.AddressOptions = await _companyPortalService.GetAddressOptionsAsync();
+                return View("~/Views/CompanyPortal/Orders/EditOrder.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateOrderAsync(companyId.Value, model);
+
+            if (!success)
+            {
+                model.AddressOptions = await _companyPortalService.GetAddressOptionsAsync();
+                ModelState.AddModelError(string.Empty, "Поръчката не може да бъде редактирана.");
+                return View("~/Views/CompanyPortal/Orders/EditOrder.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Поръчката беше обновена успешно.";
+            return RedirectToAction(nameof(OrderDetails), new { id = model.Id });
+        }
+
+        /// <summary>
+        /// Изтрива поръчка.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteOrder(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.DeleteOrderAsync(companyId.Value, id);
+            if (!success) return NotFound();
+
+            TempData["SuccessMessage"] = "Поръчката беше изтрита успешно.";
+            return RedirectToAction(nameof(Orders));
+        }
+
+        /// <summary>
+        /// Подаване на поръчка.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitOrder(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.SubmitOrderAsync(companyId.Value, id);
+
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Поръчката не може да бъде изпратена. Трябва да е в Draft статус и да има поне един ред.";
+                return RedirectToAction(nameof(OrderDetails), new { id });
+            }
+
+            TempData["SuccessMessage"] = "Поръчката беше изпратена успешно.";
+            return RedirectToAction(nameof(OrderDetails), new { id });
+        }
+
+        /// <summary>
+        /// Потвърждаване на поръчка.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmOrder(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.ConfirmOrderAsync(companyId.Value, id);
+            if (!success) return NotFound();
+
+            TempData["SuccessMessage"] = "Поръчката беше потвърдена успешно.";
+            return RedirectToAction(nameof(OrderDetails), new { id });
+        }
+
+        /// <summary>
+        /// Маркира поръчка като In Progress.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkOrderInProgress(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.MarkOrderInProgressAsync(companyId.Value, id);
+            if (!success) return NotFound();
+
+            TempData["SuccessMessage"] = "Поръчката беше маркирана като In Progress.";
+            return RedirectToAction(nameof(OrderDetails), new { id });
+        }
+
+        /// <summary>
+        /// Завършва поръчка.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CompleteOrder(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.CompleteOrderAsync(companyId.Value, id);
+            if (!success) return NotFound();
+
+            TempData["SuccessMessage"] = "Поръчката беше завършена успешно.";
+            return RedirectToAction(nameof(OrderDetails), new { id });
+        }
+
+        /// <summary>
+        /// Отказва поръчка.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelOrder(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.CancelOrderAsync(companyId.Value, id);
+            if (!success) return NotFound();
+
+            TempData["SuccessMessage"] = "Поръчката беше отказана успешно.";
+            return RedirectToAction(nameof(OrderDetails), new { id });
+        }
+
+        /// <summary>
+        /// Зарежда форма за нов ред към поръчка.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> CreateOrderLine(Guid orderId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCreateOrderLineModelAsync(companyId.Value, orderId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Orders/CreateOrderLine.cshtml", model);
+        }
+
+        /// <summary>
+        /// Създава ред към поръчка.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateOrderLine(CompanyOrderLineCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/CompanyPortal/Orders/CreateOrderLine.cshtml", model);
+            }
+
+            var success = await _companyPortalService.CreateOrderLineAsync(companyId.Value, model);
+            if (!success)
+            {
+                ModelState.AddModelError(string.Empty, "Неуспешно добавяне на ред. Проверете LineNo.");
+                return View("~/Views/CompanyPortal/Orders/CreateOrderLine.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Редът беше добавен успешно.";
+            return RedirectToAction(nameof(OrderDetails), new { id = model.OrderId });
+        }
+
+        /// <summary>
+        /// Зарежда форма за редакция на ред към поръчка.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> EditOrderLine(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetOrderLineForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Orders/EditOrderLine.cshtml", model);
+        }
+
+        /// <summary>
+        /// Записва редакция на ред към поръчка.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditOrderLine(CompanyOrderLineEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/CompanyPortal/Orders/EditOrderLine.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateOrderLineAsync(companyId.Value, model);
+            if (!success)
+            {
+                ModelState.AddModelError(string.Empty, "Неуспешна редакция на реда.");
+                return View("~/Views/CompanyPortal/Orders/EditOrderLine.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Редът беше обновен успешно.";
+            return RedirectToAction(nameof(OrderDetails), new { id = model.OrderId });
+        }
+
+        /// <summary>
+        /// Изтрива ред към поръчка.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteOrderLine(Guid id, Guid orderId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.DeleteOrderLineAsync(companyId.Value, id);
+            if (!success) return NotFound();
+
+            TempData["SuccessMessage"] = "Редът беше изтрит успешно.";
+            return RedirectToAction(nameof(OrderDetails), new { id = orderId });
+        }
+
+        #endregion
+
+        // ============================================================
+        // SHIPMENTS
+        // Основно управление на shipment записите:
+        // списък, детайли, създаване, редакция, изтриване
+        // и обновяване на shipment status/history логиката.
+        // ============================================================
+
+
+        #region Pricing
+
+        [HttpGet]
+        public async Task<IActionResult> ServiceLevels()
+        {
+            var model = await _companyPortalService.GetServiceLevelsAsync();
+            return View("~/Views/CompanyPortal/Pricing/ServiceLevels.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GeoZones()
+        {
+            var model = await _companyPortalService.GetGeoZonesAsync();
+            return View("~/Views/CompanyPortal/Pricing/GeoZones.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ZoneRules()
+        {
+            var model = await _companyPortalService.GetZoneRulesAsync();
+            return View("~/Views/CompanyPortal/Pricing/ZoneRules.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Tariffs()
+        {
+            var model = await _companyPortalService.GetTariffsAsync();
+            return View("~/Views/CompanyPortal/Pricing/Tariffs.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> TariffRates()
+        {
+            var model = await _companyPortalService.GetTariffRatesAsync();
+            return View("~/Views/CompanyPortal/Pricing/TariffRates.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Surcharges()
+        {
+            var model = await _companyPortalService.GetSurchargesAsync();
+            return View("~/Views/CompanyPortal/Pricing/Surcharges.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> TariffSurcharges()
+        {
+            var model = await _companyPortalService.GetTariffSurchargesAsync();
+            return View("~/Views/CompanyPortal/Pricing/TariffSurcharges.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Agreements()
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetAgreementsAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Pricing/Agreements.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DiscountRules()
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetDiscountRulesAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Pricing/DiscountRules.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PricingQuotes()
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetPricingQuotesAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Pricing/PricingQuotes.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PricingQuoteLines()
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetPricingQuoteLinesAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Pricing/PricingQuoteLines.cshtml", model);
+        }
+        [HttpGet]
+        public IActionResult CreateAgreement()
+        {
+            if (GetCurrentCompanyId() == null) return Forbid();
+            return View("~/Views/CompanyPortal/Pricing/CreateAgreement.cshtml", new AgreementCreateViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateAgreement(AgreementCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid) return View("~/Views/CompanyPortal/Pricing/CreateAgreement.cshtml", model);
+            var id = await _companyPortalService.CreateAgreementAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на agreement.";
+                return View("~/Views/CompanyPortal/Pricing/CreateAgreement.cshtml", model);
+            }
+            TempData["SuccessMessage"] = "Agreement беше добавен успешно.";
+            return RedirectToAction(nameof(Agreements));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditAgreement(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetAgreementForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+            return View("~/Views/CompanyPortal/Pricing/EditAgreement.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditAgreement(AgreementEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid) return View("~/Views/CompanyPortal/Pricing/EditAgreement.cshtml", model);
+            var success = await _companyPortalService.UpdateAgreementAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на agreement.";
+                return View("~/Views/CompanyPortal/Pricing/EditAgreement.cshtml", model);
+            }
+            TempData["SuccessMessage"] = "Agreement беше обновен успешно.";
+            return RedirectToAction(nameof(Agreements));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAgreement(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            var success = await _companyPortalService.DeleteAgreementAsync(companyId.Value, id);
+            TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Agreement беше изтрит успешно." : "Неуспешно изтриване на agreement.";
+            return RedirectToAction(nameof(Agreements));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateDiscountRule()
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetCreateDiscountRuleModelAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Pricing/CreateDiscountRule.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateDiscountRule(DiscountRuleCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreateDiscountRuleModelAsync(companyId.Value);
+                reload.AgreementId = model.AgreementId;
+                reload.ServiceLevelId = model.ServiceLevelId;
+                reload.GeoZoneId = model.GeoZoneId;
+                reload.DiscountType = model.DiscountType;
+                reload.Value = model.Value;
+                reload.MinShipmentValue = model.MinShipmentValue;
+                reload.MaxShipmentValue = model.MaxShipmentValue;
+                reload.ValidFromUtc = model.ValidFromUtc;
+                reload.ValidToUtc = model.ValidToUtc;
+                reload.IsActive = model.IsActive;
+                reload.Notes = model.Notes;
+                return View("~/Views/CompanyPortal/Pricing/CreateDiscountRule.cshtml", reload);
+            }
+            var id = await _companyPortalService.CreateDiscountRuleAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на discount rule.";
+                var reload = await _companyPortalService.GetCreateDiscountRuleModelAsync(companyId.Value);
+                reload.AgreementId = model.AgreementId;
+                reload.ServiceLevelId = model.ServiceLevelId;
+                reload.GeoZoneId = model.GeoZoneId;
+                reload.DiscountType = model.DiscountType;
+                reload.Value = model.Value;
+                reload.MinShipmentValue = model.MinShipmentValue;
+                reload.MaxShipmentValue = model.MaxShipmentValue;
+                reload.ValidFromUtc = model.ValidFromUtc;
+                reload.ValidToUtc = model.ValidToUtc;
+                reload.IsActive = model.IsActive;
+                reload.Notes = model.Notes;
+                return View("~/Views/CompanyPortal/Pricing/CreateDiscountRule.cshtml", reload);
+            }
+            TempData["SuccessMessage"] = "Discount rule беше добавен успешно.";
+            return RedirectToAction(nameof(DiscountRules));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditDiscountRule(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetDiscountRuleForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+            return View("~/Views/CompanyPortal/Pricing/EditDiscountRule.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditDiscountRule(DiscountRuleEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetDiscountRuleForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    reload.AgreementId = model.AgreementId;
+                    reload.ServiceLevelId = model.ServiceLevelId;
+                    reload.GeoZoneId = model.GeoZoneId;
+                    reload.DiscountType = model.DiscountType;
+                    reload.Value = model.Value;
+                    reload.MinShipmentValue = model.MinShipmentValue;
+                    reload.MaxShipmentValue = model.MaxShipmentValue;
+                    reload.ValidFromUtc = model.ValidFromUtc;
+                    reload.ValidToUtc = model.ValidToUtc;
+                    reload.IsActive = model.IsActive;
+                    reload.Notes = model.Notes;
+                    model = reload;
+                }
+                return View("~/Views/CompanyPortal/Pricing/EditDiscountRule.cshtml", model);
+            }
+            var success = await _companyPortalService.UpdateDiscountRuleAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на discount rule.";
+                return View("~/Views/CompanyPortal/Pricing/EditDiscountRule.cshtml", model);
+            }
+            TempData["SuccessMessage"] = "Discount rule беше обновен успешно.";
+            return RedirectToAction(nameof(DiscountRules));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteDiscountRule(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            var success = await _companyPortalService.DeleteDiscountRuleAsync(companyId.Value, id);
+            TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Discount rule беше изтрит успешно." : "Неуспешно изтриване на discount rule.";
+            return RedirectToAction(nameof(DiscountRules));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreatePricingQuote()
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetCreatePricingQuoteModelAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Pricing/CreatePricingQuote.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePricingQuote(PricingQuoteCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreatePricingQuoteModelAsync(companyId.Value);
+                CopyPricingQuote(model, reload);
+                return View("~/Views/CompanyPortal/Pricing/CreatePricingQuote.cshtml", reload);
+            }
+            var id = await _companyPortalService.CreatePricingQuoteAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на pricing quote.";
+                var reload = await _companyPortalService.GetCreatePricingQuoteModelAsync(companyId.Value);
+                CopyPricingQuote(model, reload);
+                return View("~/Views/CompanyPortal/Pricing/CreatePricingQuote.cshtml", reload);
+            }
+            TempData["SuccessMessage"] = "Pricing quote беше добавен успешно.";
+            return RedirectToAction(nameof(PricingQuotes));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditPricingQuote(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetPricingQuoteForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+            return View("~/Views/CompanyPortal/Pricing/EditPricingQuote.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPricingQuote(PricingQuoteEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetPricingQuoteForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    CopyPricingQuote(model, reload);
+                    model = reload;
+                }
+                return View("~/Views/CompanyPortal/Pricing/EditPricingQuote.cshtml", model);
+            }
+            var success = await _companyPortalService.UpdatePricingQuoteAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на pricing quote.";
+                return View("~/Views/CompanyPortal/Pricing/EditPricingQuote.cshtml", model);
+            }
+            TempData["SuccessMessage"] = "Pricing quote беше обновен успешно.";
+            return RedirectToAction(nameof(PricingQuotes));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePricingQuote(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            var success = await _companyPortalService.DeletePricingQuoteAsync(companyId.Value, id);
+            TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Pricing quote беше изтрит успешно." : "Неуспешно изтриване на pricing quote.";
+            return RedirectToAction(nameof(PricingQuotes));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreatePricingQuoteLine()
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetCreatePricingQuoteLineModelAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Pricing/CreatePricingQuoteLine.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePricingQuoteLine(PricingQuoteLineCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreatePricingQuoteLineModelAsync(companyId.Value);
+                CopyPricingQuoteLine(model, reload);
+                return View("~/Views/CompanyPortal/Pricing/CreatePricingQuoteLine.cshtml", reload);
+            }
+            var id = await _companyPortalService.CreatePricingQuoteLineAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на pricing quote line.";
+                var reload = await _companyPortalService.GetCreatePricingQuoteLineModelAsync(companyId.Value);
+                CopyPricingQuoteLine(model, reload);
+                return View("~/Views/CompanyPortal/Pricing/CreatePricingQuoteLine.cshtml", reload);
+            }
+            TempData["SuccessMessage"] = "Pricing quote line беше добавен успешно.";
+            return RedirectToAction(nameof(PricingQuoteLines));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditPricingQuoteLine(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            var model = await _companyPortalService.GetPricingQuoteLineForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+            return View("~/Views/CompanyPortal/Pricing/EditPricingQuoteLine.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPricingQuoteLine(PricingQuoteLineEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetPricingQuoteLineForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    CopyPricingQuoteLine(model, reload);
+                    model = reload;
+                }
+                return View("~/Views/CompanyPortal/Pricing/EditPricingQuoteLine.cshtml", model);
+            }
+            var success = await _companyPortalService.UpdatePricingQuoteLineAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на pricing quote line.";
+                return View("~/Views/CompanyPortal/Pricing/EditPricingQuoteLine.cshtml", model);
+            }
+            TempData["SuccessMessage"] = "Pricing quote line беше обновена успешно.";
+            return RedirectToAction(nameof(PricingQuoteLines));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePricingQuoteLine(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+            var success = await _companyPortalService.DeletePricingQuoteLineAsync(companyId.Value, id);
+            TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Pricing quote line беше изтрита успешно." : "Неуспешно изтриване на pricing quote line.";
+            return RedirectToAction(nameof(PricingQuoteLines));
+        }
+
+        private static void CopyPricingQuote(PricingQuoteCreateViewModel source, PricingQuoteCreateViewModel target)
+        {
+            target.QuoteNumber = source.QuoteNumber;
+            target.AgreementId = source.AgreementId;
+            target.OrderId = source.OrderId;
+            target.ShipmentId = source.ShipmentId;
+            target.ServiceLevelId = source.ServiceLevelId;
+            target.Status = source.Status;
+            target.Currency = source.Currency;
+            target.ValidUntilUtc = source.ValidUntilUtc;
+            target.NetAmount = source.NetAmount;
+            target.TaxAmount = source.TaxAmount;
+            target.TotalAmount = source.TotalAmount;
+            target.Notes = source.Notes;
+        }
+
+        private static void CopyPricingQuoteLine(PricingQuoteLineCreateViewModel source, PricingQuoteLineCreateViewModel target)
+        {
+            target.PricingQuoteId = source.PricingQuoteId;
+            target.LineNo = source.LineNo;
+            target.LineType = source.LineType;
+            target.Description = source.Description;
+            target.Quantity = source.Quantity;
+            target.UnitPrice = source.UnitPrice;
+            target.LineAmount = source.LineAmount;
+            target.ReferenceCode = source.ReferenceCode;
+            target.Notes = source.Notes;
+        }
+
+
+[HttpGet]
+public async Task<IActionResult> Charges()
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetChargesAsync(companyId.Value);
+    return View("~/Views/CompanyPortal/Billing/Charges.cshtml", model);
+}
+
+[HttpGet]
+public async Task<IActionResult> ChargeRulesApplied()
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetChargeRulesAppliedAsync(companyId.Value);
+    return View("~/Views/CompanyPortal/Billing/ChargeRulesApplied.cshtml", model);
+}
+
+[HttpGet]
+public async Task<IActionResult> Invoices()
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetInvoicesAsync(companyId.Value);
+    return View("~/Views/CompanyPortal/Billing/Invoices.cshtml", model);
+}
+
+[HttpGet]
+public async Task<IActionResult> InvoiceLines()
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetInvoiceLinesAsync(companyId.Value);
+    return View("~/Views/CompanyPortal/Billing/InvoiceLines.cshtml", model);
+}
+
+[HttpGet]
+public async Task<IActionResult> Payments()
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetPaymentsAsync(companyId.Value);
+    return View("~/Views/CompanyPortal/Billing/Payments.cshtml", model);
+}
+
+[HttpGet]
+public async Task<IActionResult> PaymentAllocations()
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetPaymentAllocationsAsync(companyId.Value);
+    return View("~/Views/CompanyPortal/Billing/PaymentAllocations.cshtml", model);
+}
+
+[HttpGet]
+public async Task<IActionResult> CreditNotes()
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetCreditNotesAsync(companyId.Value);
+    return View("~/Views/CompanyPortal/Billing/CreditNotes.cshtml", model);
+}
+
+[HttpGet]
+public async Task<IActionResult> TaxRates()
+{
+    var model = await _companyPortalService.GetTaxRatesAsync();
+    return View("~/Views/CompanyPortal/Billing/TaxRates.cshtml", model);
+}
+
+[HttpGet]
+public async Task<IActionResult> CreateCharge()
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetCreateChargeModelAsync(companyId.Value);
+    return View("~/Views/CompanyPortal/Billing/CreateCharge.cshtml", model);
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> CreateCharge(ChargeCreateViewModel model)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    if (!ModelState.IsValid)
+    {
+        var reload = await _companyPortalService.GetCreateChargeModelAsync(companyId.Value);
+        CopyCharge(model, reload);
+        return View("~/Views/CompanyPortal/Billing/CreateCharge.cshtml", reload);
+    }
+
+    var id = await _companyPortalService.CreateChargeAsync(companyId.Value, model);
+    if (id == null)
+    {
+        TempData["ErrorMessage"] = "Неуспешно добавяне на charge.";
+        var reload = await _companyPortalService.GetCreateChargeModelAsync(companyId.Value);
+        CopyCharge(model, reload);
+        return View("~/Views/CompanyPortal/Billing/CreateCharge.cshtml", reload);
+    }
+
+    TempData["SuccessMessage"] = "Charge беше добавен успешно.";
+    return RedirectToAction(nameof(Charges));
+}
+
+[HttpGet]
+public async Task<IActionResult> EditCharge(Guid id)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetChargeForEditAsync(companyId.Value, id);
+    if (model == null) return NotFound();
+    return View("~/Views/CompanyPortal/Billing/EditCharge.cshtml", model);
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> EditCharge(ChargeEditViewModel model)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    if (!ModelState.IsValid)
+    {
+        var reload = await _companyPortalService.GetChargeForEditAsync(companyId.Value, model.Id);
+        if (reload != null)
+        {
+            CopyCharge(model, reload);
+            model = reload;
+        }
+        return View("~/Views/CompanyPortal/Billing/EditCharge.cshtml", model);
+    }
+
+    var success = await _companyPortalService.UpdateChargeAsync(companyId.Value, model);
+    if (!success)
+    {
+        TempData["ErrorMessage"] = "Неуспешно обновяване на charge.";
+        return View("~/Views/CompanyPortal/Billing/EditCharge.cshtml", model);
+    }
+
+    TempData["SuccessMessage"] = "Charge беше обновен успешно.";
+    return RedirectToAction(nameof(Charges));
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> DeleteCharge(Guid id)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var success = await _companyPortalService.DeleteChargeAsync(companyId.Value, id);
+    TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Charge беше изтрит успешно." : "Неуспешно изтриване на charge.";
+    return RedirectToAction(nameof(Charges));
+}
+
+[HttpGet]
+public async Task<IActionResult> CreateChargeRuleApplied()
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetCreateChargeRuleAppliedModelAsync(companyId.Value);
+    return View("~/Views/CompanyPortal/Billing/CreateChargeRuleApplied.cshtml", model);
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> CreateChargeRuleApplied(ChargeRuleAppliedCreateViewModel model)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    if (!ModelState.IsValid)
+    {
+        var reload = await _companyPortalService.GetCreateChargeRuleAppliedModelAsync(companyId.Value);
+        CopyChargeRuleApplied(model, reload);
+        return View("~/Views/CompanyPortal/Billing/CreateChargeRuleApplied.cshtml", reload);
+    }
+
+    var id = await _companyPortalService.CreateChargeRuleAppliedAsync(companyId.Value, model);
+    if (id == null)
+    {
+        TempData["ErrorMessage"] = "Неуспешно добавяне на charge rule.";
+        var reload = await _companyPortalService.GetCreateChargeRuleAppliedModelAsync(companyId.Value);
+        CopyChargeRuleApplied(model, reload);
+        return View("~/Views/CompanyPortal/Billing/CreateChargeRuleApplied.cshtml", reload);
+    }
+
+    TempData["SuccessMessage"] = "Charge rule беше добавен успешно.";
+    return RedirectToAction(nameof(ChargeRulesApplied));
+}
+
+[HttpGet]
+public async Task<IActionResult> EditChargeRuleApplied(Guid id)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetChargeRuleAppliedForEditAsync(companyId.Value, id);
+    if (model == null) return NotFound();
+    return View("~/Views/CompanyPortal/Billing/EditChargeRuleApplied.cshtml", model);
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> EditChargeRuleApplied(ChargeRuleAppliedEditViewModel model)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    if (!ModelState.IsValid)
+    {
+        var reload = await _companyPortalService.GetChargeRuleAppliedForEditAsync(companyId.Value, model.Id);
+        if (reload != null)
+        {
+            CopyChargeRuleApplied(model, reload);
+            model = reload;
+        }
+        return View("~/Views/CompanyPortal/Billing/EditChargeRuleApplied.cshtml", model);
+    }
+
+    var success = await _companyPortalService.UpdateChargeRuleAppliedAsync(companyId.Value, model);
+    if (!success)
+    {
+        TempData["ErrorMessage"] = "Неуспешно обновяване на charge rule.";
+        return View("~/Views/CompanyPortal/Billing/EditChargeRuleApplied.cshtml", model);
+    }
+
+    TempData["SuccessMessage"] = "Charge rule беше обновен успешно.";
+    return RedirectToAction(nameof(ChargeRulesApplied));
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> DeleteChargeRuleApplied(Guid id)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var success = await _companyPortalService.DeleteChargeRuleAppliedAsync(companyId.Value, id);
+    TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Charge rule беше изтрит успешно." : "Неуспешно изтриване на charge rule.";
+    return RedirectToAction(nameof(ChargeRulesApplied));
+}
+
+[HttpGet]
+public IActionResult CreateInvoice()
+{
+    if (GetCurrentCompanyId() == null) return Forbid();
+    return View("~/Views/CompanyPortal/Billing/CreateInvoice.cshtml", new InvoiceCreateViewModel());
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> CreateInvoice(InvoiceCreateViewModel model)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    if (!ModelState.IsValid) return View("~/Views/CompanyPortal/Billing/CreateInvoice.cshtml", model);
+
+    var id = await _companyPortalService.CreateInvoiceAsync(companyId.Value, model);
+    if (id == null)
+    {
+        TempData["ErrorMessage"] = "Неуспешно добавяне на invoice.";
+        return View("~/Views/CompanyPortal/Billing/CreateInvoice.cshtml", model);
+    }
+
+    TempData["SuccessMessage"] = "Invoice беше добавен успешно.";
+    return RedirectToAction(nameof(Invoices));
+}
+
+[HttpGet]
+public async Task<IActionResult> EditInvoice(Guid id)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetInvoiceForEditAsync(companyId.Value, id);
+    if (model == null) return NotFound();
+    return View("~/Views/CompanyPortal/Billing/EditInvoice.cshtml", model);
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> EditInvoice(InvoiceEditViewModel model)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    if (!ModelState.IsValid) return View("~/Views/CompanyPortal/Billing/EditInvoice.cshtml", model);
+
+    var success = await _companyPortalService.UpdateInvoiceAsync(companyId.Value, model);
+    if (!success)
+    {
+        TempData["ErrorMessage"] = "Неуспешно обновяване на invoice.";
+        return View("~/Views/CompanyPortal/Billing/EditInvoice.cshtml", model);
+    }
+
+    TempData["SuccessMessage"] = "Invoice беше обновен успешно.";
+    return RedirectToAction(nameof(Invoices));
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> DeleteInvoice(Guid id)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var success = await _companyPortalService.DeleteInvoiceAsync(companyId.Value, id);
+    TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Invoice беше изтрита успешно." : "Неуспешно изтриване на invoice.";
+    return RedirectToAction(nameof(Invoices));
+}
+
+[HttpGet]
+public async Task<IActionResult> CreateInvoiceLine()
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetCreateInvoiceLineModelAsync(companyId.Value);
+    return View("~/Views/CompanyPortal/Billing/CreateInvoiceLine.cshtml", model);
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> CreateInvoiceLine(InvoiceLineCreateViewModel model)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    if (!ModelState.IsValid)
+    {
+        var reload = await _companyPortalService.GetCreateInvoiceLineModelAsync(companyId.Value);
+        CopyInvoiceLine(model, reload);
+        return View("~/Views/CompanyPortal/Billing/CreateInvoiceLine.cshtml", reload);
+    }
+
+    var id = await _companyPortalService.CreateInvoiceLineAsync(companyId.Value, model);
+    if (id == null)
+    {
+        TempData["ErrorMessage"] = "Неуспешно добавяне на invoice line.";
+        var reload = await _companyPortalService.GetCreateInvoiceLineModelAsync(companyId.Value);
+        CopyInvoiceLine(model, reload);
+        return View("~/Views/CompanyPortal/Billing/CreateInvoiceLine.cshtml", reload);
+    }
+
+    TempData["SuccessMessage"] = "Invoice line беше добавен успешно.";
+    return RedirectToAction(nameof(InvoiceLines));
+}
+
+[HttpGet]
+public async Task<IActionResult> EditInvoiceLine(Guid id)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetInvoiceLineForEditAsync(companyId.Value, id);
+    if (model == null) return NotFound();
+    return View("~/Views/CompanyPortal/Billing/EditInvoiceLine.cshtml", model);
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> EditInvoiceLine(InvoiceLineEditViewModel model)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    if (!ModelState.IsValid)
+    {
+        var reload = await _companyPortalService.GetInvoiceLineForEditAsync(companyId.Value, model.Id);
+        if (reload != null)
+        {
+            CopyInvoiceLine(model, reload);
+            model = reload;
+        }
+        return View("~/Views/CompanyPortal/Billing/EditInvoiceLine.cshtml", model);
+    }
+
+    var success = await _companyPortalService.UpdateInvoiceLineAsync(companyId.Value, model);
+    if (!success)
+    {
+        TempData["ErrorMessage"] = "Неуспешно обновяване на invoice line.";
+        return View("~/Views/CompanyPortal/Billing/EditInvoiceLine.cshtml", model);
+    }
+
+    TempData["SuccessMessage"] = "Invoice line беше обновена успешно.";
+    return RedirectToAction(nameof(InvoiceLines));
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> DeleteInvoiceLine(Guid id)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var success = await _companyPortalService.DeleteInvoiceLineAsync(companyId.Value, id);
+    TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Invoice line беше изтрита успешно." : "Неуспешно изтриване на invoice line.";
+    return RedirectToAction(nameof(InvoiceLines));
+}
+
+[HttpGet]
+public async Task<IActionResult> CreatePayment()
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetCreatePaymentModelAsync(companyId.Value);
+    return View("~/Views/CompanyPortal/Billing/CreatePayment.cshtml", model);
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> CreatePayment(PaymentCreateViewModel model)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    if (!ModelState.IsValid)
+    {
+        var reload = await _companyPortalService.GetCreatePaymentModelAsync(companyId.Value);
+        CopyPayment(model, reload);
+        return View("~/Views/CompanyPortal/Billing/CreatePayment.cshtml", reload);
+    }
+
+    var id = await _companyPortalService.CreatePaymentAsync(companyId.Value, model);
+    if (id == null)
+    {
+        TempData["ErrorMessage"] = "Неуспешно добавяне на payment.";
+        var reload = await _companyPortalService.GetCreatePaymentModelAsync(companyId.Value);
+        CopyPayment(model, reload);
+        return View("~/Views/CompanyPortal/Billing/CreatePayment.cshtml", reload);
+    }
+
+    TempData["SuccessMessage"] = "Payment беше добавен успешно.";
+    return RedirectToAction(nameof(Payments));
+}
+
+[HttpGet]
+public async Task<IActionResult> EditPayment(Guid id)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetPaymentForEditAsync(companyId.Value, id);
+    if (model == null) return NotFound();
+    return View("~/Views/CompanyPortal/Billing/EditPayment.cshtml", model);
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> EditPayment(PaymentEditViewModel model)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    if (!ModelState.IsValid)
+    {
+        var reload = await _companyPortalService.GetPaymentForEditAsync(companyId.Value, model.Id);
+        if (reload != null)
+        {
+            CopyPayment(model, reload);
+            model = reload;
+        }
+        return View("~/Views/CompanyPortal/Billing/EditPayment.cshtml", model);
+    }
+
+    var success = await _companyPortalService.UpdatePaymentAsync(companyId.Value, model);
+    if (!success)
+    {
+        TempData["ErrorMessage"] = "Неуспешно обновяване на payment.";
+        return View("~/Views/CompanyPortal/Billing/EditPayment.cshtml", model);
+    }
+
+    TempData["SuccessMessage"] = "Payment беше обновен успешно.";
+    return RedirectToAction(nameof(Payments));
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> DeletePayment(Guid id)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var success = await _companyPortalService.DeletePaymentAsync(companyId.Value, id);
+    TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Payment беше изтрито успешно." : "Неуспешно изтриване на payment.";
+    return RedirectToAction(nameof(Payments));
+}
+
+[HttpGet]
+public async Task<IActionResult> CreatePaymentAllocation()
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetCreatePaymentAllocationModelAsync(companyId.Value);
+    return View("~/Views/CompanyPortal/Billing/CreatePaymentAllocation.cshtml", model);
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> CreatePaymentAllocation(PaymentAllocationCreateViewModel model)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    if (!ModelState.IsValid)
+    {
+        var reload = await _companyPortalService.GetCreatePaymentAllocationModelAsync(companyId.Value);
+        CopyPaymentAllocation(model, reload);
+        return View("~/Views/CompanyPortal/Billing/CreatePaymentAllocation.cshtml", reload);
+    }
+
+    var id = await _companyPortalService.CreatePaymentAllocationAsync(companyId.Value, model);
+    if (id == null)
+    {
+        TempData["ErrorMessage"] = "Неуспешно добавяне на payment allocation.";
+        var reload = await _companyPortalService.GetCreatePaymentAllocationModelAsync(companyId.Value);
+        CopyPaymentAllocation(model, reload);
+        return View("~/Views/CompanyPortal/Billing/CreatePaymentAllocation.cshtml", reload);
+    }
+
+    TempData["SuccessMessage"] = "Payment allocation беше добавен успешно.";
+    return RedirectToAction(nameof(PaymentAllocations));
+}
+
+[HttpGet]
+public async Task<IActionResult> EditPaymentAllocation(Guid id)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetPaymentAllocationForEditAsync(companyId.Value, id);
+    if (model == null) return NotFound();
+    return View("~/Views/CompanyPortal/Billing/EditPaymentAllocation.cshtml", model);
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> EditPaymentAllocation(PaymentAllocationEditViewModel model)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    if (!ModelState.IsValid)
+    {
+        var reload = await _companyPortalService.GetPaymentAllocationForEditAsync(companyId.Value, model.Id);
+        if (reload != null)
+        {
+            CopyPaymentAllocation(model, reload);
+            model = reload;
+        }
+        return View("~/Views/CompanyPortal/Billing/EditPaymentAllocation.cshtml", model);
+    }
+
+    var success = await _companyPortalService.UpdatePaymentAllocationAsync(companyId.Value, model);
+    if (!success)
+    {
+        TempData["ErrorMessage"] = "Неуспешно обновяване на payment allocation.";
+        return View("~/Views/CompanyPortal/Billing/EditPaymentAllocation.cshtml", model);
+    }
+
+    TempData["SuccessMessage"] = "Payment allocation беше обновен успешно.";
+    return RedirectToAction(nameof(PaymentAllocations));
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> DeletePaymentAllocation(Guid id)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var success = await _companyPortalService.DeletePaymentAllocationAsync(companyId.Value, id);
+    TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Payment allocation беше изтрит успешно." : "Неуспешно изтриване на payment allocation.";
+    return RedirectToAction(nameof(PaymentAllocations));
+}
+
+[HttpGet]
+public async Task<IActionResult> CreateCreditNote()
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetCreateCreditNoteModelAsync(companyId.Value);
+    return View("~/Views/CompanyPortal/Billing/CreateCreditNote.cshtml", model);
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> CreateCreditNote(CreditNoteCreateViewModel model)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    if (!ModelState.IsValid)
+    {
+        var reload = await _companyPortalService.GetCreateCreditNoteModelAsync(companyId.Value);
+        CopyCreditNote(model, reload);
+        return View("~/Views/CompanyPortal/Billing/CreateCreditNote.cshtml", reload);
+    }
+
+    var id = await _companyPortalService.CreateCreditNoteAsync(companyId.Value, model);
+    if (id == null)
+    {
+        TempData["ErrorMessage"] = "Неуспешно добавяне на credit note.";
+        var reload = await _companyPortalService.GetCreateCreditNoteModelAsync(companyId.Value);
+        CopyCreditNote(model, reload);
+        return View("~/Views/CompanyPortal/Billing/CreateCreditNote.cshtml", reload);
+    }
+
+    TempData["SuccessMessage"] = "Credit note беше добавена успешно.";
+    return RedirectToAction(nameof(CreditNotes));
+}
+
+[HttpGet]
+public async Task<IActionResult> EditCreditNote(Guid id)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var model = await _companyPortalService.GetCreditNoteForEditAsync(companyId.Value, id);
+    if (model == null) return NotFound();
+    return View("~/Views/CompanyPortal/Billing/EditCreditNote.cshtml", model);
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> EditCreditNote(CreditNoteEditViewModel model)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    if (!ModelState.IsValid)
+    {
+        var reload = await _companyPortalService.GetCreditNoteForEditAsync(companyId.Value, model.Id);
+        if (reload != null)
+        {
+            CopyCreditNote(model, reload);
+            model = reload;
+        }
+        return View("~/Views/CompanyPortal/Billing/EditCreditNote.cshtml", model);
+    }
+
+    var success = await _companyPortalService.UpdateCreditNoteAsync(companyId.Value, model);
+    if (!success)
+    {
+        TempData["ErrorMessage"] = "Неуспешно обновяване на credit note.";
+        return View("~/Views/CompanyPortal/Billing/EditCreditNote.cshtml", model);
+    }
+
+    TempData["SuccessMessage"] = "Credit note беше обновена успешно.";
+    return RedirectToAction(nameof(CreditNotes));
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> DeleteCreditNote(Guid id)
+{
+    var companyId = GetCurrentCompanyId();
+    if (companyId == null) return Forbid();
+    var success = await _companyPortalService.DeleteCreditNoteAsync(companyId.Value, id);
+    TempData[success ? "SuccessMessage" : "ErrorMessage"] = success ? "Credit note беше изтрита успешно." : "Неуспешно изтриване на credit note.";
+    return RedirectToAction(nameof(CreditNotes));
+}
+
+private static void CopyCharge(ChargeCreateViewModel source, ChargeCreateViewModel target)
+{
+    target.ShipmentId = source.ShipmentId;
+    target.ShipmentLegId = source.ShipmentLegId;
+    target.ChargeCode = source.ChargeCode;
+    target.Description = source.Description;
+    target.Quantity = source.Quantity;
+    target.UnitPrice = source.UnitPrice;
+    target.Currency = source.Currency;
+    target.SourceType = source.SourceType;
+    target.IsTaxable = source.IsTaxable;
+    target.TaxRatePercent = source.TaxRatePercent;
+    target.Notes = source.Notes;
+}
+
+private static void CopyChargeRuleApplied(ChargeRuleAppliedCreateViewModel source, ChargeRuleAppliedCreateViewModel target)
+{
+    target.ChargeId = source.ChargeId;
+    target.SourceEntityType = source.SourceEntityType;
+    target.SourceEntityId = source.SourceEntityId;
+    target.RuleCode = source.RuleCode;
+    target.RuleDescription = source.RuleDescription;
+    target.AppliedAmount = source.AppliedAmount;
+    target.Notes = source.Notes;
+}
+
+private static void CopyInvoiceLine(InvoiceLineCreateViewModel source, InvoiceLineCreateViewModel target)
+{
+    target.InvoiceId = source.InvoiceId;
+    target.ChargeId = source.ChargeId;
+    target.ShipmentId = source.ShipmentId;
+    target.LineNo = source.LineNo;
+    target.Description = source.Description;
+    target.Quantity = source.Quantity;
+    target.UnitPrice = source.UnitPrice;
+    target.TaxRatePercent = source.TaxRatePercent;
+    target.LineNetAmount = source.LineNetAmount;
+    target.LineTaxAmount = source.LineTaxAmount;
+    target.LineTotalAmount = source.LineTotalAmount;
+}
+
+private static void CopyPayment(PaymentCreateViewModel source, PaymentCreateViewModel target)
+{
+    target.InvoiceId = source.InvoiceId;
+    target.PaymentDateUtc = source.PaymentDateUtc;
+    target.Amount = source.Amount;
+    target.Currency = source.Currency;
+    target.PaymentMethod = source.PaymentMethod;
+    target.Status = source.Status;
+    target.TransactionReference = source.TransactionReference;
+    target.Notes = source.Notes;
+}
+
+private static void CopyPaymentAllocation(PaymentAllocationCreateViewModel source, PaymentAllocationCreateViewModel target)
+{
+    target.PaymentId = source.PaymentId;
+    target.InvoiceId = source.InvoiceId;
+    target.AllocatedAmount = source.AllocatedAmount;
+    target.AllocatedAtUtc = source.AllocatedAtUtc;
+    target.Notes = source.Notes;
+}
+
+private static void CopyCreditNote(CreditNoteCreateViewModel source, CreditNoteCreateViewModel target)
+{
+    target.CreditNoteNo = source.CreditNoteNo;
+    target.InvoiceId = source.InvoiceId;
+    target.IssueDateUtc = source.IssueDateUtc;
+    target.Currency = source.Currency;
+    target.Status = source.Status;
+    target.NetAmount = source.NetAmount;
+    target.TaxAmount = source.TaxAmount;
+    target.TotalAmount = source.TotalAmount;
+    target.Reason = source.Reason;
+    target.Notes = source.Notes;
+}
+
+
+        #endregion
+
+        #region Shipments
+
+        /// <summary>
+        /// Показва всички shipments, достъпни за фирмата.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> Shipments()
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetMyShipmentsAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Shipments/Shipments.cshtml", model);
+        }
+
+        /// <summary>
+        /// Показва детайли за shipment.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> ShipmentDetails(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentDetailsAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/ShipmentDetails.cshtml", model);
+        }
+
+        /// <summary>
+        /// Зарежда форма за нов shipment.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> CreateShipment()
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCreateShipmentModelAsync(companyId.Value);
+            return View("~/Views/CompanyPortal/Shipments/CreateShipment.cshtml", model);
+        }
+
+        /// <summary>
+        /// Създава shipment.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateShipment(CompanyShipmentCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                model.OrderOptions = (await _companyPortalService.GetCreateShipmentModelAsync(companyId.Value)).OrderOptions;
+                model.AddressOptions = await _companyPortalService.GetAddressOptionsAsync();
+                return View("~/Views/CompanyPortal/Shipments/CreateShipment.cshtml", model);
+            }
+
+            var shipmentId = await _companyPortalService.CreateShipmentAsync(companyId.Value, model);
+
+            TempData["SuccessMessage"] = "Shipment-ът беше създаден успешно.";
+            return RedirectToAction(nameof(ShipmentDetails), new { id = shipmentId });
+        }
+
+        /// <summary>
+        /// Зарежда форма за редакция на shipment.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> EditShipment(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/EditShipment.cshtml", model);
+        }
+
+        /// <summary>
+        /// Записва редакция на shipment.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditShipment(CompanyShipmentEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var existing = await _companyPortalService.GetShipmentForEditAsync(companyId.Value, model.Id);
+                if (existing != null)
+                {
+                    model.OrderOptions = existing.OrderOptions;
+                    model.AddressOptions = existing.AddressOptions;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/EditShipment.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateShipmentAsync(companyId.Value, model);
+
+            if (!success)
+            {
+                ModelState.AddModelError(string.Empty, "Shipment-ът не може да бъде редактиран.");
+                var existing = await _companyPortalService.GetShipmentForEditAsync(companyId.Value, model.Id);
+                if (existing != null)
+                {
+                    model.OrderOptions = existing.OrderOptions;
+                    model.AddressOptions = existing.AddressOptions;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/EditShipment.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Shipment-ът беше обновен успешно.";
+            return RedirectToAction(nameof(ShipmentDetails), new { id = model.Id });
+        }
+
+        /// <summary>
+        /// Изтрива shipment.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteShipment(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.DeleteShipmentAsync(companyId.Value, id);
+            if (!success) return NotFound();
+
+            TempData["SuccessMessage"] = "Shipment-ът беше изтрит успешно.";
+            return RedirectToAction(nameof(Shipments));
+        }
+
+        /// <summary>
+        /// Обновява status на shipment.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateShipmentStatus(Guid id, string newStatus, string? reason)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.UpdateShipmentStatusAsync(companyId.Value, id, newStatus, reason);
+            if (!success) return NotFound();
+
+            TempData["SuccessMessage"] = "Shipment статусът беше обновен успешно.";
+            return RedirectToAction(nameof(ShipmentDetails), new { id });
+        }
+
+        #endregion
+
+        // ============================================================
+        // SHIPMENT PARTIES
+        // Управление на участниците в shipment-а:
+        // списък, добавяне, редакция, изтриване и зареждане
+        // на контактите за конкретна party company.
+        // ============================================================
+
+        #region Shipment Parties
+
+        /// <summary>
+        /// Показва parties за shipment.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> ShipmentParties(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentPartiesAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Party/ShipmentParties.cshtml", model);
+        }
+
+        /// <summary>
+        /// Зарежда форма за нов shipment party.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> CreateShipmentParty(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCreateShipmentPartyModelAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Party/CreateShipmentParty.cshtml", model);
+        }
+
+        /// <summary>
+        /// Връща контакти за избрана компания при shipment party формата.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetShipmentPartyContacts(Guid companyId)
+        {
+            var currentCompanyId = GetCurrentCompanyId();
+            if (currentCompanyId == null)
+            {
+                return Json(new List<object>());
+            }
+
+            var contacts = await _companyPortalService.GetShipmentPartyContactOptionsAsync(companyId);
+
+            var result = contacts.Select(x => new
+            {
+                value = x.Value,
+                text = x.Text
+            });
+
+            return Json(result);
+        }
+
+        /// <summary>
+        /// Създава shipment party.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateShipmentParty(CompanyShipmentPartyCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var result = await _companyPortalService.CreateShipmentPartyAsync(companyId.Value, model);
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError(string.Empty, result.ErrorMessage ?? "Неуспешно добавяне на shipment party.");
+
+                var reload = await _companyPortalService.GetCreateShipmentPartyModelAsync(companyId.Value, model.ShipmentId);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                    model.CompanyOptions = reload.CompanyOptions;
+                    model.ContactOptions = model.CompanyId == Guid.Empty
+                        ? new List<SelectListItem>()
+                        : await _companyPortalService.GetShipmentPartyContactOptionsAsync(model.CompanyId);
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Party/CreateShipmentParty.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Shipment party беше добавен успешно.";
+            return RedirectToAction(nameof(ShipmentParties), new { shipmentId = model.ShipmentId });
+        }
+
+        /// <summary>
+        /// Зарежда форма за редакция на shipment party.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> EditShipmentParty(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentPartyForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Party/EditShipmentParty.cshtml", model);
+        }
+
+        /// <summary>
+        /// Записва редакция на shipment party.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditShipmentParty(CompanyShipmentPartyEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetShipmentPartyForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                    model.CompanyOptions = reload.CompanyOptions;
+                    model.ContactOptions = reload.ContactOptions;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Party/EditShipmentParty.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateShipmentPartyAsync(companyId.Value, model);
+            if (!success)
+            {
+                ModelState.AddModelError(string.Empty, "Неуспешно обновяване на shipment party.");
+                var reload = await _companyPortalService.GetShipmentPartyForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                    model.CompanyOptions = reload.CompanyOptions;
+                    model.ContactOptions = reload.ContactOptions;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Party/EditShipmentParty.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = "Shipment party беше обновен успешно.";
+            return RedirectToAction(nameof(ShipmentParties), new { shipmentId = model.ShipmentId });
+        }
+
+        /// <summary>
+        /// Изтрива shipment party.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteShipmentParty(Guid id, Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.DeleteShipmentPartyAsync(companyId.Value, id);
+            if (!success) return NotFound();
+
+            TempData["SuccessMessage"] = "Shipment party беше изтрит успешно.";
+            return RedirectToAction(nameof(ShipmentParties), new { shipmentId });
+        }
+
+        #endregion
+
+        // ============================================================
+        // SHIPMENT LEGS
+        // Управление на транспортните legs към shipment-а:
+        // списък, детайли, създаване, редакция, изтриване,
+        // както и update на leg status и неговата history.
+        // ============================================================
+
+        #region Shipment Legs
+
+        /// <summary>
+        /// Показва всички legs за shipment.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> ShipmentLegs(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentLegsAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Legs/ShipmentLegs.cshtml", model);
+        }
+
+        /// <summary>
+        /// Показва детайли за shipment leg.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> ShipmentLegDetails(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentLegDetailsAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Legs/ShipmentLegDetails.cshtml", model);
+        }
+
+        /// <summary>
+        /// Зарежда форма за нов shipment leg.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> CreateShipmentLeg(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCreateShipmentLegModelAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Legs/CreateShipmentLeg.cshtml", model);
+        }
+
+        /// <summary>
+        /// Създава shipment leg.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateShipmentLeg(CompanyShipmentLegCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreateShipmentLegModelAsync(companyId.Value, model.ShipmentId);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                    model.LocationOptions = reload.LocationOptions;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Legs/CreateShipmentLeg.cshtml", model);
+            }
+
+            var legId = await _companyPortalService.CreateShipmentLegAsync(companyId.Value, model);
+            if (legId == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на shipment leg.";
+                return RedirectToAction(nameof(ShipmentLegs), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment leg беше добавен успешно.";
+            return RedirectToAction(nameof(ShipmentLegDetails), new { id = legId.Value });
+        }
+
+        /// <summary>
+        /// Зарежда форма за редакция на shipment leg.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> EditShipmentLeg(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentLegForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Legs/EditShipmentLeg.cshtml", model);
+        }
+
+        /// <summary>
+        /// Записва редакция на shipment leg.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditShipmentLeg(CompanyShipmentLegEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetShipmentLegForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                    model.LocationOptions = reload.LocationOptions;
+                    model.CurrentStatus = reload.CurrentStatus;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Legs/EditShipmentLeg.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateShipmentLegAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на shipment leg.";
+                return RedirectToAction(nameof(ShipmentLegs), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment leg беше обновен успешно.";
+            return RedirectToAction(nameof(ShipmentLegDetails), new { id = model.Id });
+        }
+
+        /// <summary>
+        /// Обновява status на shipment leg.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateShipmentLegStatus(CompanyShipmentLegStatusUpdateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.UpdateShipmentLegStatusAsync(companyId.Value, model);
+
+            TempData[success ? "SuccessMessage" : "ErrorMessage"] = success
+                ? "Leg status беше обновен успешно."
+                : "Неуспешно обновяване на leg status.";
+
+            return RedirectToAction(nameof(ShipmentLegDetails), new { id = model.ShipmentLegId });
+        }
+
+        /// <summary>
+        /// Изтрива shipment leg.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteShipmentLeg(Guid id, Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.DeleteShipmentLegAsync(companyId.Value, id);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно изтриване на shipment leg.";
+                return RedirectToAction(nameof(ShipmentLegs), new { shipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment leg беше изтрит успешно.";
+            return RedirectToAction(nameof(ShipmentLegs), new { shipmentId });
+        }
+
+        #endregion
+
+        // ============================================================
+        // SHIPMENT TRACKING EVENTS
+        // Управление на tracking events за shipment-а:
+        // списък, добавяне, редакция и изтриване на събития,
+        // които описват движението и статуса по трасето.
+        // ============================================================
+
+        #region Tracking Events
+
+        /// <summary>
+        /// Показва tracking events за shipment.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> TrackingEvents(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetTrackingEventsAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/TrackingEvents/TrackingEvents.cshtml", model);
+        }
+
+        /// <summary>
+        /// Зарежда форма за нов tracking event.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> CreateTrackingEvent(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCreateTrackingEventModelAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/TrackingEvents/CreateTrackingEvent.cshtml", model);
+        }
+
+        /// <summary>
+        /// Създава tracking event.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateTrackingEvent(CompanyTrackingEventCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreateTrackingEventModelAsync(companyId.Value, model.ShipmentId);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                    model.LocationOptions = reload.LocationOptions;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/TrackingEvents/CreateTrackingEvent.cshtml", model);
+            }
+
+            var trackingEventId = await _companyPortalService.CreateTrackingEventAsync(companyId.Value, model);
+            if (trackingEventId == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на tracking event.";
+                return RedirectToAction(nameof(TrackingEvents), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Tracking event беше добавен успешно.";
+            return RedirectToAction(nameof(TrackingEvents), new { shipmentId = model.ShipmentId });
+        }
+
+        /// <summary>
+        /// Зарежда форма за редакция на tracking event.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> EditTrackingEvent(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetTrackingEventForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/TrackingEvents/EditTrackingEvent.cshtml", model);
+        }
+
+        /// <summary>
+        /// Записва редакция на tracking event.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditTrackingEvent(CompanyTrackingEventEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetTrackingEventForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                    model.LocationOptions = reload.LocationOptions;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/TrackingEvents/EditTrackingEvent.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateTrackingEventAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на tracking event.";
+                return RedirectToAction(nameof(TrackingEvents), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Tracking event беше обновен успешно.";
+            return RedirectToAction(nameof(TrackingEvents), new { shipmentId = model.ShipmentId });
+        }
+
+        /// <summary>
+        /// Изтрива tracking event.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteTrackingEvent(Guid id, Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.DeleteTrackingEventAsync(companyId.Value, id);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно изтриване на tracking event.";
+                return RedirectToAction(nameof(TrackingEvents), new { shipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Tracking event беше изтрит успешно.";
+            return RedirectToAction(nameof(TrackingEvents), new { shipmentId });
+        }
+
+        #endregion
+
+        // ============================================================
+        // PROOF OF DELIVERIES
+        // Управление на POD записи за shipment:
+        // списък, създаване, редакция и изтриване.
+        // ============================================================
+
+        #region Proof Of Deliveries
+
+        /// <summary>
+        /// Показва POD записите за shipment.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> ProofOfDeliveries(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetProofOfDeliveriesAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/ProofOfDelivery/ProofOfDeliveries.cshtml", model);
+        }
+
+        /// <summary>
+        /// Зарежда форма за нов POD.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> CreateProofOfDelivery(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCreateProofOfDeliveryModelAsync(companyId.Value, shipmentId);
+            if (model == null)
+            {
+                TempData["ErrorMessage"] = "За този shipment вече има proof of delivery или нямате право да добавяте нов.";
+                return RedirectToAction(nameof(ProofOfDeliveries), new { shipmentId });
+            }
+
+            return View("~/Views/CompanyPortal/Shipments/ProofOfDelivery/CreateProofOfDelivery.cshtml", model);
+        }
+
+        /// <summary>
+        /// Създава нов POD.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateProofOfDelivery(CompanyProofOfDeliveryCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreateProofOfDeliveryModelAsync(companyId.Value, model.ShipmentId);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/ProofOfDelivery/CreateProofOfDelivery.cshtml", model);
+            }
+
+            var podId = await _companyPortalService.CreateProofOfDeliveryAsync(companyId.Value, model);
+            if (podId == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне. За този shipment вече има proof of delivery.";
+                return RedirectToAction(nameof(ProofOfDeliveries), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Proof of delivery беше добавен успешно.";
+            return RedirectToAction(nameof(ProofOfDeliveries), new { shipmentId = model.ShipmentId });
+        }
+
+        /// <summary>
+        /// Зарежда форма за редакция на POD.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> EditProofOfDelivery(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetProofOfDeliveryForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/ProofOfDelivery/EditProofOfDelivery.cshtml", model);
+        }
+
+        /// <summary>
+        /// Записва редакция на POD.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProofOfDelivery(CompanyProofOfDeliveryEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetProofOfDeliveryForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/ProofOfDelivery/EditProofOfDelivery.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateProofOfDeliveryAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на proof of delivery.";
+                return RedirectToAction(nameof(ProofOfDeliveries), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Proof of delivery беше обновен успешно.";
+            return RedirectToAction(nameof(ProofOfDeliveries), new { shipmentId = model.ShipmentId });
+        }
+
+        #region Delete POD
+        /// <summary>
+        /// Изтрива POD.
+        /// </summary>
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteProofOfDelivery(Guid id, Guid shipmentId)
+        //{
+        //    var companyId = GetCurrentCompanyId();
+        //    if (companyId == null) return Forbid();
+
+        //    var success = await _companyPortalService.DeleteProofOfDeliveryAsync(companyId.Value, id);
+        //    if (!success)
+        //    {
+        //        TempData["ErrorMessage"] = "Неуспешно изтриване на proof of delivery.";
+        //        return RedirectToAction(nameof(ProofOfDeliveries), new { shipmentId });
+        //    }
+
+        //    TempData["SuccessMessage"] = "Proof of delivery беше изтрит успешно.";
+        //    return RedirectToAction(nameof(ProofOfDeliveries), new { shipmentId });
+        //}
+        #endregion
+        #endregion
+
+        // ============================================================
+        // PACKAGES
+        // ============================================================
+
+        #region Packages
+
+        [HttpGet]
+        public async Task<IActionResult> Packages(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetPackagesAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Packages/Packages.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreatePackage(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCreatePackageModelAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Packages/CreatePackage.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePackage(CompanyPackageCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreatePackageModelAsync(companyId.Value, model.ShipmentId);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Packages/CreatePackage.cshtml", model);
+            }
+
+            var packageId = await _companyPortalService.CreatePackageAsync(companyId.Value, model);
+            if (packageId == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на package. Възможно е да има дублиращ Package No.";
+                return RedirectToAction(nameof(Packages), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Package беше добавен успешно.";
+            return RedirectToAction(nameof(Packages), new { shipmentId = model.ShipmentId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditPackage(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetPackageForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Packages/EditPackage.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPackage(CompanyPackageEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetPackageForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Packages/EditPackage.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdatePackageAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на package. Възможно е да има дублиращ Package No.";
+                return RedirectToAction(nameof(Packages), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Package беше обновен успешно.";
+            return RedirectToAction(nameof(Packages), new { shipmentId = model.ShipmentId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePackage(Guid id, Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.DeletePackageAsync(companyId.Value, id);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно изтриване на package.";
+                return RedirectToAction(nameof(Packages), new { shipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Package беше изтрит успешно.";
+            return RedirectToAction(nameof(Packages), new { shipmentId });
+        }
+
+        #endregion
+
+        // ============================================================
+        // PACKAGE ITEMS
+        // ============================================================
+
+        #region PackageItems
+
+        [HttpGet]
+        public async Task<IActionResult> PackageItems(Guid packageId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetPackageItemsAsync(companyId.Value, packageId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/PackageItems/PackageItems.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreatePackageItem(Guid packageId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCreatePackageItemModelAsync(companyId.Value, packageId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/PackageItems/CreatePackageItem.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePackageItem(CompanyPackageItemCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreatePackageItemModelAsync(companyId.Value, model.PackageId);
+                if (reload != null)
+                {
+                    model.PackageNo = reload.PackageNo;
+                    model.ShipmentId = reload.ShipmentId;
+                    model.ShipmentNo = reload.ShipmentNo;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/PackageItems/CreatePackageItem.cshtml", model);
+            }
+
+            var id = await _companyPortalService.CreatePackageItemAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на package item.";
+                return RedirectToAction(nameof(PackageItems), new { packageId = model.PackageId });
+            }
+
+            TempData["SuccessMessage"] = "Package item беше добавен успешно.";
+            return RedirectToAction(nameof(PackageItems), new { packageId = model.PackageId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditPackageItem(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetPackageItemForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/PackageItems/EditPackageItem.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPackageItem(CompanyPackageItemEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetPackageItemForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    model.PackageId = reload.PackageId;
+                    model.PackageNo = reload.PackageNo;
+                    model.ShipmentId = reload.ShipmentId;
+                    model.ShipmentNo = reload.ShipmentNo;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/PackageItems/EditPackageItem.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdatePackageItemAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на package item.";
+                return RedirectToAction(nameof(PackageItems), new { packageId = model.PackageId });
+            }
+
+            TempData["SuccessMessage"] = "Package item беше обновен успешно.";
+            return RedirectToAction(nameof(PackageItems), new { packageId = model.PackageId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePackageItem(Guid id, Guid packageId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.DeletePackageItemAsync(companyId.Value, id);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно изтриване на package item.";
+                return RedirectToAction(nameof(PackageItems), new { packageId });
+            }
+
+            TempData["SuccessMessage"] = "Package item беше изтрит успешно.";
+            return RedirectToAction(nameof(PackageItems), new { packageId });
+        }
+
+        #endregion
+
+        // ============================================================
+        // CARGO ITEMS
+        // ============================================================
+
+        #region CargoItems
+
+        [HttpGet]
+        public async Task<IActionResult> CargoItems(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCargoItemsAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/CargoItems/CargoItems.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateCargoItem(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCreateCargoItemModelAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/CargoItems/CreateCargoItem.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateCargoItem(CompanyCargoItemCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreateCargoItemModelAsync(companyId.Value, model.ShipmentId);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/CargoItems/CreateCargoItem.cshtml", model);
+            }
+
+            var id = await _companyPortalService.CreateCargoItemAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на cargo item.";
+                return RedirectToAction(nameof(CargoItems), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Cargo item беше добавен успешно.";
+            return RedirectToAction(nameof(CargoItems), new { shipmentId = model.ShipmentId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditCargoItem(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCargoItemForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/CargoItems/EditCargoItem.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCargoItem(CompanyCargoItemEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCargoItemForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    model.ShipmentId = reload.ShipmentId;
+                    model.ShipmentNo = reload.ShipmentNo;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/CargoItems/EditCargoItem.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateCargoItemAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на cargo item.";
+                return RedirectToAction(nameof(CargoItems), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Cargo item беше обновен успешно.";
+            return RedirectToAction(nameof(CargoItems), new { shipmentId = model.ShipmentId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCargoItem(Guid id, Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.DeleteCargoItemAsync(companyId.Value, id);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно изтриване на cargo item.";
+                return RedirectToAction(nameof(CargoItems), new { shipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Cargo item беше изтрит успешно.";
+            return RedirectToAction(nameof(CargoItems), new { shipmentId });
+        }
+
+        #endregion
+
+        // ============================================================
+        // SHIPMENT REFERENCES
+        // ============================================================
+
+        #region ShipmentReferences
+
+        [HttpGet]
+        public async Task<IActionResult> ShipmentReferences(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentReferencesAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/References/ShipmentReferences.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateShipmentReference(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCreateShipmentReferenceModelAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/References/CreateShipmentReference.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateShipmentReference(CompanyShipmentReferenceCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreateShipmentReferenceModelAsync(companyId.Value, model.ShipmentId);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/References/CreateShipmentReference.cshtml", model);
+            }
+
+            var id = await _companyPortalService.CreateShipmentReferenceAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на shipment reference.";
+                return RedirectToAction(nameof(ShipmentReferences), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment reference беше добавен успешно.";
+            return RedirectToAction(nameof(ShipmentReferences), new { shipmentId = model.ShipmentId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditShipmentReference(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentReferenceForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/References/EditShipmentReference.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditShipmentReference(CompanyShipmentReferenceEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetShipmentReferenceForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    model.ShipmentId = reload.ShipmentId;
+                    model.ShipmentNo = reload.ShipmentNo;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/References/EditShipmentReference.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateShipmentReferenceAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на shipment reference.";
+                return RedirectToAction(nameof(ShipmentReferences), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment reference беше обновен успешно.";
+            return RedirectToAction(nameof(ShipmentReferences), new { shipmentId = model.ShipmentId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteShipmentReference(Guid id, Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.DeleteShipmentReferenceAsync(companyId.Value, id);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно изтриване на shipment reference.";
+                return RedirectToAction(nameof(ShipmentReferences), new { shipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment reference беше изтрит успешно.";
+            return RedirectToAction(nameof(ShipmentReferences), new { shipmentId });
+        }
+
+        #endregion
+
+        // ============================================================
+        // SHIPMENT TAGS
+        // ============================================================
+
+        #region ShipmentTags
+
+        [HttpGet]
+        public async Task<IActionResult> ShipmentTags(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentTagsAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Tags/ShipmentTags.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateShipmentTag(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCreateShipmentTagModelAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Tags/CreateShipmentTag.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateShipmentTag(CompanyShipmentTagCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreateShipmentTagModelAsync(companyId.Value, model.ShipmentId);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Tags/CreateShipmentTag.cshtml", model);
+            }
+
+            var id = await _companyPortalService.CreateShipmentTagAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на shipment tag.";
+                return RedirectToAction(nameof(ShipmentTags), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment tag беше добавен успешно.";
+            return RedirectToAction(nameof(ShipmentTags), new { shipmentId = model.ShipmentId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditShipmentTag(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentTagForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Tags/EditShipmentTag.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditShipmentTag(CompanyShipmentTagEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetShipmentTagForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    model.ShipmentId = reload.ShipmentId;
+                    model.ShipmentNo = reload.ShipmentNo;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Tags/EditShipmentTag.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateShipmentTagAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на shipment tag.";
+                return RedirectToAction(nameof(ShipmentTags), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment tag беше обновен успешно.";
+            return RedirectToAction(nameof(ShipmentTags), new { shipmentId = model.ShipmentId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteShipmentTag(Guid id, Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.DeleteShipmentTagAsync(companyId.Value, id);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно изтриване на shipment tag.";
+                return RedirectToAction(nameof(ShipmentTags), new { shipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment tag беше изтрит успешно.";
+            return RedirectToAction(nameof(ShipmentTags), new { shipmentId });
+        }
+
+        #endregion
+
+        // ============================================================
+        // SHIPMENT VOYAGES
+        // ============================================================
+
+        #region ShipmentVoyages
+
+        [HttpGet]
+        public async Task<IActionResult> ShipmentVoyages(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentVoyagesAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Voyages/ShipmentVoyages.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateShipmentVoyage(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCreateShipmentVoyageModelAsync(companyId.Value, shipmentId);
+            if (model == null)
+            {
+                TempData["ErrorMessage"] = "Няма свободен voyage за добавяне към този shipment.";
+                return RedirectToAction(nameof(ShipmentVoyages), new { shipmentId });
+            }
+
+            return View("~/Views/CompanyPortal/Shipments/Voyages/CreateShipmentVoyage.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateShipmentVoyage(CompanyShipmentVoyageCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreateShipmentVoyageModelAsync(companyId.Value, model.ShipmentId);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                    model.ShipmentLegOptions = reload.ShipmentLegOptions;
+
+                    // пазим вече избрания voyage от първоначалното зареждане
+                    if (model.VoyageId == Guid.Empty)
+                    {
+                        model.VoyageId = reload.VoyageId;
+                    }
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Voyages/CreateShipmentVoyage.cshtml", model);
+            }
+
+            var id = await _companyPortalService.CreateShipmentVoyageAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на shipment voyage.";
+                return RedirectToAction(nameof(ShipmentVoyages), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment voyage беше добавен успешно.";
+            return RedirectToAction(nameof(ShipmentVoyages), new { shipmentId = model.ShipmentId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditShipmentVoyage(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentVoyageForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Voyages/EditShipmentVoyage.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditShipmentVoyage(CompanyShipmentVoyageEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetShipmentVoyageForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    model.ShipmentId = reload.ShipmentId;
+                    model.ShipmentNo = reload.ShipmentNo;
+                    model.VoyageId = reload.VoyageId;
+                    model.ShipmentLegOptions = reload.ShipmentLegOptions;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Voyages/EditShipmentVoyage.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateShipmentVoyageAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на shipment voyage.";
+                return RedirectToAction(nameof(ShipmentVoyages), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment voyage беше обновен успешно.";
+            return RedirectToAction(nameof(ShipmentVoyages), new { shipmentId = model.ShipmentId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteShipmentVoyage(Guid id, Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.DeleteShipmentVoyageAsync(companyId.Value, id);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно изтриване на shipment voyage.";
+                return RedirectToAction(nameof(ShipmentVoyages), new { shipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment voyage беше изтрит успешно.";
+            return RedirectToAction(nameof(ShipmentVoyages), new { shipmentId });
+        }
+
+        #endregion
+
+        // ============================================================
+        // SHIPMENT TRIPS
+        // ============================================================
+
+        #region ShipmentTrips
+
+        [HttpGet]
+        public async Task<IActionResult> ShipmentTrips(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentTripsAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Trips/ShipmentTrips.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateShipmentTrip(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCreateShipmentTripModelAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Trips/CreateShipmentTrip.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateShipmentTrip(CompanyShipmentTripCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreateShipmentTripModelAsync(companyId.Value, model.ShipmentId);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                    model.TripOptions = reload.TripOptions;
+                    model.ShipmentLegOptions = reload.ShipmentLegOptions;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Trips/CreateShipmentTrip.cshtml", model);
+            }
+
+            var id = await _companyPortalService.CreateShipmentTripAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на shipment trip.";
+                return RedirectToAction(nameof(ShipmentTrips), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment trip беше добавен успешно.";
+            return RedirectToAction(nameof(ShipmentTrips), new { shipmentId = model.ShipmentId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditShipmentTrip(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentTripForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Trips/EditShipmentTrip.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditShipmentTrip(CompanyShipmentTripEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetShipmentTripForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    model.ShipmentId = reload.ShipmentId;
+                    model.ShipmentNo = reload.ShipmentNo;
+                    model.TripOptions = reload.TripOptions;
+                    model.ShipmentLegOptions = reload.ShipmentLegOptions;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Trips/EditShipmentTrip.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateShipmentTripAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на shipment trip.";
+                return RedirectToAction(nameof(ShipmentTrips), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment trip беше обновен успешно.";
+            return RedirectToAction(nameof(ShipmentTrips), new { shipmentId = model.ShipmentId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteShipmentTrip(Guid id, Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.DeleteShipmentTripAsync(companyId.Value, id);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно изтриване на shipment trip.";
+                return RedirectToAction(nameof(ShipmentTrips), new { shipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment trip беше изтрит успешно.";
+            return RedirectToAction(nameof(ShipmentTrips), new { shipmentId });
+        }
+
+        #endregion
+
+        // ============================================================
+        // SHIPMENT CONTAINERS
+        // ============================================================
+
+        #region ShipmentContainers
+
+        [HttpGet]
+        public async Task<IActionResult> ShipmentContainers(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentContainersAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Containers/ShipmentContainers.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateShipmentContainer(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCreateShipmentContainerModelAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Containers/CreateShipmentContainer.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateShipmentContainer(CompanyShipmentContainerCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreateShipmentContainerModelAsync(companyId.Value, model.ShipmentId);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                    model.ContainerOptions = reload.ContainerOptions;
+                    model.ShipmentLegOptions = reload.ShipmentLegOptions;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Containers/CreateShipmentContainer.cshtml", model);
+            }
+
+            var id = await _companyPortalService.CreateShipmentContainerAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на shipment container.";
+                return RedirectToAction(nameof(ShipmentContainers), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment container беше добавен успешно.";
+            return RedirectToAction(nameof(ShipmentContainers), new { shipmentId = model.ShipmentId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditShipmentContainer(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentContainerForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Containers/EditShipmentContainer.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditShipmentContainer(CompanyShipmentContainerEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetShipmentContainerForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    model.ShipmentId = reload.ShipmentId;
+                    model.ShipmentNo = reload.ShipmentNo;
+                    model.ContainerOptions = reload.ContainerOptions;
+                    model.ShipmentLegOptions = reload.ShipmentLegOptions;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Containers/EditShipmentContainer.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateShipmentContainerAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на shipment container.";
+                return RedirectToAction(nameof(ShipmentContainers), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment container беше обновен успешно.";
+            return RedirectToAction(nameof(ShipmentContainers), new { shipmentId = model.ShipmentId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteShipmentContainer(Guid id, Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.DeleteShipmentContainerAsync(companyId.Value, id);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно изтриване на shipment container.";
+                return RedirectToAction(nameof(ShipmentContainers), new { shipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment container беше изтрит успешно.";
+            return RedirectToAction(nameof(ShipmentContainers), new { shipmentId });
+        }
+
+        #endregion
+
+        // ============================================================
+        // SHIPMENT ULDS
+        // ============================================================
+
+        #region ShipmentUlds
+
+        [HttpGet]
+        public async Task<IActionResult> ShipmentUlds(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentUldsAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Ulds/ShipmentUlds.cshtml", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateShipmentUld(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetCreateShipmentUldModelAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Ulds/CreateShipmentUld.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateShipmentUld(CompanyShipmentUldCreateViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetCreateShipmentUldModelAsync(companyId.Value, model.ShipmentId);
+                if (reload != null)
+                {
+                    model.ShipmentNo = reload.ShipmentNo;
+                    model.UldOptions = reload.UldOptions;
+                    model.ShipmentLegOptions = reload.ShipmentLegOptions;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Ulds/CreateShipmentUld.cshtml", model);
+            }
+
+            var id = await _companyPortalService.CreateShipmentUldAsync(companyId.Value, model);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "Неуспешно добавяне на shipment ULD.";
+                return RedirectToAction(nameof(ShipmentUlds), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment ULD беше добавен успешно.";
+            return RedirectToAction(nameof(ShipmentUlds), new { shipmentId = model.ShipmentId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditShipmentUld(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentUldForEditAsync(companyId.Value, id);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Ulds/EditShipmentUld.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditShipmentUld(CompanyShipmentUldEditViewModel model)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                var reload = await _companyPortalService.GetShipmentUldForEditAsync(companyId.Value, model.Id);
+                if (reload != null)
+                {
+                    model.ShipmentId = reload.ShipmentId;
+                    model.ShipmentNo = reload.ShipmentNo;
+                    model.UldOptions = reload.UldOptions;
+                    model.ShipmentLegOptions = reload.ShipmentLegOptions;
+                }
+
+                return View("~/Views/CompanyPortal/Shipments/Ulds/EditShipmentUld.cshtml", model);
+            }
+
+            var success = await _companyPortalService.UpdateShipmentUldAsync(companyId.Value, model);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно обновяване на shipment ULD.";
+                return RedirectToAction(nameof(ShipmentUlds), new { shipmentId = model.ShipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment ULD беше обновен успешно.";
+            return RedirectToAction(nameof(ShipmentUlds), new { shipmentId = model.ShipmentId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteShipmentUld(Guid id, Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var success = await _companyPortalService.DeleteShipmentUldAsync(companyId.Value, id);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Неуспешно изтриване на shipment ULD.";
+                return RedirectToAction(nameof(ShipmentUlds), new { shipmentId });
+            }
+
+            TempData["SuccessMessage"] = "Shipment ULD беше изтрит успешно.";
+            return RedirectToAction(nameof(ShipmentUlds), new { shipmentId });
+        }
+
+        #endregion
+
+        // ============================================================
+        // SHIPMENT STATUS HISRORY
+        // ============================================================
+
+        #region ShipmentStatusHistory
+
+        [HttpGet]
+        public async Task<IActionResult> ShipmentStatusHistory(Guid shipmentId)
+        {
+            var companyId = GetCurrentCompanyId();
+            if (companyId == null) return Forbid();
+
+            var model = await _companyPortalService.GetShipmentStatusHistoryAsync(companyId.Value, shipmentId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/CompanyPortal/Shipments/Statuses/ShipmentStatusHistory.cshtml", model);
+        }
+        
+        #endregion
+    }
+}
