@@ -1,0 +1,76 @@
+@model LogisticManagementApp.Models.AdminPortal.AdminEntityListViewModel
+@{
+    ViewData["Title"] = $"Admin · {Model.DisplayName}";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <div>
+            <div class="text-muted small">@Model.GroupName</div>
+            <h1 class="h3 mb-0">@Model.DisplayName</h1>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary">Всички entity-та</a>
+            <a asp-action="Create" asp-route-entity="@Model.EntityName" class="btn btn-success">Нов запис</a>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("~/Views/Shared/_StatusMessage.cshtml")
+
+    <div class="card shadow-sm">
+        <div class="table-responsive" data-table-pagination-wrapper>
+            <table class="table table-hover align-middle mb-0" data-table-pagination="true" data-page-size="5">
+                <thead class="table-light">
+                    <tr>
+                        @foreach (var col in Model.Columns)
+                        {
+                            <th>@col</th>
+                        }
+                        <th class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Rows.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="@(Model.Columns.Count + 1)" class="text-center text-muted py-4">Няма записи.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var row in Model.Rows)
+                        {
+                            <tr>
+                                @foreach (var col in Model.Columns)
+                                {
+                                    <td>@row.Values[col]</td>
+                                }
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm gap-2">
+                                        <a asp-action="Details" asp-route-entity="@Model.EntityName" asp-route-key="@row.Key" class="btn btn-outline-secondary">Details</a>
+                                        <a asp-action="Edit" asp-route-entity="@Model.EntityName" asp-route-key="@row.Key" class="btn btn-outline-primary">Edit</a>
+                                        <a asp-action="Delete" asp-route-entity="@Model.EntityName" asp-route-key="@row.Key" class="btn btn-outline-danger">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="mt-1 d-flex justify-content-center align-items-center">
+            <ul class="pagination mb-0">
+                @for (var i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.Page ? "active" : null)">
+                        <a class="page-link" asp-action="Entities" asp-route-entity="@Model.EntityName" asp-route-page="@i">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>

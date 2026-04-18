@@ -1,0 +1,36 @@
+@model LogisticManagementApp.Models.AdminPortal.AdminEntityDeleteViewModel
+@{
+    ViewData["Title"] = $"Admin · Изтриване {Model.DisplayName}";
+}
+
+<div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <div>
+            <div class="text-muted small">@Model.GroupName</div>
+            <h1 class="h3 mb-0">Изтриване на @Model.DisplayName</h1>
+        </div>
+        <a asp-action="Entities" asp-route-entity="@Model.EntityName" class="btn btn-outline-secondary">Назад</a>
+    </div>
+
+    @await Html.PartialAsync("~/Views/Shared/_StatusMessage.cshtml")
+
+    <div class="card shadow-sm border-danger">
+        <div class="card-body">
+            <p class="text-danger fw-semibold">Сигурен ли си, че искаш да изтриеш този запис?</p>
+
+            <dl class="row mb-4 text-muted">
+                @foreach (var field in Model.Fields.Take(8))
+                {
+                    <dt class="col-sm-4">@field.DisplayName</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrWhiteSpace(field.Value) ? "—" : field.Value)</dd>
+                }
+            </dl>
+
+            <form asp-action="DeleteConfirmed" asp-route-entity="@Model.EntityName" asp-route-key="@Model.Key" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger">Изтрий</button>
+                <a asp-action="Details" asp-route-entity="@Model.EntityName" asp-route-key="@Model.Key" class="btn btn-outline-secondary">Отказ</a>
+            </form>
+        </div>
+    </div>
+</div>
