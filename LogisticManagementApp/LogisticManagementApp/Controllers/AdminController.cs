@@ -22,9 +22,14 @@ namespace LogisticManagementApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Entities(string entity, int page = 1)
+        public IActionResult Entities(
+            string entity,
+            int page = 1,
+            string? searchTerm = null,
+            string? filterColumn = null,
+            string? filterValue = null)
         {
-            var model = _adminCrudService.GetEntityList(entity, page);
+            var model = _adminCrudService.GetEntityList(entity, page, 50, searchTerm, filterColumn, filterValue);
             ViewData["Title"] = $"Admin · {model.DisplayName}";
             return View("~/Views/Admin/Entities.cshtml", model);
         }

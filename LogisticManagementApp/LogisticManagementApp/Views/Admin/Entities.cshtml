@@ -18,8 +18,50 @@
     @await Html.PartialAsync("~/Views/Shared/_StatusMessage.cshtml")
 
     <div class="card shadow-sm">
+        <div class="card-body border-bottom">
+            <form method="get" asp-action="Entities" class="row g-2 align-items-end">
+                <input type="hidden" name="entity" value="@Model.EntityName" />
+
+                <div class="col-12 col-lg-5">
+                    <label class="form-label">Търсене</label>
+                    <input type="text"
+                           name="searchTerm"
+                           value="@Model.SearchTerm"
+                           class="form-control"
+                           placeholder="Търси във всички колони..." />
+                </div>
+
+                <div class="col-12 col-lg-3">
+                    <label class="form-label">Филтър колона</label>
+                    <select name="filterColumn" class="form-select">
+                        <option value="">Всички</option>
+                        @foreach (var col in Model.Columns)
+                        {
+                            <option value="@col" selected="@(string.Equals(Model.FilterColumn, col, StringComparison.OrdinalIgnoreCase) ? "selected" : null)">@col</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-12 col-lg-3">
+                    <label class="form-label">Стойност</label>
+                    <input type="text"
+                           name="filterValue"
+                           value="@Model.FilterValue"
+                           class="form-control"
+                           placeholder="напр. Да, Sofia, Pending..." />
+                </div>
+
+                <div class="col-12 col-lg-1 d-grid">
+                    <button type="submit" class="btn btn-primary">OK</button>
+                </div>
+
+                <div class="col-12">
+                    <a asp-action="Entities" asp-route-entity="@Model.EntityName" class="btn btn-outline-secondary btn-sm">Изчисти</a>
+                </div>
+            </form>
+        </div>
         <div class="table-responsive" data-table-pagination-wrapper>
-            <table class="table table-hover align-middle mb-0" data-table-pagination="true" data-page-size="5">
+            <table class="table table-hover align-middle mb-0" data-table-pagination="true" data-page-size="5" data-table-search="false">
                 <thead class="table-light">
                     <tr>
                         @foreach (var col in Model.Columns)
@@ -49,7 +91,14 @@
                                     <div class="btn-group btn-group-sm gap-2">
                                         <a asp-action="Details" asp-route-entity="@Model.EntityName" asp-route-key="@row.Key" class="btn btn-outline-secondary">Details</a>
                                         <a asp-action="Edit" asp-route-entity="@Model.EntityName" asp-route-key="@row.Key" class="btn btn-outline-primary">Edit</a>
-                                        <a asp-action="Delete" asp-route-entity="@Model.EntityName" asp-route-key="@row.Key" class="btn btn-outline-danger">Delete</a>
+                                        @if (row.SupportsSoftDelete && row.IsDeleted)
+                                        {
+                                            <span class="btn btn-outline-secondary disabled">Deleted</span>
+                                        }
+                                        else
+                                        {
+                                            <a asp-action="Delete" asp-route-entity="@Model.EntityName" asp-route-key="@row.Key" class="btn btn-outline-danger">Delete</a>
+                                        }
                                     </div>
                                 </td>
                             </tr>
@@ -67,7 +116,7 @@
                 @for (var i = 1; i <= Model.TotalPages; i++)
                 {
                     <li class="page-item @(i == Model.Page ? "active" : null)">
-                        <a class="page-link" asp-action="Entities" asp-route-entity="@Model.EntityName" asp-route-page="@i">@i</a>
+                        <a class="page-link" asp-action="Entities" asp-route-entity="@Model.EntityName" asp-route-page="@i" asp-route-searchTerm="@Model.SearchTerm" asp-route-filterColumn="@Model.FilterColumn" asp-route-filterValue="@Model.FilterValue">@i</a>
                     </li>
                 }
             </ul>

@@ -5,7 +5,7 @@ namespace LogisticManagementApp.Applicationn.Interfaces.AdminPortal
     public interface IAdminCrudService
     {
         IReadOnlyList<AdminEntityGroupViewModel> GetEntityGroups();
-        AdminEntityListViewModel GetEntityList(string entityName, int page = 1, int pageSize = 50);
+        AdminEntityListViewModel GetEntityList(string entityName, int page = 1, int pageSize = 50, string? searchTerm = null, string? filterColumn = null, string? filterValue = null);
         AdminEntityDetailsViewModel? GetEntityDetails(string entityName, string key);
         AdminEntityFormViewModel GetCreateForm(string entityName);
         AdminEntityFormViewModel? GetEditForm(string entityName, string key);

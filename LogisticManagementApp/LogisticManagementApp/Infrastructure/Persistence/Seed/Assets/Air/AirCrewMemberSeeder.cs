@@ -15,7 +15,7 @@ namespace LogisticManagementApp.Infrastructure.Persistence.Seed.Assets.Air
 
             var crew = new List<AirCrewMember>();
 
-            var roles = Enum.GetValues<VesselCrewRole>();
+            var roles = Enum.GetValues<AirCrewRole>();
             int role = 1;
 
             for (int i = 0; i < 15 && i < companies.Count; i++)

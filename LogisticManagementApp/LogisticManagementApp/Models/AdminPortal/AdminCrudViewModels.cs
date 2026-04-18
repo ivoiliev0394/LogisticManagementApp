@@ -24,6 +24,9 @@ namespace LogisticManagementApp.Models.AdminPortal
         public int Page { get; set; }
         public int PageSize { get; set; }
         public int TotalCount { get; set; }
+        public string? SearchTerm { get; set; }
+        public string? FilterColumn { get; set; }
+        public string? FilterValue { get; set; }
         public int TotalPages => PageSize <= 0 ? 1 : (int)Math.Ceiling((double)TotalCount / PageSize);
     }
 
@@ -31,6 +34,8 @@ namespace LogisticManagementApp.Models.AdminPortal
     {
         public string Key { get; set; } = string.Empty;
         public Dictionary<string, string> Values { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+        public bool SupportsSoftDelete { get; set; }
+        public bool IsDeleted { get; set; }
     }
 
     public class AdminEntityDetailsViewModel
@@ -39,6 +44,8 @@ namespace LogisticManagementApp.Models.AdminPortal
         public string DisplayName { get; set; } = string.Empty;
         public string GroupName { get; set; } = string.Empty;
         public string Key { get; set; } = string.Empty;
+        public bool SupportsSoftDelete { get; set; }
+        public bool IsDeleted { get; set; }
         public List<AdminEntityFieldViewModel> Fields { get; set; } = new();
     }
 
@@ -53,6 +60,8 @@ namespace LogisticManagementApp.Models.AdminPortal
         public string GroupName { get; set; } = string.Empty;
         public string? Key { get; set; }
         public bool IsEdit { get; set; }
+        public bool SupportsSoftDelete { get; set; }
+        public bool IsDeleted { get; set; }
         public List<AdminEntityFieldViewModel> Fields { get; set; } = new();
     }
 

@@ -1,4 +1,5 @@
 using LogisticManagementApp.Applicationn.Interfaces.AdminPortal;
+using LogisticManagementApp.Domain.Common.Interfaces;
 using LogisticManagementApp.Infrastructure.Persistence;
 using LogisticManagementApp.Models.AdminPortal;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +35,7 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
                 .ToList();
         }
 
-        public AdminEntityListViewModel GetEntityList(string entityName, int page = 1, int pageSize = 50)
+        public AdminEntityListViewModel GetEntityList(string entityName, int page = 1, int pageSize = 50, string? searchTerm = null, string? filterColumn = null, string? filterValue = null)
         {
             var entityType = GetEntityTypeOrThrow(entityName);
             var descriptor = BuildDescriptor(entityType);
@@ -43,7 +44,13 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
             var take = pageSize <= 0 ? 50 : Math.Min(pageSize, 200);
 
             var allItems = QueryEntityObjects(entityType).ToList();
+
+            allItems = allItems
+                .Where(item => MatchesAdminFilters(item, propertyInfos, searchTerm, filterColumn, filterValue))
+                .ToList();
+
             var paged = allItems.Skip((pageIndex - 1) * take).Take(take).ToList();
+            var supportsSoftDelete = SupportsSoftDelete(entityType);
 
             return new AdminEntityListViewModel
             {
@@ -54,9 +61,14 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
                 TotalCount = allItems.Count,
                 Page = pageIndex,
                 PageSize = take,
+                SearchTerm = searchTerm,
+                FilterColumn = filterColumn,
+                FilterValue = filterValue,
                 Rows = paged.Select(item => new AdminEntityRowViewModel
                 {
                     Key = BuildKey(entityType, item),
+                    SupportsSoftDelete = supportsSoftDelete,
+                    IsDeleted = supportsSoftDelete && IsSoftDeleted(item),
                     Values = propertyInfos.ToDictionary(
                         x => x.Name,
                         x => FormatValue(GetPropertyValue(item, x.Name)),
@@ -73,12 +85,16 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
 
             var descriptor = BuildDescriptor(entityType);
 
+            var supportsSoftDelete = SupportsSoftDelete(entityType);
+
             return new AdminEntityDetailsViewModel
             {
                 EntityName = descriptor.Name,
                 DisplayName = descriptor.DisplayName,
                 GroupName = descriptor.Group,
                 Key = key,
+                SupportsSoftDelete = supportsSoftDelete,
+                IsDeleted = supportsSoftDelete && IsSoftDeleted(entity),
                 Fields = GetBrowsableProperties(entityType)
                     .Select(p => BuildFieldViewModel(entityType, p, GetPropertyValue(entity, p.Name), isEdit: false))
                     .ToList()
@@ -96,6 +112,8 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
                 DisplayName = descriptor.DisplayName,
                 GroupName = descriptor.Group,
                 IsEdit = false,
+                SupportsSoftDelete = SupportsSoftDelete(entityType),
+                IsDeleted = false,
                 Fields = GetBrowsableProperties(entityType)
                     .Select(p => BuildFieldViewModel(entityType, p, null, isEdit: false))
                     .ToList()
@@ -110,6 +128,8 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
 
             var descriptor = BuildDescriptor(entityType);
 
+            var supportsSoftDelete = SupportsSoftDelete(entityType);
+
             return new AdminEntityFormViewModel
             {
                 EntityName = descriptor.Name,
@@ -117,6 +137,8 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
                 GroupName = descriptor.Group,
                 Key = key,
                 IsEdit = true,
+                SupportsSoftDelete = supportsSoftDelete,
+                IsDeleted = supportsSoftDelete && IsSoftDeleted(entity),
                 Fields = GetBrowsableProperties(entityType)
                     .Select(p => BuildFieldViewModel(entityType, p, GetPropertyValue(entity, p.Name), isEdit: true))
                     .ToList()
@@ -157,6 +179,7 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
             if (entity == null) return false;
 
             ApplyValues(entityType, entity, values, isEdit: true);
+            NormalizeSoftDeleteState(entityType, entity);
             _dbContext.Update(entity);
             _dbContext.SaveChanges();
             return true;
@@ -167,6 +190,19 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
             var entityType = GetEntityTypeOrThrow(entityName);
             var entity = FindEntity(entityType, key);
             if (entity == null) return false;
+
+            if (SupportsSoftDelete(entityType) && entity is ISoftDeletable softDeletable)
+            {
+                if (!softDeletable.IsDeleted)
+                {
+                    softDeletable.IsDeleted = true;
+                    softDeletable.DeletedAtUtc = DateTime.UtcNow;
+                    _dbContext.Update(entity);
+                    _dbContext.SaveChanges();
+                }
+
+                return true;
+            }
 
             _dbContext.Remove(entity);
             _dbContext.SaveChanges();
@@ -209,6 +245,74 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
 
             return QueryEntityObjects(entityType)
                 .FirstOrDefault(entity => KeyMatches(entityType, entity, keyMap));
+        }
+
+
+        private static bool SupportsSoftDelete(IEntityType entityType)
+            => typeof(ISoftDeletable).IsAssignableFrom(entityType.ClrType);
+
+        private static bool IsSoftDeleted(object entity)
+            => entity is ISoftDeletable softDeletable && softDeletable.IsDeleted;
+
+        private static void NormalizeSoftDeleteState(IEntityType entityType, object entity)
+        {
+            if (!SupportsSoftDelete(entityType) || entity is not ISoftDeletable softDeletable)
+                return;
+
+            if (!softDeletable.IsDeleted)
+            {
+                softDeletable.DeletedAtUtc = null;
+                return;
+            }
+
+            if (softDeletable.DeletedAtUtc == null)
+            {
+                softDeletable.DeletedAtUtc = DateTime.UtcNow;
+            }
+        }
+
+        private bool MatchesAdminFilters(
+            object item,
+            IReadOnlyCollection<IProperty> properties,
+            string? searchTerm,
+            string? filterColumn,
+            string? filterValue)
+        {
+            var normalizedSearchTerm = searchTerm?.Trim();
+            var normalizedFilterColumn = filterColumn?.Trim();
+            var normalizedFilterValue = filterValue?.Trim();
+
+            var hasSearch = !string.IsNullOrWhiteSpace(normalizedSearchTerm);
+            var hasColumnFilter = !string.IsNullOrWhiteSpace(normalizedFilterColumn)
+                && !string.IsNullOrWhiteSpace(normalizedFilterValue);
+
+            if (!hasSearch && !hasColumnFilter)
+                return true;
+
+            var values = properties.ToDictionary(
+                property => property.Name,
+                property => FormatValue(GetPropertyValue(item, property.Name)),
+                StringComparer.OrdinalIgnoreCase);
+
+            if (hasSearch)
+            {
+                var matchesSearch = values.Values.Any(value =>
+                    value.Contains(normalizedSearchTerm!, StringComparison.OrdinalIgnoreCase));
+
+                if (!matchesSearch)
+                    return false;
+            }
+
+            if (hasColumnFilter)
+            {
+                if (!values.TryGetValue(normalizedFilterColumn!, out var columnValue))
+                    return false;
+
+                if (!columnValue.Contains(normalizedFilterValue!, StringComparison.OrdinalIgnoreCase))
+                    return false;
+            }
+
+            return true;
         }
 
         private bool KeyMatches(IEntityType entityType, object entity, IDictionary<string, string> keyMap)

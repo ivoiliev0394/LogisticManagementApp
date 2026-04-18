@@ -48,6 +48,7 @@
 
                             @if (field.DataType == "checkbox")
                             {
+                                <input type="hidden" name="@field.Name" value="false" />
                                 <div class="form-check form-switch pt-2">
                                     <input class="form-check-input" type="checkbox" id="@field.Name" name="@field.Name" value="true" @(string.Equals(field.Value, "true", StringComparison.OrdinalIgnoreCase) ? "checked" : null) />
                                 </div>

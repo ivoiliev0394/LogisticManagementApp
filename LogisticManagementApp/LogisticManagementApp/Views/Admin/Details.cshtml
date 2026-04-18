@@ -12,11 +12,23 @@
         <div class="d-flex gap-2">
             <a asp-action="Entities" asp-route-entity="@Model.EntityName" class="btn btn-outline-secondary">Назад</a>
             <a asp-action="Edit" asp-route-entity="@Model.EntityName" asp-route-key="@Model.Key" class="btn btn-primary">Редакция</a>
-            <a asp-action="Delete" asp-route-entity="@Model.EntityName" asp-route-key="@Model.Key" class="btn btn-danger">Изтриване</a>
+            @if (Model.SupportsSoftDelete && Model.IsDeleted)
+            {
+                <span class="btn btn-outline-secondary disabled">Изтрит</span>
+            }
+            else
+            {
+                <a asp-action="Delete" asp-route-entity="@Model.EntityName" asp-route-key="@Model.Key" class="btn btn-danger">Изтриване</a>
+            }
         </div>
     </div>
 
     @await Html.PartialAsync("~/Views/Shared/_StatusMessage.cshtml")
+
+    @if (Model.SupportsSoftDelete && Model.IsDeleted)
+    {
+        <div class="alert alert-warning">Записът е маркиран като изтрит. Можеш да го възстановиш от <strong>Редакция</strong>, като върнеш <strong>IsDeleted = false</strong>.</div>
+    }
 
     <div class="card shadow-sm">
         <div class="card-body">

@@ -17,6 +17,10 @@
     <div class="card shadow-sm border-danger">
         <div class="card-body">
             <p class="text-danger fw-semibold">Сигурен ли си, че искаш да изтриеш този запис?</p>
+            @if (Model.SupportsSoftDelete)
+            {
+                <p class="text-muted small mb-3">За този тип записи изтриването е soft delete — записът ще остане в базата, но ще бъде маркиран като изтрит.</p>
+            }
 
             <dl class="row mb-4 text-muted">
                 @foreach (var field in Model.Fields.Take(8))
