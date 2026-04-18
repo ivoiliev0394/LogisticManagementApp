@@ -53,6 +53,20 @@
                                     <input class="form-check-input" type="checkbox" id="@field.Name" name="@field.Name" value="true" @(string.Equals(field.Value, "true", StringComparison.OrdinalIgnoreCase) ? "checked" : null) />
                                 </div>
                             }
+                            else if (field.UseForeignKeyDropdown)
+                            {
+                                <select class="form-select admin-fk-select" id="@field.Name" name="@field.Name">
+                                    @if (field.IsNullable)
+                                    {
+                                        <option value="">-- Избери стойност --</option>
+                                    }
+                                    @foreach (var option in field.ForeignKeyOptions)
+                                    {
+                                        <option value="@option.Value" selected="@(string.Equals(field.Value, option.Value, StringComparison.OrdinalIgnoreCase) ? "selected" : null)">@option.Text</option>
+                                    }
+                                </select>
+                                <div class="form-text text-muted">Стойност от @field.ForeignEntityName</div>
+                            }
                             else if (field.DataType == "textarea")
                             {
                                 <textarea class="form-control" id="@field.Name" name="@field.Name" rows="4">@field.Value</textarea>

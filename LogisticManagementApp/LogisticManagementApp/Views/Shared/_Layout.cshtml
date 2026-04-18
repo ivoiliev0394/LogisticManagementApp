@@ -42,33 +42,6 @@
                         }
                         else
                         {
-
-                            @if (User.IsInRole("Admin"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">Companies</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">Orders</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">Shipments</a>
-                                </li>
-                            }
-
-                            @if (User.IsInRole("Company"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">My Company</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">Orders</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">Shipments</a>
-                                </li>
-                            }
-
                             @if (User.IsInRole("Client"))
                             {
                                 <li class="nav-item">

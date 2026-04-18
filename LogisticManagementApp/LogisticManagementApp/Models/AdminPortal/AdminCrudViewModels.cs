@@ -33,9 +33,9 @@ namespace LogisticManagementApp.Models.AdminPortal
     public class AdminEntityRowViewModel
     {
         public string Key { get; set; } = string.Empty;
-        public Dictionary<string, string> Values { get; set; } = new(StringComparer.OrdinalIgnoreCase);
-        public bool SupportsSoftDelete { get; set; }
         public bool IsDeleted { get; set; }
+        public bool CanDelete { get; set; } = true;
+        public Dictionary<string, string> Values { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     }
 
     public class AdminEntityDetailsViewModel
@@ -44,8 +44,8 @@ namespace LogisticManagementApp.Models.AdminPortal
         public string DisplayName { get; set; } = string.Empty;
         public string GroupName { get; set; } = string.Empty;
         public string Key { get; set; } = string.Empty;
-        public bool SupportsSoftDelete { get; set; }
         public bool IsDeleted { get; set; }
+        public bool CanDelete { get; set; } = true;
         public List<AdminEntityFieldViewModel> Fields { get; set; } = new();
     }
 
@@ -60,8 +60,6 @@ namespace LogisticManagementApp.Models.AdminPortal
         public string GroupName { get; set; } = string.Empty;
         public string? Key { get; set; }
         public bool IsEdit { get; set; }
-        public bool SupportsSoftDelete { get; set; }
-        public bool IsDeleted { get; set; }
         public List<AdminEntityFieldViewModel> Fields { get; set; } = new();
     }
 
@@ -75,5 +73,14 @@ namespace LogisticManagementApp.Models.AdminPortal
         public bool IsNullable { get; set; }
         public bool IsReadOnly { get; set; }
         public bool IsForeignKey { get; set; }
+        public bool UseForeignKeyDropdown { get; set; }
+        public string? ForeignEntityName { get; set; }
+        public List<AdminForeignKeyOptionViewModel> ForeignKeyOptions { get; set; } = new();
+    }
+
+    public class AdminForeignKeyOptionViewModel
+    {
+        public string Value { get; set; } = string.Empty;
+        public string Text { get; set; } = string.Empty;
     }
 }

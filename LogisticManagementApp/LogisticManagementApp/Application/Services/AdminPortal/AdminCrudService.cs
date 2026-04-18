@@ -1,5 +1,4 @@
 using LogisticManagementApp.Applicationn.Interfaces.AdminPortal;
-using LogisticManagementApp.Domain.Common.Interfaces;
 using LogisticManagementApp.Infrastructure.Persistence;
 using LogisticManagementApp.Models.AdminPortal;
 using Microsoft.EntityFrameworkCore;
@@ -50,7 +49,6 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
                 .ToList();
 
             var paged = allItems.Skip((pageIndex - 1) * take).Take(take).ToList();
-            var supportsSoftDelete = SupportsSoftDelete(entityType);
 
             return new AdminEntityListViewModel
             {
@@ -67,8 +65,8 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
                 Rows = paged.Select(item => new AdminEntityRowViewModel
                 {
                     Key = BuildKey(entityType, item),
-                    SupportsSoftDelete = supportsSoftDelete,
-                    IsDeleted = supportsSoftDelete && IsSoftDeleted(item),
+                    IsDeleted = IsSoftDeleted(item),
+                    CanDelete = !IsSoftDeleted(item),
                     Values = propertyInfos.ToDictionary(
                         x => x.Name,
                         x => FormatValue(GetPropertyValue(item, x.Name)),
@@ -85,16 +83,14 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
 
             var descriptor = BuildDescriptor(entityType);
 
-            var supportsSoftDelete = SupportsSoftDelete(entityType);
-
             return new AdminEntityDetailsViewModel
             {
                 EntityName = descriptor.Name,
                 DisplayName = descriptor.DisplayName,
                 GroupName = descriptor.Group,
                 Key = key,
-                SupportsSoftDelete = supportsSoftDelete,
-                IsDeleted = supportsSoftDelete && IsSoftDeleted(entity),
+                IsDeleted = IsSoftDeleted(entity),
+                CanDelete = !IsSoftDeleted(entity),
                 Fields = GetBrowsableProperties(entityType)
                     .Select(p => BuildFieldViewModel(entityType, p, GetPropertyValue(entity, p.Name), isEdit: false))
                     .ToList()
@@ -112,8 +108,6 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
                 DisplayName = descriptor.DisplayName,
                 GroupName = descriptor.Group,
                 IsEdit = false,
-                SupportsSoftDelete = SupportsSoftDelete(entityType),
-                IsDeleted = false,
                 Fields = GetBrowsableProperties(entityType)
                     .Select(p => BuildFieldViewModel(entityType, p, null, isEdit: false))
                     .ToList()
@@ -128,8 +122,6 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
 
             var descriptor = BuildDescriptor(entityType);
 
-            var supportsSoftDelete = SupportsSoftDelete(entityType);
-
             return new AdminEntityFormViewModel
             {
                 EntityName = descriptor.Name,
@@ -137,8 +129,6 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
                 GroupName = descriptor.Group,
                 Key = key,
                 IsEdit = true,
-                SupportsSoftDelete = supportsSoftDelete,
-                IsDeleted = supportsSoftDelete && IsSoftDeleted(entity),
                 Fields = GetBrowsableProperties(entityType)
                     .Select(p => BuildFieldViewModel(entityType, p, GetPropertyValue(entity, p.Name), isEdit: true))
                     .ToList()
@@ -156,6 +146,8 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
                 DisplayName = details.DisplayName,
                 GroupName = details.GroupName,
                 Key = details.Key,
+                IsDeleted = details.IsDeleted,
+                CanDelete = details.CanDelete,
                 Fields = details.Fields
             };
         }
@@ -179,7 +171,6 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
             if (entity == null) return false;
 
             ApplyValues(entityType, entity, values, isEdit: true);
-            NormalizeSoftDeleteState(entityType, entity);
             _dbContext.Update(entity);
             _dbContext.SaveChanges();
             return true;
@@ -191,18 +182,8 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
             var entity = FindEntity(entityType, key);
             if (entity == null) return false;
 
-            if (SupportsSoftDelete(entityType) && entity is ISoftDeletable softDeletable)
-            {
-                if (!softDeletable.IsDeleted)
-                {
-                    softDeletable.IsDeleted = true;
-                    softDeletable.DeletedAtUtc = DateTime.UtcNow;
-                    _dbContext.Update(entity);
-                    _dbContext.SaveChanges();
-                }
-
+            if (IsSoftDeleted(entity))
                 return true;
-            }
 
             _dbContext.Remove(entity);
             _dbContext.SaveChanges();
@@ -245,30 +226,6 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
 
             return QueryEntityObjects(entityType)
                 .FirstOrDefault(entity => KeyMatches(entityType, entity, keyMap));
-        }
-
-
-        private static bool SupportsSoftDelete(IEntityType entityType)
-            => typeof(ISoftDeletable).IsAssignableFrom(entityType.ClrType);
-
-        private static bool IsSoftDeleted(object entity)
-            => entity is ISoftDeletable softDeletable && softDeletable.IsDeleted;
-
-        private static void NormalizeSoftDeleteState(IEntityType entityType, object entity)
-        {
-            if (!SupportsSoftDelete(entityType) || entity is not ISoftDeletable softDeletable)
-                return;
-
-            if (!softDeletable.IsDeleted)
-            {
-                softDeletable.DeletedAtUtc = null;
-                return;
-            }
-
-            if (softDeletable.DeletedAtUtc == null)
-            {
-                softDeletable.DeletedAtUtc = DateTime.UtcNow;
-            }
         }
 
         private bool MatchesAdminFilters(
@@ -364,6 +321,15 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
                 ?.GetValue(entity);
         }
 
+        private static bool IsSoftDeleted(object entity)
+        {
+            var property = entity.GetType().GetProperty("IsDeleted", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            if (property == null || property.PropertyType != typeof(bool))
+                return false;
+
+            return property.GetValue(entity) as bool? ?? false;
+        }
+
         private List<IProperty> GetBrowsableProperties(IEntityType entityType)
         {
             return entityType.GetProperties()
@@ -388,10 +354,12 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
         private AdminEntityFieldViewModel BuildFieldViewModel(IEntityType entityType, IProperty property, object? value, bool isEdit)
         {
             var clrType = Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType;
-            var foreignKeys = entityType.GetForeignKeys()
-                .SelectMany(x => x.Properties)
-                .Select(x => x.Name)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var foreignKey = entityType.GetForeignKeys()
+                .FirstOrDefault(x => x.Properties.Any(p => string.Equals(p.Name, property.Name, StringComparison.OrdinalIgnoreCase)));
+            var isForeignKey = foreignKey != null;
+            var foreignKeyOptions = isForeignKey
+                ? GetForeignKeyOptions(foreignKey!, property.Name)
+                : new List<AdminForeignKeyOptionViewModel>();
 
             return new AdminEntityFieldViewModel
             {
@@ -402,8 +370,67 @@ namespace LogisticManagementApp.Applicationn.Services.AdminPortal
                 IsKey = property.IsPrimaryKey(),
                 IsNullable = property.IsNullable,
                 IsReadOnly = property.ValueGenerated != ValueGenerated.Never && !isEdit,
-                IsForeignKey = foreignKeys.Contains(property.Name)
+                IsForeignKey = isForeignKey,
+                UseForeignKeyDropdown = foreignKeyOptions.Count > 0,
+                ForeignEntityName = foreignKey?.PrincipalEntityType?.ClrType?.Name,
+                ForeignKeyOptions = foreignKeyOptions
             };
+        }
+
+        private List<AdminForeignKeyOptionViewModel> GetForeignKeyOptions(IForeignKey foreignKey, string propertyName)
+        {
+            var matchingProperty = foreignKey.Properties
+                .FirstOrDefault(x => string.Equals(x.Name, propertyName, StringComparison.OrdinalIgnoreCase));
+
+            if (matchingProperty == null)
+                return new List<AdminForeignKeyOptionViewModel>();
+
+            var propertyIndex = foreignKey.Properties.ToList().IndexOf(matchingProperty);
+            if (propertyIndex < 0 || propertyIndex >= foreignKey.PrincipalKey.Properties.Count)
+                return new List<AdminForeignKeyOptionViewModel>();
+
+            var principalEntityType = foreignKey.PrincipalEntityType;
+            var principalProperty = foreignKey.PrincipalKey.Properties[propertyIndex];
+            var browseProperties = GetBrowsableProperties(principalEntityType);
+
+            return QueryEntityObjects(principalEntityType)
+                .Select(entity =>
+                {
+                    var rawValue = GetPropertyValue(entity, principalProperty.Name);
+                    var optionValue = FormatEditorValue(rawValue, Nullable.GetUnderlyingType(principalProperty.ClrType) ?? principalProperty.ClrType) ?? string.Empty;
+                    var optionText = BuildForeignKeyOptionText(principalEntityType, entity, principalProperty.Name, optionValue, browseProperties);
+
+                    return new AdminForeignKeyOptionViewModel
+                    {
+                        Value = optionValue,
+                        Text = optionText
+                    };
+                })
+                .Where(x => !string.IsNullOrWhiteSpace(x.Value))
+                .DistinctBy(x => x.Value)
+                .OrderBy(x => x.Text)
+                .ToList();
+        }
+
+        private string BuildForeignKeyOptionText(IEntityType principalEntityType, object entity, string principalPropertyName, string optionValue, IReadOnlyCollection<IProperty> browseProperties)
+        {
+            var descriptors = browseProperties
+                .Where(p => !string.Equals(p.Name, principalPropertyName, StringComparison.OrdinalIgnoreCase))
+                .Take(3)
+                .Select(p => new
+                {
+                    Name = GetDisplayName(principalEntityType.ClrType, p.Name),
+                    Value = FormatValue(GetPropertyValue(entity, p.Name))
+                })
+                .Where(x => !string.IsNullOrWhiteSpace(x.Value) && !string.Equals(x.Value, "—", StringComparison.Ordinal))
+                .Take(2)
+                .Select(x => $"{x.Name}: {x.Value}")
+                .ToList();
+
+            if (descriptors.Count == 0)
+                return optionValue;
+
+            return $"{optionValue} — {string.Join(" | ", descriptors)}";
         }
 
         private IEntityType GetEntityTypeOrThrow(string entityName)

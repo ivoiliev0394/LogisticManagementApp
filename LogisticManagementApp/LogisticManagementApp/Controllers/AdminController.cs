@@ -137,7 +137,10 @@ namespace LogisticManagementApp.Controllers
         {
             return form.Keys
                 .Where(x => !string.Equals(x, "__RequestVerificationToken", StringComparison.OrdinalIgnoreCase))
-                .ToDictionary(x => x, x => form[x].ToString(), StringComparer.OrdinalIgnoreCase);
+                .ToDictionary(
+                    x => x,
+                    x => form[x].Count > 0 ? form[x][form[x].Count - 1]?.ToString() : null,
+                    StringComparer.OrdinalIgnoreCase);
         }
 
         private static void ApplyPostedValues(LogisticManagementApp.Models.AdminPortal.AdminEntityFormViewModel model, IFormCollection form)

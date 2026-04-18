@@ -7,16 +7,18 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
         <div>
             <div class="text-muted small">@Model.GroupName</div>
-            <h1 class="h3 mb-0">@Model.DisplayName</h1>
+            <h1 class="h3 mb-0 d-flex align-items-center gap-2">
+                <span>@Model.DisplayName</span>
+                @if (Model.IsDeleted)
+                {
+                    <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">Изтрит</span>
+                }
+            </h1>
         </div>
         <div class="d-flex gap-2">
             <a asp-action="Entities" asp-route-entity="@Model.EntityName" class="btn btn-outline-secondary">Назад</a>
             <a asp-action="Edit" asp-route-entity="@Model.EntityName" asp-route-key="@Model.Key" class="btn btn-primary">Редакция</a>
-            @if (Model.SupportsSoftDelete && Model.IsDeleted)
-            {
-                <span class="btn btn-outline-secondary disabled">Изтрит</span>
-            }
-            else
+            @if (Model.CanDelete)
             {
                 <a asp-action="Delete" asp-route-entity="@Model.EntityName" asp-route-key="@Model.Key" class="btn btn-danger">Изтриване</a>
             }
@@ -24,11 +26,6 @@
     </div>
 
     @await Html.PartialAsync("~/Views/Shared/_StatusMessage.cshtml")
-
-    @if (Model.SupportsSoftDelete && Model.IsDeleted)
-    {
-        <div class="alert alert-warning">Записът е маркиран като изтрит. Можеш да го възстановиш от <strong>Редакция</strong>, като върнеш <strong>IsDeleted = false</strong>.</div>
-    }
 
     <div class="card shadow-sm">
         <div class="card-body">
