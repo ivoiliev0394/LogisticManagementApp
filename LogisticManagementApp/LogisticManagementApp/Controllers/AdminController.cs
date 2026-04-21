@@ -1,5 +1,8 @@
 ﻿using LogisticManagementApp.Applicationn.Interfaces.AdminPortal;
+using LogisticManagementApp.Infrastructure.Persistence;
+using LogisticManagementApp.Models.AdminPortal.Reports;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LogisticManagementApp.Controllers
@@ -8,10 +11,12 @@ namespace LogisticManagementApp.Controllers
     public class AdminController : Controller
     {
         private readonly IAdminCrudService _adminCrudService;
+        private readonly LogisticAppDbContext _dbContext;
 
-        public AdminController(IAdminCrudService adminCrudService)
+        public AdminController(IAdminCrudService adminCrudService, LogisticAppDbContext dbContext)
         {
             _adminCrudService = adminCrudService;
+            _dbContext = dbContext;
         }
 
         [HttpGet]
@@ -32,6 +37,77 @@ namespace LogisticManagementApp.Controllers
             var model = _adminCrudService.GetEntityList(entity, page, 50, searchTerm, filterColumn, filterValue);
             ViewData["Title"] = $"Admin · {model.DisplayName}";
             return View("~/Views/Admin/Entities.cshtml", model);
+        }
+
+
+
+        [HttpGet]
+        public IActionResult Reports()
+        {
+            var groups = _adminCrudService.GetEntityGroups();
+            var model = new AdminReportsIndexViewModel
+            {
+                TotalEntityGroups = groups.Count,
+                TotalEntities = groups.Sum(x => x.Entities.Count)
+            };
+
+            ViewData["Title"] = "Admin Reports";
+            return View("~/Views/Admin/Reports.cshtml", model);
+        }
+
+        [HttpGet]
+        public IActionResult SystemReport()
+        {
+            var groups = _adminCrudService.GetEntityGroups();
+            var model = new AdminSystemOverviewReportViewModel
+            {
+                GeneratedAtUtc = DateTime.UtcNow,
+                CompaniesCount = _dbContext.Companies.Count(),
+                UsersCount = _dbContext.Users.Count(),
+                OrdersCount = _dbContext.Orders.Count(),
+                ShipmentsCount = _dbContext.Shipments.Count(),
+                InvoicesCount = _dbContext.Invoices.Count(),
+                RoutesCount = _dbContext.Routes.Count(),
+                BookingsCount = _dbContext.Bookings.Count(),
+                TrackedAssetsCount = _dbContext.Vessels.Count()
+                    + _dbContext.Vehicles.Count()
+                    + _dbContext.Aircraft.Count()
+                    + _dbContext.Trains.Count()
+                    + _dbContext.Containers.Count()
+                    + _dbContext.ULDs.Count(),
+                CatalogItems = groups
+                    .SelectMany(group => group.Entities.Select(entity => new AdminSystemEntityCatalogItemViewModel
+                    {
+                        Group = group.Name,
+                        Entity = entity.DisplayName,
+                        Fields = entity.PropertyCount
+                    }))
+                    .ToList()
+            };
+
+            ViewData["Title"] = "Admin System Overview Report";
+            return View("~/Views/Admin/SystemReport.cshtml", model);
+        }
+
+        [HttpGet]
+        public IActionResult EntityReport(string entity, string? searchTerm = null, string? filterColumn = null, string? filterValue = null)
+        {
+            var list = _adminCrudService.GetEntityList(entity, 1, 5000, searchTerm, filterColumn, filterValue);
+            var model = new AdminEntityReportViewModel
+            {
+                EntityName = list.EntityName,
+                DisplayName = list.DisplayName,
+                GroupName = list.GroupName,
+                GeneratedAtUtc = DateTime.UtcNow,
+                SearchTerm = list.SearchTerm,
+                FilterColumn = list.FilterColumn,
+                FilterValue = list.FilterValue,
+                Columns = list.Columns,
+                Rows = list.Rows.Select(x => x.Values).ToList()
+            };
+
+            ViewData["Title"] = $"Admin Entity Report - {list.DisplayName}";
+            return View("~/Views/Admin/EntityReport.cshtml", model);
         }
 
         [HttpGet]

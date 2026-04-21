@@ -1,0 +1,34 @@
+@model LogisticManagementApp.Models.CompanyPortal.Reports.CompanyReportsIndexViewModel
+@{
+    ViewData["Title"] = "Company Reports";
+}
+
+<partial name="_CompanyModuleHeader" />
+
+<div class="row g-4">
+    <div class="col-12 col-xl-3">
+        <partial name="_CompanyNavigation" />
+    </div>
+
+    <div class="col-12 col-xl-9">
+        <div class="card mb-4">
+            <div class="card-body p-4">
+                <div class="small text-muted text-uppercase fw-semibold mb-2">Company Portal</div>
+                <h1 class="h3 mb-2">PDF Reports</h1>
+                <p class="text-muted mb-0">Printable A4 reports with dedicated layout for export to PDF.</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-12 col-lg-4">
+                <div class="card h-100"><div class="card-body p-4"><div class="small text-muted text-uppercase fw-semibold mb-2">Operations</div><h2 class="h4 mb-2">Operational Report</h2><p class="text-muted mb-4">Orders, shipments, routes and booking activity in printable PDF layout.</p><a asp-action="OperationalReport" class="btn btn-success">Open report</a></div></div>
+            </div>
+            <div class="col-12 col-lg-4">
+                <div class="card h-100"><div class="card-body p-4"><div class="small text-muted text-uppercase fw-semibold mb-2">Assets</div><h2 class="h4 mb-2">Assets Report</h2><p class="text-muted mb-4">Sea, road, air, rail and container assets summarized for PDF export.</p><a asp-action="AssetsReport" class="btn btn-success">Open report</a></div></div>
+            </div>
+            <div class="col-12 col-lg-4">
+                <div class="card h-100"><div class="card-body p-4"><div class="small text-muted text-uppercase fw-semibold mb-2">Finance</div><h2 class="h4 mb-2">Finance Report</h2><p class="text-muted mb-4">Invoices, payments and credit notes grouped for printing and PDF save.</p><a asp-action="FinanceReport" class="btn btn-success">Open report</a></div></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -23,6 +23,7 @@ using LogisticManagementApp.Models.CompanyPortal.Shipments.TrackingEvents;
 using LogisticManagementApp.Models.CompanyPortal.Shipments.Trips;
 using LogisticManagementApp.Models.CompanyPortal.Shipments.Ulds;
 using LogisticManagementApp.Models.CompanyPortal.Shipments.Voyages;
+using LogisticManagementApp.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -36,12 +37,14 @@ namespace LogisticManagementApp.Controllers
     {
         private readonly ICompanyPortalService _companyPortalService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly LogisticAppDbContext _dbContext;
 
 
-        public CompanyController(ICompanyPortalService companyPortalService, UserManager<ApplicationUser> userManager)
+        public CompanyController(ICompanyPortalService companyPortalService, UserManager<ApplicationUser> userManager, LogisticAppDbContext dbContext)
         {
             _companyPortalService = companyPortalService;
             _userManager = userManager;
+            _dbContext = dbContext;
         }
 
         // ============================================================

@@ -1,0 +1,69 @@
+@model LogisticManagementApp.Models.AdminPortal.Reports.AdminEntityReportViewModel
+@{
+    ViewData["Title"] = $"Admin Entity Report - {Model.DisplayName}";
+}
+
+<div class="report-page">
+    <div class="report-toolbar d-flex justify-content-between align-items-center mb-3 no-print">
+        <div>
+            <div class="text-muted small text-uppercase">PDF Export</div>
+            <h1 class="h3 mb-0">Admin Entity Report - @Model.DisplayName</h1>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-success" onclick="window.print()">Export PDF</button>
+            <a asp-action="Entities" asp-route-entity="@Model.EntityName" asp-route-searchTerm="@Model.SearchTerm" asp-route-filterColumn="@Model.FilterColumn" asp-route-filterValue="@Model.FilterValue" class="btn btn-outline-secondary">Back</a>
+        </div>
+    </div>
+
+    <div class="report-shell print-area">
+        <div class="report-hero">
+            <div>
+                <div class="report-kicker">Admin Portal</div>
+                <div class="report-title">Admin Entity Report - @Model.DisplayName</div>
+                <div class="report-subtitle">@Model.GroupName / @Model.DisplayName</div>
+            </div>
+            <div class="report-meta text-end">
+                <div>Generated: @Model.GeneratedAtUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+                <div>Source: @Model.SourceName</div>
+            </div>
+        </div>
+
+        <section class="report-section">
+            <h2 class="report-section-title">Summary</h2>
+            <div class="report-section-note">Key indicators prepared for quick screen review and clean PDF export.</div>
+            <div class="report-stats-grid stats-5">
+                <div class="report-stat"><span>Entity</span><strong>@Model.DisplayName</strong></div>
+                <div class="report-stat"><span>Rows in result</span><strong>@Model.TotalRows</strong></div>
+                <div class="report-stat"><span>Columns</span><strong>@Model.Columns.Count</strong></div>
+                <div class="report-stat"><span>Search term</span><strong>@(string.IsNullOrWhiteSpace(Model.SearchTerm) ? "None" : Model.SearchTerm)</strong></div>
+                <div class="report-stat"><span>Filter</span><strong>@(string.IsNullOrWhiteSpace(Model.FilterColumn) ? "None" : $"{Model.FilterColumn}: {Model.FilterValue}")</strong></div>
+            </div>
+        </section>
+
+        <section class="report-section">
+            <h2 class="report-section-title">Filtered Entity Data</h2>
+            <div class="report-section-note">Current admin list result exported in printable PDF layout.</div>
+            <table class="report-table report-table-compact">
+                <thead>
+                    <tr>
+                        @foreach (var col in Model.Columns)
+                        {
+                            <th>@col</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>
+                        @foreach (var col in Model.Columns)
+                        {
+                            <td>@(row.TryGetValue(col, out var value) ? value : string.Empty)</td>
+                        }
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </section>
+    </div>
+</div>

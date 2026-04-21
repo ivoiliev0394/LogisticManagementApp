@@ -1,0 +1,77 @@
+@model LogisticManagementApp.Models.CompanyPortal.Reports.CompanyFinanceReportViewModel
+@{
+    ViewData["Title"] = "Company Finance Report";
+}
+
+<div class="report-page">
+    <div class="report-toolbar d-flex justify-content-between align-items-center mb-3 no-print">
+        <div>
+            <div class="text-muted small text-uppercase">PDF Export</div>
+            <h1 class="h3 mb-0">Company Finance Report</h1>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-success" onclick="window.print()">Export PDF</button>
+            <a asp-action="Reports" class="btn btn-outline-secondary">Back</a>
+        </div>
+    </div>
+
+    <div class="report-shell print-area">
+        <div class="report-hero">
+            <div>
+                <div class="report-kicker">Company Portal</div>
+                <div class="report-title">Company Finance Report</div>
+                <div class="report-subtitle">@Model.CompanyName</div>
+            </div>
+            <div class="report-meta text-end">
+                <div>Generated: @Model.GeneratedAtUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+                <div>Source: @Model.SourceName</div>
+            </div>
+        </div>
+
+        <section class="report-section">
+            <h2 class="report-section-title">Summary</h2>
+            <div class="report-section-note">Key indicators prepared for quick screen review and clean PDF export.</div>
+            <div class="report-stats-grid stats-7">
+                <div class="report-stat"><span>Invoices</span><strong>@Model.InvoicesCount</strong></div>
+                <div class="report-stat"><span>Credit Notes</span><strong>@Model.CreditNotesCount</strong></div>
+                <div class="report-stat"><span>Payments</span><strong>@Model.PaymentsCount</strong></div>
+                <div class="report-stat"><span>Total Invoiced</span><strong>@Model.TotalInvoiced.ToString("0.##")</strong></div>
+                <div class="report-stat"><span>Total Tax</span><strong>@Model.TotalTax.ToString("0.##")</strong></div>
+                <div class="report-stat"><span>Total Paid</span><strong>@Model.TotalPaid.ToString("0.##")</strong></div>
+                <div class="report-stat"><span>Credit Issued</span><strong>@Model.CreditIssued.ToString("0.##")</strong></div>
+            </div>
+        </section>
+
+        <section class="report-section">
+            <h2 class="report-section-title">Latest Invoices</h2>
+            <div class="report-section-note">Most recent issued invoices included in the report snapshot.</div>
+            <table class="report-table">
+                <thead>
+                    <tr><th>Invoice No</th><th>Issue Date</th><th>Status</th><th>Currency</th><th>Total</th></tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Model.LatestInvoices)
+                {
+                    <tr><td>@row.InvoiceNo</td><td>@row.IssueDate</td><td>@row.Status</td><td>@row.Currency</td><td>@row.Total</td></tr>
+                }
+                </tbody>
+            </table>
+        </section>
+
+        <section class="report-section">
+            <h2 class="report-section-title">Latest Payments</h2>
+            <div class="report-section-note">Recent payment activity linked to company invoices.</div>
+            <table class="report-table">
+                <thead>
+                    <tr><th>Invoice No</th><th>Payment Date</th><th>Status</th><th>Currency</th><th>Amount</th></tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Model.LatestPayments)
+                {
+                    <tr><td>@row.InvoiceNo</td><td>@row.PaymentDate</td><td>@row.Status</td><td>@row.Currency</td><td>@row.Amount</td></tr>
+                }
+                </tbody>
+            </table>
+        </section>
+    </div>
+</div>

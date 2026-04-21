@@ -1,0 +1,37 @@
+@model LogisticManagementApp.Models.AdminPortal.Reports.AdminReportsIndexViewModel
+@{
+    ViewData["Title"] = "Admin Reports";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <div class="text-muted small text-uppercase">Admin Portal</div>
+            <h1 class="h3 mb-0">PDF Reports</h1>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary">Back to Admin</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-lg-6">
+            <div class="card h-100">
+                <div class="card-body p-4">
+                    <div class="small text-muted text-uppercase fw-semibold mb-2">System</div>
+                    <h2 class="h4 mb-2">System Overview Report</h2>
+                    <p class="text-muted mb-4">High-level counts for companies, users, orders, shipments, invoices, routes and tracked assets.</p>
+                    <a asp-action="SystemReport" class="btn btn-success">Open report</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6">
+            <div class="card h-100">
+                <div class="card-body p-4">
+                    <div class="small text-muted text-uppercase fw-semibold mb-2">Entities</div>
+                    <h2 class="h4 mb-2">Entity List Reports</h2>
+                    <p class="text-muted mb-4">Use the export button inside each entity list to open a printable PDF-ready report with current filters.</p>
+                    <a asp-action="Index" class="btn btn-outline-success">Go to entities</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

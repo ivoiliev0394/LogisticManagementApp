@@ -11,6 +11,7 @@
         </div>
         <div class="d-flex gap-2">
             <a asp-action="Index" class="btn btn-outline-secondary">Всички entity-та</a>
+            <a asp-action="EntityReport" asp-route-entity="@Model.EntityName" asp-route-searchTerm="@Model.SearchTerm" asp-route-filterColumn="@Model.FilterColumn" asp-route-filterValue="@Model.FilterValue" class="btn btn-outline-success">PDF Report</a>
             <a asp-action="Create" asp-route-entity="@Model.EntityName" class="btn btn-success">Нов запис</a>
         </div>
     </div>

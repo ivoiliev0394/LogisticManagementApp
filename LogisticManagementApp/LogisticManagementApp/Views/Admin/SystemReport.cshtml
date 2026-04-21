@@ -1,0 +1,70 @@
+@model LogisticManagementApp.Models.AdminPortal.Reports.AdminSystemOverviewReportViewModel
+@{
+    ViewData["Title"] = "Admin System Overview Report";
+}
+
+<div class="report-page">
+    <div class="report-toolbar d-flex justify-content-between align-items-center mb-3 no-print">
+        <div>
+            <div class="text-muted small text-uppercase">PDF Export</div>
+            <h1 class="h3 mb-0">Admin System Overview Report</h1>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-success" onclick="window.print()">Export PDF</button>
+            <a asp-action="Reports" class="btn btn-outline-secondary">Back</a>
+        </div>
+    </div>
+
+    <div class="report-shell print-area">
+        <div class="report-hero">
+            <div>
+                <div class="report-kicker">Admin Portal</div>
+                <div class="report-title">Admin System Overview Report</div>
+                <div class="report-subtitle">Global system summary</div>
+            </div>
+            <div class="report-meta text-end">
+                <div>Generated: @Model.GeneratedAtUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+                <div>Source: @Model.SourceName</div>
+            </div>
+        </div>
+
+        <section class="report-section">
+            <h2 class="report-section-title">Summary</h2>
+            <div class="report-section-note">Key indicators prepared for quick screen review and clean PDF export.</div>
+            <div class="report-stats-grid stats-8">
+                <div class="report-stat"><span>Companies</span><strong>@Model.CompaniesCount</strong></div>
+                <div class="report-stat"><span>Users</span><strong>@Model.UsersCount</strong></div>
+                <div class="report-stat"><span>Orders</span><strong>@Model.OrdersCount</strong></div>
+                <div class="report-stat"><span>Shipments</span><strong>@Model.ShipmentsCount</strong></div>
+                <div class="report-stat"><span>Invoices</span><strong>@Model.InvoicesCount</strong></div>
+                <div class="report-stat"><span>Routes</span><strong>@Model.RoutesCount</strong></div>
+                <div class="report-stat"><span>Bookings</span><strong>@Model.BookingsCount</strong></div>
+                <div class="report-stat"><span>Tracked Assets</span><strong>@Model.TrackedAssetsCount</strong></div>
+            </div>
+        </section>
+
+        <section class="report-section">
+            <h2 class="report-section-title">Entity Catalog Snapshot</h2>
+            <div class="report-section-note">Available admin-managed entity types and their browsable field counts.</div>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>Group</th>
+                        <th>Entity</th>
+                        <th>Fields</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.CatalogItems)
+                {
+                    <tr>
+                        <td>@item.Group</td>
+                        <td>@item.Entity</td>
+                        <td>@item.Fields</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </section>
+    </div>
+</div>

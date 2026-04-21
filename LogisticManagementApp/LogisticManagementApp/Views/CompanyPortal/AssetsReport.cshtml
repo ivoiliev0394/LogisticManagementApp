@@ -1,0 +1,63 @@
+@model LogisticManagementApp.Models.CompanyPortal.Reports.CompanyAssetsReportViewModel
+@{
+    ViewData["Title"] = "Company Assets Report";
+}
+
+<div class="report-page">
+    <div class="report-toolbar d-flex justify-content-between align-items-center mb-3 no-print">
+        <div>
+            <div class="text-muted small text-uppercase">PDF Export</div>
+            <h1 class="h3 mb-0">Company Assets Report</h1>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-success" onclick="window.print()">Export PDF</button>
+            <a asp-action="Reports" class="btn btn-outline-secondary">Back</a>
+        </div>
+    </div>
+
+    <div class="report-shell print-area">
+        <div class="report-hero">
+            <div>
+                <div class="report-kicker">Company Portal</div>
+                <div class="report-title">Company Assets Report</div>
+                <div class="report-subtitle">@Model.CompanyName</div>
+            </div>
+            <div class="report-meta text-end">
+                <div>Generated: @Model.GeneratedAtUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+                <div>Source: @Model.SourceName</div>
+            </div>
+        </div>
+
+        <section class="report-section">
+            <h2 class="report-section-title">Summary</h2>
+            <div class="report-section-note">Key indicators prepared for quick screen review and clean PDF export.</div>
+            <div class="report-stats-grid stats-9">
+                <div class="report-stat"><span>Vessels</span><strong>@Model.VesselsCount</strong></div>
+                <div class="report-stat"><span>Vehicles</span><strong>@Model.VehiclesCount</strong></div>
+                <div class="report-stat"><span>Aircraft</span><strong>@Model.AircraftCount</strong></div>
+                <div class="report-stat"><span>Trains</span><strong>@Model.TrainsCount</strong></div>
+                <div class="report-stat"><span>Containers</span><strong>@Model.ContainersCount</strong></div>
+                <div class="report-stat"><span>Trips</span><strong>@Model.TripsCount</strong></div>
+                <div class="report-stat"><span>Voyages</span><strong>@Model.VoyagesCount</strong></div>
+                <div class="report-stat"><span>Flights</span><strong>@Model.FlightsCount</strong></div>
+                <div class="report-stat"><span>Rail Movements</span><strong>@Model.RailMovementsCount</strong></div>
+            </div>
+        </section>
+
+        <section class="report-section">
+            <h2 class="report-section-title">Latest Registered Assets</h2>
+            <div class="report-section-note">Most recent sea, road, air, rail and cargo-unit assets.</div>
+            <table class="report-table">
+                <thead>
+                    <tr><th>Mode</th><th>Identifier</th><th>Type</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Model.LatestAssets)
+                {
+                    <tr><td>@row.Mode</td><td>@row.Identifier</td><td>@row.Type</td><td>@row.Status</td></tr>
+                }
+                </tbody>
+            </table>
+        </section>
+    </div>
+</div>
