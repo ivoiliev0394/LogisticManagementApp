@@ -1,4 +1,4 @@
-@model IReadOnlyList<LogisticManagementApp.Models.AdminPortal.AdminEntityGroupViewModel>
+﻿@model IReadOnlyList<LogisticManagementApp.Models.AdminPortal.AdminEntityGroupViewModel>
 @{
     ViewData["Title"] = "Admin Portal";
 }
@@ -11,10 +11,7 @@
         </div>
         <a asp-controller="Home" asp-action="AdminDashboard" class="btn btn-outline-secondary">Dashboard</a>
     </div>
-
-    @await Html.PartialAsync("~/Views/Shared/_StatusMessage.cshtml")
-
-    @foreach (var group in Model)
+@foreach (var group in Model)
     {
         <div class="card shadow-sm mb-4">
             <div class="card-header admin-green-header border-0 pb-0">

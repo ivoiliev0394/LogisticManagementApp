@@ -1,4 +1,4 @@
-@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Assets.Sea.VesselPositionListItemViewModel>
+﻿@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Assets.Sea.VesselPositionListItemViewModel>
 
 @{
     ViewData["Title"] = "Vessel Positions";
@@ -113,3 +113,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -24,7 +24,6 @@
                     <input asp-for="Id" type="hidden" />
                     <input asp-for="ShipmentId" type="hidden" />
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-12 col-md-6">
@@ -38,6 +37,7 @@
                                     </option>
                                 }
                             </select>
+                            <span asp-validation-for="ContainerId" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
@@ -51,21 +51,25 @@
                                     </option>
                                 }
                             </select>
+                            <span asp-validation-for="ShipmentLegId" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label asp-for="GrossWeightKg" class="form-label"></label>
                             <input asp-for="GrossWeightKg" class="form-control" />
+                            <span asp-validation-for="GrossWeightKg" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label asp-for="SealNumber" class="form-label"></label>
                             <input asp-for="SealNumber" class="form-control" />
+                            <span asp-validation-for="SealNumber" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="Notes" class="form-label"></label>
                             <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 
@@ -82,3 +86,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

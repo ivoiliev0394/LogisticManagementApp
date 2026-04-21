@@ -6,6 +6,8 @@ namespace LogisticManagementApp.Models.CompanyPortal.Shipments
 {
     public class CompanyShipmentCreateViewModel
     {
+        [Display(Name = "Shipment number")]
+        public string ShipmentNo { get; set; } = string.Empty;
         [Display(Name = "Поръчка")]
         public Guid? OrderId { get; set; }
 

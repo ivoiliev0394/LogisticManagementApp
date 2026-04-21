@@ -19,17 +19,18 @@
                 <form asp-action="CreateSavedFilter" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label asp-for="Name" class="form-label"></label>
                             <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="EntityType" class="form-label"></label>
                             <input asp-for="EntityType" class="form-control" />
+                            <span asp-validation-for="EntityType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -37,11 +38,13 @@
                             <select asp-for="UserId" asp-items="Model.UserOptions" class="form-select">
                                 <option value="">Ниво компания</option>
                             </select>
+                            <span asp-validation-for="UserId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-check mt-4 pt-2">
                                 <input asp-for="IsDefault" class="form-check-input" />
+                                <span asp-validation-for="IsDefault" class="text-danger"></span>
                                 <label asp-for="IsDefault" class="form-check-label">Default</label>
                             </div>
                         </div>
@@ -49,6 +52,7 @@
                         <div class="col-12">
                             <label asp-for="FilterJson" class="form-label"></label>
                             <textarea asp-for="FilterJson" class="form-control" rows="6"></textarea>
+                            <span asp-validation-for="FilterJson" class="text-danger"></span>
                         </div>
                     </div>
 

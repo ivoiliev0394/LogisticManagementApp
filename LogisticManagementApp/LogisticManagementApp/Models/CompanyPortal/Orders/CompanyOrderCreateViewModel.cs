@@ -6,6 +6,9 @@ namespace LogisticManagementApp.Models.CompanyPortal.Orders
 {
     public class CompanyOrderCreateViewModel
     {
+        [Display(Name = "Order number")]
+        public string OrderNo { get; set; } = string.Empty;
+
         [Display(Name = "Pickup адрес")]
         public Guid? PickupAddressId { get; set; }
 

@@ -22,10 +22,7 @@
 
                     <a asp-action="CreateDocumentVersion" class="btn btn-success">Нова версия</a>
                 </div>
-
-                <partial name="_StatusMessage" />
-
-                @if (!Model.Any())
+@if (!Model.Any())
                 {
                     <div class="alert alert-info mb-0">Няма налични записи.</div>
                 }
@@ -81,3 +78,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

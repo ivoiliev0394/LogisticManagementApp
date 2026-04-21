@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Assets.CargoUnits.ContainerSealEditViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Assets.CargoUnits.ContainerSealEditViewModel
 
 @{
     ViewData["Title"] = "Редакция на container seal";
@@ -19,7 +19,6 @@
                 <form asp-action="EditContainerSeal" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -29,36 +28,43 @@
                                     class="form-select">
                                 <option value="">-- Избери --</option>
                             </select>
+                            <span asp-validation-for="ContainerId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="SealNumber" class="form-label"></label>
                             <input asp-for="SealNumber" class="form-control" />
+                            <span asp-validation-for="SealNumber" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="AppliedAtUtc" class="form-label"></label>
                             <input asp-for="AppliedAtUtc" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="AppliedAtUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="AppliedBy" class="form-label"></label>
                             <input asp-for="AppliedBy" class="form-control" />
+                            <span asp-validation-for="AppliedBy" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="RemovedAtUtc" class="form-label"></label>
                             <input asp-for="RemovedAtUtc" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="RemovedAtUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="RemovedBy" class="form-label"></label>
                             <input asp-for="RemovedBy" class="form-control" />
+                            <span asp-validation-for="RemovedBy" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-check mt-4 pt-2">
                                 <input asp-for="IsActiveSeal" class="form-check-input" />
+                                <span asp-validation-for="IsActiveSeal" class="text-danger"></span>
                                 <label asp-for="IsActiveSeal" class="form-check-label">
                                     Активна пломба
                                 </label>
@@ -70,6 +76,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

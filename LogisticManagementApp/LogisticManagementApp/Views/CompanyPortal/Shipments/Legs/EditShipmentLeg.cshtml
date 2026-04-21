@@ -25,17 +25,18 @@
                     <input asp-for="Id" type="hidden" />
                     <input asp-for="ShipmentId" type="hidden" />
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-12 col-md-4">
                             <label asp-for="LegNo" class="form-label"></label>
                             <input asp-for="LegNo" class="form-control" />
+                            <span asp-validation-for="LegNo" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-4">
                             <label asp-for="Mode" class="form-label"></label>
                             <select asp-for="Mode" asp-items="Html.GetEnumSelectList<TransportMode>()" class="form-select"></select>
+                            <span asp-validation-for="Mode" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
@@ -43,6 +44,7 @@
                             <select asp-for="OriginLocationId" asp-items="Model.LocationOptions" class="form-select">
                                 <option value="">Изберете origin location</option>
                             </select>
+                            <span asp-validation-for="OriginLocationId" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
@@ -50,36 +52,43 @@
                             <select asp-for="DestinationLocationId" asp-items="Model.LocationOptions" class="form-select">
                                 <option value="">Изберете destination location</option>
                             </select>
+                            <span asp-validation-for="DestinationLocationId" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label asp-for="ETD_Utc" class="form-label"></label>
                             <input asp-for="ETD_Utc" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="ETD_Utc" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label asp-for="ETA_Utc" class="form-label"></label>
                             <input asp-for="ETA_Utc" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="ETA_Utc" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label asp-for="ATD_Utc" class="form-label"></label>
                             <input asp-for="ATD_Utc" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="ATD_Utc" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label asp-for="ATA_Utc" class="form-label"></label>
                             <input asp-for="ATA_Utc" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="ATA_Utc" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="CarrierReference" class="form-label"></label>
                             <input asp-for="CarrierReference" class="form-control" />
+                            <span asp-validation-for="CarrierReference" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="Notes" class="form-label"></label>
                             <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 
@@ -96,3 +105,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

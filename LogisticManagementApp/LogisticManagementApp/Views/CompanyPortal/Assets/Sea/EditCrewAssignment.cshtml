@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Assets.Sea.CrewAssignmentEditViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Assets.Sea.CrewAssignmentEditViewModel
 
 @{
     ViewData["Title"] = "Редакция на crew assignment";
@@ -19,7 +19,6 @@
                 <form asp-action="EditCrewAssignment" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <input asp-for="Id" type="hidden" />
 
@@ -31,6 +30,7 @@
                                     class="form-select">
                                 <option value="">Избери voyage</option>
                             </select>
+                            <span asp-validation-for="VoyageId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -40,6 +40,7 @@
                                     class="form-select">
                                 <option value="">Избери crew member</option>
                             </select>
+                            <span asp-validation-for="VesselCrewMemberId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -47,6 +48,7 @@
                             <select asp-for="AssignedRole"
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Assets.VesselCrewRole>()"
                                     class="form-select"></select>
+                                    <span asp-validation-for="AssignedRole" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -54,6 +56,7 @@
                             <input asp-for="AssignedAtUtc"
                                    type="datetime-local"
                                    class="form-control" />
+                                   <span asp-validation-for="AssignedAtUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -61,6 +64,7 @@
                             <input asp-for="FromUtc"
                                    type="datetime-local"
                                    class="form-control" />
+                                   <span asp-validation-for="FromUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -68,6 +72,7 @@
                             <input asp-for="ToUtc"
                                    type="datetime-local"
                                    class="form-control" />
+                                   <span asp-validation-for="ToUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -75,6 +80,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

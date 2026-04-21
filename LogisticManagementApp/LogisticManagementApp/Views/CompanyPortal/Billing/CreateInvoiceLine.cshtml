@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Billing.InvoiceLineCreateViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Billing.InvoiceLineCreateViewModel
 
 @{
     ViewData["Title"] = "Нов invoice line";
@@ -20,7 +20,6 @@
                 <form asp-action="CreateInvoiceLine" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-4">
@@ -30,6 +29,7 @@
                                     class="form-select">
                                 <option value="">Избери invoice</option>
                             </select>
+                            <span asp-validation-for="InvoiceId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -39,6 +39,7 @@
                                     class="form-select">
                                 <option value="">Без charge</option>
                             </select>
+                            <span asp-validation-for="ChargeId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -48,46 +49,55 @@
                                     class="form-select">
                                 <option value="">Без shipment</option>
                             </select>
+                            <span asp-validation-for="ShipmentId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <label asp-for="LineNo" class="form-label"></label>
                             <input asp-for="LineNo" class="form-control" />
+                            <span asp-validation-for="LineNo" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-9">
                             <label asp-for="Description" class="form-label"></label>
                             <input asp-for="Description" class="form-control" />
+                            <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <label asp-for="Quantity" class="form-label"></label>
                             <input asp-for="Quantity" class="form-control" />
+                            <span asp-validation-for="Quantity" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <label asp-for="UnitPrice" class="form-label"></label>
                             <input asp-for="UnitPrice" class="form-control" />
+                            <span asp-validation-for="UnitPrice" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <label asp-for="TaxRatePercent" class="form-label"></label>
                             <input asp-for="TaxRatePercent" class="form-control" />
+                            <span asp-validation-for="TaxRatePercent" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <label asp-for="LineNetAmount" class="form-label"></label>
                             <input asp-for="LineNetAmount" class="form-control" />
+                            <span asp-validation-for="LineNetAmount" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="LineTaxAmount" class="form-label"></label>
                             <input asp-for="LineTaxAmount" class="form-control" />
+                            <span asp-validation-for="LineTaxAmount" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="LineTotalAmount" class="form-label"></label>
                             <input asp-for="LineTotalAmount" class="form-control" />
+                            <span asp-validation-for="LineTotalAmount" class="text-danger"></span>
                         </div>
                     </div>
 

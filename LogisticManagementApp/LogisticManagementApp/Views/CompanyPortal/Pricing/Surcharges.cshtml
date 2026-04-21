@@ -1,4 +1,4 @@
-@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Pricing.SurchargeListItemViewModel>
+﻿@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Pricing.SurchargeListItemViewModel>
 
 @{
     ViewData["Title"] = "Surcharges";
@@ -22,10 +22,7 @@
                         </p>
                     </div>
                 </div>
-
-                <partial name="_StatusMessage" />
-
-                @if (!Model.Any())
+@if (!Model.Any())
                 {
                     <div class="alert alert-info mb-0">
                         Няма налични записи.

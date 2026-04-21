@@ -108,8 +108,7 @@
                             Редакция
                         </a>
 
-                        <form asp-action="DeleteShipment" asp-route-id="@Model.Id" method="post"
-                              onsubmit="return confirm('Сигурен ли си, че искаш да изтриеш този shipment?');">
+                        <form asp-action="DeleteShipment" asp-route-id="@Model.Id" method="post" data-confirm-message="Сигурен ли си, че искаш да изтриеш този shipment?">
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-outline-light">Изтрий</button>
                         </form>
@@ -267,3 +266,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

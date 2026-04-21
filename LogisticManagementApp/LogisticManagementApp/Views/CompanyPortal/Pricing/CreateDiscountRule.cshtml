@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Pricing.DiscountRuleCreateViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Pricing.DiscountRuleCreateViewModel
 @using LogisticManagementApp.Domain.Enums.Pricing
 
 @{
@@ -20,7 +20,6 @@
                 <form asp-action="CreateDiscountRule" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-4">
@@ -30,6 +29,7 @@
                                     class="form-select">
                                 <option value="">-- Избери --</option>
                             </select>
+                            <span asp-validation-for="AgreementId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -39,6 +39,7 @@
                                     class="form-select">
                                 <option value="">-- Няма --</option>
                             </select>
+                            <span asp-validation-for="ServiceLevelId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -48,6 +49,7 @@
                                     class="form-select">
                                 <option value="">-- Няма --</option>
                             </select>
+                            <span asp-validation-for="GeoZoneId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -56,6 +58,7 @@
                                     asp-items="Html.GetEnumSelectList<DiscountType>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="DiscountType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -64,6 +67,7 @@
                                    type="number"
                                    step="0.01"
                                    class="form-control" />
+                                   <span asp-validation-for="Value" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -72,6 +76,7 @@
                                    type="number"
                                    step="0.01"
                                    class="form-control" />
+                                   <span asp-validation-for="MinShipmentValue" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -80,6 +85,7 @@
                                    type="number"
                                    step="0.01"
                                    class="form-control" />
+                                   <span asp-validation-for="MaxShipmentValue" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -87,6 +93,7 @@
                             <input asp-for="ValidFromUtc"
                                    type="date"
                                    class="form-control" />
+                                   <span asp-validation-for="ValidFromUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -94,6 +101,7 @@
                             <input asp-for="ValidToUtc"
                                    type="date"
                                    class="form-control" />
+                                   <span asp-validation-for="ValidToUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -101,12 +109,14 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="4"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <div class="form-check form-switch">
                                 <input asp-for="IsActive"
                                        class="form-check-input" />
+                                       <span asp-validation-for="IsActive" class="text-danger"></span>
                                 <label asp-for="IsActive"
                                        class="form-check-label">
                                     Активен

@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Assets.Rail.RailServiceEditViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Assets.Rail.RailServiceEditViewModel
 
 @{
     ViewData["Title"] = "Редакция на rail service";
@@ -19,17 +19,18 @@
                 <form asp-action="EditRailService" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label asp-for="ServiceCode" class="form-label"></label>
                             <input asp-for="ServiceCode" class="form-control" />
+                            <span asp-validation-for="ServiceCode" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-8">
                             <label asp-for="Name" class="form-label"></label>
                             <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -39,6 +40,7 @@
                                     class="form-select">
                                 <option value="">-- Избери --</option>
                             </select>
+                            <span asp-validation-for="OriginLocationId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -48,16 +50,19 @@
                                     class="form-select">
                                 <option value="">-- Избери --</option>
                             </select>
+                            <span asp-validation-for="DestinationLocationId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="EstimatedTransitDays" class="form-label"></label>
                             <input asp-for="EstimatedTransitDays" class="form-control" />
+                            <span asp-validation-for="EstimatedTransitDays" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-check mt-4 pt-2">
                                 <input asp-for="IsActive" class="form-check-input" />
+                                <span asp-validation-for="IsActive" class="text-danger"></span>
                                 <label asp-for="IsActive" class="form-check-label">
                                     Активен
                                 </label>
@@ -69,6 +74,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

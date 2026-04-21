@@ -24,7 +24,6 @@
                     <input asp-for="ShipmentId" type="hidden" />
                     <input asp-for="VoyageId" type="hidden" />
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-12 col-md-6">
@@ -38,16 +37,19 @@
                                     asp-items="Model.ShipmentLegOptions"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="ShipmentLegId" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label asp-for="BookingReference" class="form-label"></label>
                             <input asp-for="BookingReference" class="form-control" />
+                            <span asp-validation-for="BookingReference" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="Notes" class="form-label"></label>
                             <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 
@@ -64,3 +66,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

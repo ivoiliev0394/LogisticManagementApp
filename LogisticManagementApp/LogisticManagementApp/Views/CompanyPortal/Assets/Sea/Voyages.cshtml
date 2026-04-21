@@ -1,4 +1,4 @@
-@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Assets.Sea.VoyageListItemViewModel>
+﻿@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Assets.Sea.VoyageListItemViewModel>
 
 @{
     ViewData["Title"] = "Voyages";
@@ -109,3 +109,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

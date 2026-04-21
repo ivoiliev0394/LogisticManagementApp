@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Billing.CreditNoteCreateViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Billing.CreditNoteCreateViewModel
 @using LogisticManagementApp.Domain.Enums.Billing
 
 @{
@@ -21,12 +21,12 @@
                 <form asp-action="CreateCreditNote" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label asp-for="CreditNoteNo" class="form-label"></label>
                             <input asp-for="CreditNoteNo" class="form-control" />
+                            <span asp-validation-for="CreditNoteNo" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -36,6 +36,7 @@
                                     class="form-select">
                                 <option value="">Избери invoice</option>
                             </select>
+                            <span asp-validation-for="InvoiceId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -43,11 +44,13 @@
                             <input asp-for="IssueDateUtc"
                                    type="date"
                                    class="form-control" />
+                                   <span asp-validation-for="IssueDateUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="Currency" class="form-label"></label>
                             <input asp-for="Currency" class="form-control" />
+                            <span asp-validation-for="Currency" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -56,21 +59,25 @@
                                     asp-items="Html.GetEnumSelectList<CreditNoteStatus>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="NetAmount" class="form-label"></label>
                             <input asp-for="NetAmount" class="form-control" />
+                            <span asp-validation-for="NetAmount" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="TaxAmount" class="form-label"></label>
                             <input asp-for="TaxAmount" class="form-control" />
+                            <span asp-validation-for="TaxAmount" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="TotalAmount" class="form-label"></label>
                             <input asp-for="TotalAmount" class="form-control" />
+                            <span asp-validation-for="TotalAmount" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -78,6 +85,7 @@
                             <textarea asp-for="Reason"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Reason" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -85,6 +93,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="4"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

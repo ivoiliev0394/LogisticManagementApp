@@ -1,4 +1,4 @@
-@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Routes.RoutePlanStopListItemViewModel>
+﻿@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Routes.RoutePlanStopListItemViewModel>
 
 @{
     ViewData["Title"] = "Route Plan Stops";
@@ -100,3 +100,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

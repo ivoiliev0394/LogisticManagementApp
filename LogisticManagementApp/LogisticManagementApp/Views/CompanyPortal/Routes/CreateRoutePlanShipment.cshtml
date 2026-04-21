@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Routes.RoutePlanShipmentCreateViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Routes.RoutePlanShipmentCreateViewModel
 
 @{
     ViewData["Title"] = "Нов route plan shipment";
@@ -19,7 +19,6 @@
                 <form asp-action="CreateRoutePlanShipment" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -29,6 +28,7 @@
                                     class="form-select">
                                 <option value="">Избери route plan</option>
                             </select>
+                            <span asp-validation-for="RoutePlanId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -38,6 +38,7 @@
                                     class="form-select">
                                 <option value="">Избери shipment</option>
                             </select>
+                            <span asp-validation-for="ShipmentId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -47,6 +48,7 @@
                                     class="form-select">
                                 <option value="">Без pickup stop</option>
                             </select>
+                            <span asp-validation-for="PickupStopId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -56,6 +58,7 @@
                                     class="form-select">
                                 <option value="">Без delivery stop</option>
                             </select>
+                            <span asp-validation-for="DeliveryStopId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -64,6 +67,7 @@
                                    type="number"
                                    min="1"
                                    class="form-control" />
+                                   <span asp-validation-for="Priority" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -71,6 +75,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

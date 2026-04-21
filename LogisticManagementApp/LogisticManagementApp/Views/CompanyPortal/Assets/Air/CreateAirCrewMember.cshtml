@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Assets.Air.AirCrewMemberCreateViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Assets.Air.AirCrewMemberCreateViewModel
 
 @{
     ViewData["Title"] = "Нов air crew member";
@@ -20,13 +20,13 @@
                 <form asp-action="CreateAirCrewMember" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
 
                         <div class="col-md-4">
                             <label asp-for="FullName" class="form-label"></label>
                             <input asp-for="FullName" class="form-control" />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -34,6 +34,7 @@
                             <select asp-for="CrewRole"
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Assets.AirCrewRole>()"
                                     class="form-select"></select>
+                                    <span asp-validation-for="CrewRole" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -41,21 +42,25 @@
                             <select asp-for="Status"
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Assets.AssetStatus>()"
                                     class="form-select"></select>
+                                    <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="LicenseNumber" class="form-label"></label>
                             <input asp-for="LicenseNumber" class="form-control" />
+                            <span asp-validation-for="LicenseNumber" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="Phone" class="form-label"></label>
                             <input asp-for="Phone" class="form-control" />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-check mt-4 pt-2">
                                 <input asp-for="IsActive" class="form-check-input" />
+                                <span asp-validation-for="IsActive" class="text-danger"></span>
                                 <label asp-for="IsActive" class="form-check-label">Активен</label>
                             </div>
                         </div>
@@ -63,6 +68,7 @@
                         <div class="col-12">
                             <label asp-for="Notes" class="form-label"></label>
                             <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
 
                     </div>

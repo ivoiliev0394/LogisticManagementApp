@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Assets.Rail.RailCarEditViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Assets.Rail.RailCarEditViewModel
 
 @{
     ViewData["Title"] = "Редакция на rail car";
@@ -19,12 +19,12 @@
                 <form asp-action="EditRailCar" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label asp-for="RailCarNumber" class="form-label"></label>
                             <input asp-for="RailCarNumber" class="form-control" />
+                            <span asp-validation-for="RailCarNumber" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -32,6 +32,7 @@
                             <select asp-for="RailCarType"
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Assets.RailCarType>()"
                                     class="form-select"></select>
+                                    <span asp-validation-for="RailCarType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -39,21 +40,25 @@
                             <select asp-for="Status"
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Assets.AssetStatus>()"
                                     class="form-select"></select>
+                                    <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="MaxWeightKg" class="form-label"></label>
                             <input asp-for="MaxWeightKg" class="form-control" />
+                            <span asp-validation-for="MaxWeightKg" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="MaxVolumeCbm" class="form-label"></label>
                             <input asp-for="MaxVolumeCbm" class="form-control" />
+                            <span asp-validation-for="MaxVolumeCbm" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-check mt-4 pt-2">
                                 <input asp-for="IsActive" class="form-check-input" />
+                                <span asp-validation-for="IsActive" class="text-danger"></span>
                                 <label asp-for="IsActive" class="form-check-label">
                                     Активен
                                 </label>
@@ -65,6 +70,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

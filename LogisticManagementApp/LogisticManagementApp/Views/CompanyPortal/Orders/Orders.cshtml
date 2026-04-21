@@ -25,10 +25,7 @@
                         Нова поръчка
                     </a>
                 </div>
-
-                <partial name="_StatusMessage" />
-
-                @if (Model.Orders.Any())
+@if (Model.Orders.Any())
                 {
                     <div class="table-responsive" data-table-pagination-wrapper>
                         <table class="table table-hover align-middle" data-table-pagination="true" data-page-size="5">

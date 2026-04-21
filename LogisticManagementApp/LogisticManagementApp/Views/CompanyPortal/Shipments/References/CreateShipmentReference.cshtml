@@ -24,23 +24,25 @@
                     @Html.AntiForgeryToken()
                     <input asp-for="ShipmentId" type="hidden" />
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-12 col-md-6">
                             <label asp-for="ReferenceType" class="form-label"></label>
                             <select asp-for="ReferenceType" class="form-select"
                                     asp-items="Html.GetEnumSelectList<ShipmentReferenceType>()"></select>
+                                    <span asp-validation-for="ReferenceType" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label asp-for="ReferenceValue" class="form-label"></label>
                             <input asp-for="ReferenceValue" class="form-control" />
+                            <span asp-validation-for="ReferenceValue" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="Description" class="form-label"></label>
                             <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
                     </div>
 
@@ -57,3 +59,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -109,6 +109,7 @@ namespace LogisticManagementApp.Controllers
             }
 
             await _clientAddressService.CreateAddressAsync(userId, model);
+            TempData["SuccessMessage"] = "Адресът беше добавен успешно.";
             return RedirectToAction(nameof(MyAddresses));
         }
 
@@ -152,9 +153,11 @@ namespace LogisticManagementApp.Controllers
 
             if (!updated)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "Неуспешно обновяване на адреса.";
+                return RedirectToAction(nameof(MyAddresses));
             }
 
+            TempData["SuccessMessage"] = "Адресът беше обновен успешно.";
             return RedirectToAction(nameof(MyAddresses));
         }
 
@@ -173,9 +176,11 @@ namespace LogisticManagementApp.Controllers
 
             if (!deleted)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "Неуспешно изтриване на адреса.";
+                return RedirectToAction(nameof(MyAddresses));
             }
 
+            TempData["SuccessMessage"] = "Адресът беше изтрит успешно.";
             return RedirectToAction(nameof(MyAddresses));
         }
 
@@ -194,9 +199,11 @@ namespace LogisticManagementApp.Controllers
 
             if (!updated)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "Неуспешно задаване на адрес по подразбиране.";
+                return RedirectToAction(nameof(MyAddresses));
             }
 
+            TempData["SuccessMessage"] = "Адресът по подразбиране беше зададен успешно.";
             return RedirectToAction(nameof(MyAddresses));
         }
 

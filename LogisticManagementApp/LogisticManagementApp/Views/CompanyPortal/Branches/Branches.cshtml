@@ -25,10 +25,7 @@
                         Добави нов клон
                     </a>
                 </div>
-
-                <partial name="_StatusMessage" />
-
-                @if (!Model.Any())
+@if (!Model.Any())
                 {
                     <div class="alert alert-info mb-0">
                         Все още няма добавени клонове.
@@ -77,8 +74,7 @@
                                                       class="d-inline">
                                                     @Html.AntiForgeryToken()
                                                     <button type="submit"
-                                                            class="btn btn-sm btn-danger"
-                                                            onclick="return confirm('Сигурни ли сте, че искате да изтриете този клон?');">
+                                                            class="btn btn-sm btn-danger" data-confirm-message="Сигурни ли сте, че искате да изтриете този клон?">
                                                         Изтриване
                                                     </button>
                                                 </form>
@@ -94,3 +90,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

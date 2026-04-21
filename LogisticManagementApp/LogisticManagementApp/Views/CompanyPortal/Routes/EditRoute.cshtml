@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Routes.RouteEditViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Routes.RouteEditViewModel
 
 @{
     ViewData["Title"] = "Редакция на route";
@@ -20,19 +20,20 @@
                     @Html.AntiForgeryToken()
                     <input asp-for="Id" type="hidden" />
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label asp-for="RouteCode" class="form-label"></label>
                             <input asp-for="RouteCode"
                                    class="form-control" />
+                                   <span asp-validation-for="RouteCode" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="Name" class="form-label"></label>
                             <input asp-for="Name"
                                    class="form-control" />
+                                   <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -41,12 +42,14 @@
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Shipments.TransportMode>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="TransportMode" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-check mt-4 pt-2">
                                 <input asp-for="IsActive"
                                        class="form-check-input" />
+                                       <span asp-validation-for="IsActive" class="text-danger"></span>
                                 <label asp-for="IsActive"
                                        class="form-check-label">
                                     Активен
@@ -59,6 +62,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

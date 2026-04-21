@@ -20,12 +20,12 @@
                 <form asp-action="EditDocumentTemplate" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label asp-for="Name" class="form-label"></label>
                             <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -34,6 +34,7 @@
                                     asp-items="Html.GetEnumSelectList<DocumentTemplateType>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="TemplateType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -41,11 +42,13 @@
                             <select asp-for="FileResourceId" asp-items="Model.FileResourceOptions" class="form-select">
                                 <option value="">Избери file resource</option>
                             </select>
+                            <span asp-validation-for="FileResourceId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <div class="form-check mt-4 pt-2">
                                 <input asp-for="IsDefault" class="form-check-input" />
+                                <span asp-validation-for="IsDefault" class="text-danger"></span>
                                 <label asp-for="IsDefault" class="form-check-label">Default</label>
                             </div>
                         </div>
@@ -53,6 +56,7 @@
                         <div class="col-md-3">
                             <div class="form-check mt-4 pt-2">
                                 <input asp-for="IsActive" class="form-check-input" />
+                                <span asp-validation-for="IsActive" class="text-danger"></span>
                                 <label asp-for="IsActive" class="form-check-label">Active</label>
                             </div>
                         </div>
@@ -60,6 +64,7 @@
                         <div class="col-12">
                             <label asp-for="Notes" class="form-label"></label>
                             <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

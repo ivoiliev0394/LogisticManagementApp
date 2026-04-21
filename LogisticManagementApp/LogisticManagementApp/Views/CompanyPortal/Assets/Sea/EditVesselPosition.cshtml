@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Assets.Sea.VesselPositionEditViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Assets.Sea.VesselPositionEditViewModel
 
 @{
     ViewData["Title"] = "Редакция на vessel position";
@@ -19,7 +19,6 @@
                 <form asp-action="EditVesselPosition" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <input asp-for="Id" type="hidden" />
 
@@ -31,6 +30,7 @@
                                     class="form-select">
                                 <option value="">Избери vessel</option>
                             </select>
+                            <span asp-validation-for="VesselId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -38,31 +38,37 @@
                             <input asp-for="PositionTimeUtc"
                                    type="datetime-local"
                                    class="form-control" />
+                                   <span asp-validation-for="PositionTimeUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <label asp-for="Latitude" class="form-label"></label>
                             <input asp-for="Latitude" class="form-control" />
+                            <span asp-validation-for="Latitude" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <label asp-for="Longitude" class="form-label"></label>
                             <input asp-for="Longitude" class="form-control" />
+                            <span asp-validation-for="Longitude" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <label asp-for="SpeedKnots" class="form-label"></label>
                             <input asp-for="SpeedKnots" class="form-control" />
+                            <span asp-validation-for="SpeedKnots" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <label asp-for="CourseDegrees" class="form-label"></label>
                             <input asp-for="CourseDegrees" class="form-control" />
+                            <span asp-validation-for="CourseDegrees" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="Source" class="form-label"></label>
                             <input asp-for="Source" class="form-control" />
+                            <span asp-validation-for="Source" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -70,6 +76,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

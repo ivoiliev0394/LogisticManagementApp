@@ -183,7 +183,7 @@ namespace LogisticManagementApp.Application.Services
 
             if (await _userManager.IsInRoleAsync(user, RoleNames.Company))
             {
-                return "/Home/CompanyDashboard";
+                return "/Company/Profile";
             }
 
             if (await _userManager.IsInRoleAsync(user, RoleNames.Client))

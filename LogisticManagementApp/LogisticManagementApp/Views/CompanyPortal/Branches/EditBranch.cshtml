@@ -23,7 +23,6 @@
                     @Html.AntiForgeryToken()
                     <input asp-for="Id" type="hidden" />
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="mb-3">
                         <label asp-for="Name" class="form-label">Име</label>
@@ -65,11 +64,13 @@
 
                     <div class="form-check mb-2">
                         <input asp-for="IsHeadOffice" class="form-check-input" />
+                        <span asp-validation-for="IsHeadOffice" class="text-danger"></span>
                         <label asp-for="IsHeadOffice" class="form-check-label">Централа</label>
                     </div>
 
                     <div class="form-check mb-4">
                         <input asp-for="IsActive" class="form-check-input" />
+                        <span asp-validation-for="IsActive" class="text-danger"></span>
                         <label asp-for="IsActive" class="form-check-label">Активен</label>
                     </div>
 

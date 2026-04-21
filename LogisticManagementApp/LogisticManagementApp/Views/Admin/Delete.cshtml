@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.AdminPortal.AdminEntityDeleteViewModel
+﻿@model LogisticManagementApp.Models.AdminPortal.AdminEntityDeleteViewModel
 @{
     ViewData["Title"] = $"Admin · Изтриване {Model.DisplayName}";
 }
@@ -11,10 +11,7 @@
         </div>
         <a asp-action="Entities" asp-route-entity="@Model.EntityName" class="btn btn-outline-secondary">Назад</a>
     </div>
-
-    @await Html.PartialAsync("~/Views/Shared/_StatusMessage.cshtml")
-
-    <div class="card shadow-sm border-danger">
+<div class="card shadow-sm border-danger">
         <div class="card-body">
             @if (Model.IsDeleted)
             {
@@ -44,3 +41,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

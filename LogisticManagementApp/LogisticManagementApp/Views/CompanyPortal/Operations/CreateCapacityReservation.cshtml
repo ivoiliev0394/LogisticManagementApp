@@ -19,7 +19,6 @@
                 <form asp-action="CreateCapacityReservation" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-4">
@@ -28,6 +27,7 @@
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Operations.ResourceType>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="ResourceType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-8">
@@ -37,6 +37,7 @@
                                     class="form-select">
                                 <option value="">Избери resource</option>
                             </select>
+                            <span asp-validation-for="ResourceId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -46,6 +47,7 @@
                                     class="form-select">
                                 <option value="">Без shipment</option>
                             </select>
+                            <span asp-validation-for="ShipmentId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -55,36 +57,43 @@
                                     class="form-select">
                                 <option value="">Без shipment leg</option>
                             </select>
+                            <span asp-validation-for="ShipmentLegId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="ReservedWeightKg" class="form-label"></label>
                             <input asp-for="ReservedWeightKg" class="form-control" />
+                            <span asp-validation-for="ReservedWeightKg" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="ReservedVolumeCbm" class="form-label"></label>
                             <input asp-for="ReservedVolumeCbm" class="form-control" />
+                            <span asp-validation-for="ReservedVolumeCbm" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="ReservedUnitCount" class="form-label"></label>
                             <input asp-for="ReservedUnitCount" class="form-control" />
+                            <span asp-validation-for="ReservedUnitCount" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="ReservedFromUtc" class="form-label"></label>
                             <input asp-for="ReservedFromUtc" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="ReservedFromUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="ReservedToUtc" class="form-label"></label>
                             <input asp-for="ReservedToUtc" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="ReservedToUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="Notes" class="form-label"></label>
                             <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

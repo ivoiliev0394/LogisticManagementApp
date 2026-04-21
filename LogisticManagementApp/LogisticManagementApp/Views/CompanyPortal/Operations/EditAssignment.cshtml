@@ -20,7 +20,6 @@
                     @Html.AntiForgeryToken()
                     <input asp-for="Id" type="hidden" />
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -30,6 +29,7 @@
                                     class="form-select">
                                 <option value="">Избери shipment leg</option>
                             </select>
+                            <span asp-validation-for="ShipmentLegId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
@@ -38,6 +38,7 @@
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Operations.ResourceType>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="ResourceType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
@@ -47,6 +48,7 @@
                                     class="form-select">
                                 <option value="">Избери resource</option>
                             </select>
+                            <span asp-validation-for="ResourceId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -55,6 +57,7 @@
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Operations.AssignmentStatus>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -62,12 +65,14 @@
                             <input asp-for="AssignedAtUtc"
                                    type="datetime-local"
                                    class="form-control" />
+                                   <span asp-validation-for="AssignedAtUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="ReferenceNo" class="form-label"></label>
                             <input asp-for="ReferenceNo"
                                    class="form-control" />
+                                   <span asp-validation-for="ReferenceNo" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -75,6 +80,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

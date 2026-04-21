@@ -1,4 +1,5 @@
 ﻿@model LogisticManagementApp.Models.CompanyPortal.Compliance.ComplianceCheckCreateViewModel
+@using LogisticManagementApp.Domain.Enums.Compliance
 
 @{
     ViewData["Title"] = "Нов compliance check";
@@ -25,16 +26,22 @@
                             <select asp-for="ShipmentId" asp-items="Model.ShipmentOptions" class="form-select">
                                 <option value="">Избери shipment</option>
                             </select>
+                            <span asp-validation-for="ShipmentId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="Status" class="form-label"></label>
-                            <input asp-for="Status" class="form-control" />
+                            <select asp-for="Status"
+                                    asp-items="Html.GetEnumSelectList<ComplianceCheckStatus>()"
+                                    class="form-select">
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="Notes" class="form-label"></label>
                             <textarea asp-for="Notes" class="form-control"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 
@@ -47,3 +54,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

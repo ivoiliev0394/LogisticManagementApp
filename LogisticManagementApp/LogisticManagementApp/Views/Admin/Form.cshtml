@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.AdminPortal.AdminEntityFormViewModel
+﻿@model LogisticManagementApp.Models.AdminPortal.AdminEntityFormViewModel
 @{
     ViewData["Title"] = Model.IsEdit ? $"Admin · Редакция {Model.DisplayName}" : $"Admin · Нов {Model.DisplayName}";
 }
@@ -11,25 +11,37 @@
         </div>
         <a asp-action="Entities" asp-route-entity="@Model.EntityName" class="btn btn-outline-secondary">Назад</a>
     </div>
-
-    @await Html.PartialAsync("~/Views/Shared/_StatusMessage.cshtml")
-
-    <div class="card shadow-sm">
+<div class="card shadow-sm">
         <div class="card-body">
             <form asp-action="@(Model.IsEdit ? "Edit" : "Create")" asp-route-entity="@Model.EntityName" asp-route-key="@Model.Key" method="post">
                 @Html.AntiForgeryToken()
+                @if (ViewBag.RequiredSummaryMessages is List<string> requiredSummaryMessages && requiredSummaryMessages.Any())
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <ul class="mb-0 ps-3">
+                            @foreach (var message in requiredSummaryMessages)
+                            {
+                                <li>@message</li>
+                            }
+                        </ul>
+                    </div>
+                }
 
                 <div class="row g-3">
                     @foreach (var field in Model.Fields)
                     {
-                        if (field.IsKey && Model.IsEdit)
+                        if (field.IsHidden)
                         {
-                            <input type="hidden" name="@field.Name" value="@field.Value" />
+                            if (Model.IsEdit && !string.IsNullOrWhiteSpace(field.Value))
+                            {
+                                <input type="hidden" name="@field.Name" value="@field.Value" />
+                            }
                             continue;
                         }
 
-                        if (field.IsReadOnly && !Model.IsEdit)
+                        if (field.IsKey && Model.IsEdit)
                         {
+                            <input type="hidden" name="@field.Name" value="@field.Value" />
                             continue;
                         }
 
@@ -44,6 +56,10 @@
                                 {
                                     <span class="badge bg-info text-dark ms-1">FK</span>
                                 }
+                                @if (!field.IsNullable)
+                                {
+                                    <span class="badge bg-danger ms-1">Required</span>
+                                }
                             </label>
 
                             @if (field.DataType == "checkbox")
@@ -52,6 +68,7 @@
                                 <div class="form-check form-switch pt-2">
                                     <input class="form-check-input" type="checkbox" id="@field.Name" name="@field.Name" value="true" @(string.Equals(field.Value, "true", StringComparison.OrdinalIgnoreCase) ? "checked" : null) />
                                 </div>
+                                @Html.ValidationMessage(field.Name, null, new { @class = "text-danger" })
                             }
                             else if (field.UseForeignKeyDropdown)
                             {
@@ -66,14 +83,40 @@
                                     }
                                 </select>
                                 <div class="form-text text-muted">Стойност от @field.ForeignEntityName</div>
+                                @Html.ValidationMessage(field.Name, null, new { @class = "text-danger" })
+                            }
+                            else if (field.UseEnumDropdown)
+                            {
+                                <select class="form-select admin-enum-select" id="@field.Name" name="@field.Name">
+                                    @if (field.IsNullable)
+                                    {
+                                        <option value="">-- Избери стойност --</option>
+                                    }
+                                    @foreach (var option in field.EnumOptions)
+                                    {
+                                        <option value="@option.Value" selected="@(string.Equals(field.Value, option.Value, StringComparison.OrdinalIgnoreCase) ? "selected" : null)">@option.Text</option>
+                                    }
+                                </select>
+                                <div class="form-text text-muted">Enum: @field.EnumTypeName</div>
+                                @Html.ValidationMessage(field.Name, null, new { @class = "text-danger" })
                             }
                             else if (field.DataType == "textarea")
                             {
-                                <textarea class="form-control" id="@field.Name" name="@field.Name" rows="4">@field.Value</textarea>
+                                <textarea class="form-control @(field.IsReadOnly ? "bg-light text-muted" : null)" id="@field.Name" name="@field.Name" rows="4" readonly="@(field.IsReadOnly ? "readonly" : null)">@field.Value</textarea>
+                                @Html.ValidationMessage(field.Name, null, new { @class = "text-danger" })
                             }
                             else
                             {
-                                <input class="form-control" type="@field.DataType" id="@field.Name" name="@field.Name" value="@field.Value" />
+                                <input class="form-control @(field.IsReadOnly ? "bg-light text-muted" : null)"
+                                       type="@field.DataType"
+                                       id="@field.Name"
+                                       name="@field.Name"
+                                       value="@field.Value"
+                                       readonly="@(field.IsReadOnly ? "readonly" : null)"
+                                       step="@(field.IsDecimalNumber ? "any" : null)"
+                                       inputmode="@(field.IsDecimalNumber ? "decimal" : null)"
+                                       data-decimal-field="@(field.IsDecimalNumber ? "true" : null)" />
+                                @Html.ValidationMessage(field.Name, null, new { @class = "text-danger" })
                             }
                         </div>
                     }
@@ -87,3 +130,8 @@
         </div>
     </div>
 </div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

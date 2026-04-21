@@ -20,8 +20,6 @@
                     @Html.AntiForgeryToken()
                     <input asp-for="Id" type="hidden" />
 
-                    <div asp-validation-summary="ModelOnly"
-                         class="text-danger mb-3"></div>
 
                     <div class="row g-3">
 
@@ -32,12 +30,14 @@
                                     class="form-select">
                                 <option value="">Ниво компания</option>
                             </select>
+                            <span asp-validation-for="UserId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="EventKey" class="form-label"></label>
                             <input asp-for="EventKey"
                                    class="form-control" />
+                                   <span asp-validation-for="EventKey" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -46,12 +46,14 @@
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Operations.NotificationChannel>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="Channel" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-check mt-4 pt-2">
                                 <input asp-for="IsEnabled"
                                        class="form-check-input" />
+                                       <span asp-validation-for="IsEnabled" class="text-danger"></span>
                                 <label asp-for="IsEnabled"
                                        class="form-check-label">
                                     Активен
@@ -64,6 +66,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
 
                     </div>

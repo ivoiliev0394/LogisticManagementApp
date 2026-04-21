@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Assets.Sea.VesselCrewMemberEditViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Assets.Sea.VesselCrewMemberEditViewModel
 
 @{
     ViewData["Title"] = "Редакция на vessel crew member";
@@ -19,7 +19,6 @@
                 <form asp-action="EditVesselCrewMember" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <input asp-for="Id" type="hidden" />
 
@@ -27,6 +26,7 @@
                         <div class="col-md-6">
                             <label asp-for="FullName" class="form-label"></label>
                             <input asp-for="FullName" class="form-control" />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -34,21 +34,25 @@
                             <select asp-for="CrewRole"
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Assets.VesselCrewRole>()"
                                     class="form-select"></select>
+                                    <span asp-validation-for="CrewRole" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="SeamanBookNumber" class="form-label"></label>
                             <input asp-for="SeamanBookNumber" class="form-control" />
+                            <span asp-validation-for="SeamanBookNumber" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="CertificateNumber" class="form-label"></label>
                             <input asp-for="CertificateNumber" class="form-control" />
+                            <span asp-validation-for="CertificateNumber" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="Phone" class="form-label"></label>
                             <input asp-for="Phone" class="form-control" />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -56,11 +60,13 @@
                             <select asp-for="Status"
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Assets.AssetStatus>()"
                                     class="form-select"></select>
+                                    <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-check mt-4 pt-2">
                                 <input asp-for="IsActive" class="form-check-input" />
+                                <span asp-validation-for="IsActive" class="text-danger"></span>
                                 <label asp-for="IsActive" class="form-check-label">
                                     Активен
                                 </label>
@@ -72,6 +78,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

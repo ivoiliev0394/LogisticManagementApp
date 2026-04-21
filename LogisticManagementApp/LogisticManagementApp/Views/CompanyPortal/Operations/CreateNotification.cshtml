@@ -19,12 +19,12 @@
                 <form asp-action="CreateNotification" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label asp-for="Title" class="form-label"></label>
                             <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -34,6 +34,7 @@
                                     class="form-select">
                                 <option value="">Всички в компанията</option>
                             </select>
+                            <span asp-validation-for="RecipientUserId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -42,6 +43,7 @@
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Operations.NotificationType>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="NotificationType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -50,11 +52,13 @@
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Operations.NotificationChannel>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="Channel" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <div class="form-check mt-4 pt-2">
                                 <input asp-for="IsRead" class="form-check-input" />
+                                <span asp-validation-for="IsRead" class="text-danger"></span>
                                 <label asp-for="IsRead" class="form-check-label">Прочетено</label>
                             </div>
                         </div>
@@ -62,31 +66,37 @@
                         <div class="col-12">
                             <label asp-for="Message" class="form-label"></label>
                             <textarea asp-for="Message" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Message" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="RelatedEntityType" class="form-label"></label>
                             <input asp-for="RelatedEntityType" class="form-control" />
+                            <span asp-validation-for="RelatedEntityType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="RelatedEntityId" class="form-label"></label>
                             <input asp-for="RelatedEntityId" class="form-control" />
+                            <span asp-validation-for="RelatedEntityId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="SentAtUtc" class="form-label"></label>
                             <input asp-for="SentAtUtc" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="SentAtUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="ReadAtUtc" class="form-label"></label>
                             <input asp-for="ReadAtUtc" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="ReadAtUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="Notes" class="form-label"></label>
                             <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

@@ -24,10 +24,7 @@
                         Добави capability
                     </a>
                 </div>
-
-                <partial name="_StatusMessage" />
-
-                @if (!Model.Any())
+@if (!Model.Any())
                 {
                     <div class="alert alert-info mb-0">
                         Все още няма добавени capabilities.
@@ -70,8 +67,7 @@
                                                       class="d-inline">
                                                     @Html.AntiForgeryToken()
                                                     <button type="submit"
-                                                            class="btn btn-sm btn-danger"
-                                                            onclick="return confirm('Сигурни ли сте, че искате да изтриете тази възможност?');">
+                                                            class="btn btn-sm btn-danger" data-confirm-message="Сигурни ли сте, че искате да изтриете тази възможност?">
                                                         Изтриване
                                                     </button>
                                                 </form>
@@ -87,3 +83,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

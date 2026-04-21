@@ -1,4 +1,4 @@
-namespace LogisticManagementApp.Models.AdminPortal
+﻿namespace LogisticManagementApp.Models.AdminPortal
 {
     public class AdminEntityGroupViewModel
     {
@@ -72,10 +72,16 @@ namespace LogisticManagementApp.Models.AdminPortal
         public bool IsKey { get; set; }
         public bool IsNullable { get; set; }
         public bool IsReadOnly { get; set; }
+        public bool IsHidden { get; set; }
         public bool IsForeignKey { get; set; }
+        public bool IsEnum { get; set; }
+        public bool IsDecimalNumber { get; set; }
         public bool UseForeignKeyDropdown { get; set; }
+        public bool UseEnumDropdown { get; set; }
         public string? ForeignEntityName { get; set; }
+        public string? EnumTypeName { get; set; }
         public List<AdminForeignKeyOptionViewModel> ForeignKeyOptions { get; set; } = new();
+        public List<AdminForeignKeyOptionViewModel> EnumOptions { get; set; } = new();
     }
 
     public class AdminForeignKeyOptionViewModel

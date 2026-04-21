@@ -10,6 +10,9 @@ using LogisticManagementApp.Applicationn.Services.ClientPortal;
 using LogisticManagementApp.Applicationn.Services.CompanyPortal;
 using LogisticManagementApp.Domain.Identity;
 using LogisticManagementApp.Infrastructure.Persistence;
+using LogisticManagementApp.Infrastructure.ModelBinding;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -69,8 +72,27 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ExpireTimeSpan = TimeSpan.FromHours(8);
 });
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddLocalization();
+
+builder.Services.AddControllersWithViews(options =>
+{
+    options.ModelBinderProviders.Insert(0, new FlexibleDecimalModelBinderProvider());
+});
 builder.Services.AddRazorPages();
+
+var supportedCultures = new[]
+{
+    new CultureInfo("bg-BG"),
+    new CultureInfo("en-US")
+};
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture("bg-BG");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+    options.ApplyCurrentCultureToResponseHeaders = true;
+});
 
 var app = builder.Build();
 
@@ -89,6 +111,9 @@ app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+var localizationOptions = app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>().Value;
+app.UseRequestLocalization(localizationOptions);
 
 app.UseRouting();
 

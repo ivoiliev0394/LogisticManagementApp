@@ -250,3 +250,153 @@
         tables.forEach(initPaginatedTable);
     });
 })();
+
+(function () {
+    function initCustomDeleteConfirm() {
+        const modalElement = document.getElementById("customDeleteConfirmModal");
+        const messageElement = document.getElementById("customDeleteConfirmModalMessage");
+        const approveButton = document.getElementById("customDeleteConfirmModalApprove");
+
+        if (!modalElement || !messageElement || !approveButton || typeof bootstrap === "undefined") {
+            return;
+        }
+
+        const modal = new bootstrap.Modal(modalElement);
+        let pendingAction = null;
+
+        function normalizeText(value) {
+            return (value || "").toString().trim().toLowerCase();
+        }
+
+        function hasDeleteKeyword(value) {
+            const text = normalizeText(value);
+            return text.includes("delete")
+                || text.includes("remove")
+                || text.includes("destroy")
+                || text.includes("изтриване")
+                || text.includes("изтрий")
+                || text.includes("премахни");
+        }
+
+        function shouldConfirmForm(form) {
+            if (!form) {
+                return false;
+            }
+
+            if (form.hasAttribute("data-confirm-message")) {
+                return true;
+            }
+
+            const action = form.getAttribute("action") || "";
+            if (hasDeleteKeyword(action)) {
+                return true;
+            }
+
+            const submitButton = form.querySelector("button[type='submit'], input[type='submit']");
+            if (!submitButton) {
+                return false;
+            }
+
+            const buttonText = submitButton.value || submitButton.textContent || "";
+            const buttonClasses = submitButton.className || "";
+            return hasDeleteKeyword(buttonText) || hasDeleteKeyword(buttonClasses);
+        }
+
+        function shouldConfirmAnchor(anchor) {
+            if (!anchor) {
+                return false;
+            }
+
+            if (anchor.hasAttribute("data-confirm-message")) {
+                return true;
+            }
+
+            const href = anchor.getAttribute("href") || "";
+            const text = anchor.textContent || "";
+            const classes = anchor.className || "";
+            return hasDeleteKeyword(href) || hasDeleteKeyword(text) || hasDeleteKeyword(classes);
+        }
+
+        function getMessage(trigger, form) {
+            return trigger?.dataset?.confirmMessage
+                || form?.dataset?.confirmMessage
+                || "Сигурни ли сте, че искате да изтриете този запис?";
+        }
+
+        function openModal(message, action) {
+            pendingAction = action;
+            messageElement.textContent = message || "Сигурни ли сте, че искате да изтриете този запис?";
+            modal.show();
+        }
+
+        document.addEventListener("submit", function (event) {
+            const form = event.target.closest("form");
+            if (!shouldConfirmForm(form)) {
+                return;
+            }
+
+            if (form.dataset.confirmed === "true") {
+                form.dataset.confirmed = "false";
+                return;
+            }
+
+            event.preventDefault();
+            openModal(getMessage(null, form), {
+                type: "submit",
+                form: form
+            });
+        });
+
+        document.addEventListener("click", function (event) {
+            const trigger = event.target.closest("a, button, input[type='submit'], [data-confirm-message]");
+            if (!trigger || trigger.tagName === "FORM") {
+                return;
+            }
+
+            const form = trigger.closest("form");
+
+            if ((trigger.matches("button, input[type='submit']") || trigger.hasAttribute("data-confirm-message")) && form && shouldConfirmForm(form)) {
+                if (trigger.type === "submit" || trigger.tagName === "BUTTON" || trigger.tagName === "INPUT") {
+                    event.preventDefault();
+                    openModal(getMessage(trigger, form), {
+                        type: "submit",
+                        form: form
+                    });
+                    return;
+                }
+            }
+
+            if (trigger.tagName === "A" && trigger.href && shouldConfirmAnchor(trigger)) {
+                event.preventDefault();
+                openModal(getMessage(trigger, form), {
+                    type: "navigate",
+                    href: trigger.href
+                });
+            }
+        });
+
+        approveButton.addEventListener("click", function () {
+            if (!pendingAction) {
+                modal.hide();
+                return;
+            }
+
+            if (pendingAction.type === "submit" && pendingAction.form) {
+                pendingAction.form.dataset.confirmed = "true";
+                pendingAction.form.requestSubmit();
+            }
+            else if (pendingAction.type === "navigate" && pendingAction.href) {
+                window.location.href = pendingAction.href;
+            }
+
+            pendingAction = null;
+            modal.hide();
+        });
+
+        modalElement.addEventListener("hidden.bs.modal", function () {
+            pendingAction = null;
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", initCustomDeleteConfirm);
+})();

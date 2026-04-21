@@ -20,17 +20,18 @@
                     @Html.AntiForgeryToken()
                     <input asp-for="Id" type="hidden" />
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label asp-for="DashboardKey" class="form-label"></label>
                             <input asp-for="DashboardKey" class="form-control" />
+                            <span asp-validation-for="DashboardKey" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-check form-switch mt-4 pt-2">
                                 <input asp-for="IsActive" class="form-check-input" />
+                                <span asp-validation-for="IsActive" class="text-danger"></span>
                                 <label asp-for="IsActive" class="form-check-label">
                                     Активен
                                 </label>
@@ -42,6 +43,7 @@
                             <textarea asp-for="LayoutJson"
                                       class="form-control font-monospace"
                                       rows="6"></textarea>
+                                      <span asp-validation-for="LayoutJson" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -49,6 +51,7 @@
                             <textarea asp-for="WidgetSettingsJson"
                                       class="form-control font-monospace"
                                       rows="5"></textarea>
+                                      <span asp-validation-for="WidgetSettingsJson" class="text-danger"></span>
                         </div>
                     </div>
 

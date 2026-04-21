@@ -74,8 +74,7 @@
                                                     <form asp-action="DeleteShipmentUld"
                                                           asp-route-id="@item.Id"
                                                           asp-route-shipmentId="@Model.ShipmentId"
-                                                          method="post"
-                                                          onsubmit="return confirm('Сигурен ли си, че искаш да изтриеш този shipment ULD?');">
+                                                          method="post" data-confirm-message="Сигурен ли си, че искаш да изтриеш този shipment ULD?">
                                                         @Html.AntiForgeryToken()
                                                         <button type="submit" class="btn btn-sm btn-outline-light">
                                                             Изтрий
@@ -102,3 +101,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -34,10 +34,7 @@
                         }
                     </div>
                 </div>
-
-                <partial name="_StatusMessage" />
-
-                <div class="row g-3 mb-4">
+<div class="row g-3 mb-4">
                     <div class="col-12 col-md-6 col-xl-3">
                         <div class="stat-card h-100">
                             <div class="small text-muted mb-2">Статус на поръчката</div>
@@ -156,8 +153,7 @@
                         <form asp-action="CancelOrder" asp-route-id="@Model.Id" method="post" class="d-inline">
                             @Html.AntiForgeryToken()
                             <button type="submit"
-                                    class="btn btn-outline-light"
-                                    onclick="return confirm('Сигурни ли сте, че искате да откажете поръчката?');">
+                                    class="btn btn-outline-light" data-confirm-message="Сигурни ли сте, че искате да откажете поръчката?">
                                 Cancel
                             </button>
                         </form>
@@ -168,8 +164,7 @@
                         <form asp-action="DeleteOrder" asp-route-id="@Model.Id" method="post" class="d-inline">
                             @Html.AntiForgeryToken()
                             <button type="submit"
-                                    class="btn btn-danger"
-                                    onclick="return confirm('Сигурни ли сте, че искате да изтриете поръчката?');">
+                                    class="btn btn-danger" data-confirm-message="Сигурни ли сте, че искате да изтриете поръчката?">
                                 Изтрий
                             </button>
                         </form>
@@ -241,8 +236,7 @@
                                                                           class="d-inline">
                                                                         @Html.AntiForgeryToken()
                                                                         <button type="submit"
-                                                                                class="btn btn-sm btn-danger"
-                                                                                onclick="return confirm('Сигурни ли сте, че искате да изтриете този ред?');">
+                                                                                class="btn btn-sm btn-danger" data-confirm-message="Сигурни ли сте, че искате да изтриете този ред?">
                                                                             Изтриване
                                                                         </button>
                                                                     </form>
@@ -315,3 +309,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

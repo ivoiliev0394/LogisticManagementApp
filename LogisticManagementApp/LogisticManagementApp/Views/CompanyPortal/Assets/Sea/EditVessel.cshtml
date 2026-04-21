@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Assets.Sea.VesselEditViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Assets.Sea.VesselEditViewModel
 
 @{
     ViewData["Title"] = "Редакция на vessel";
@@ -19,7 +19,6 @@
                 <form asp-action="EditVessel" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <input asp-for="Id" type="hidden" />
 
@@ -27,16 +26,19 @@
                         <div class="col-md-6">
                             <label asp-for="Name" class="form-label"></label>
                             <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <label asp-for="ImoNumber" class="form-label"></label>
                             <input asp-for="ImoNumber" class="form-control" />
+                            <span asp-validation-for="ImoNumber" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <label asp-for="MmsiNumber" class="form-label"></label>
                             <input asp-for="MmsiNumber" class="form-control" />
+                            <span asp-validation-for="MmsiNumber" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -44,6 +46,7 @@
                             <select asp-for="VesselType"
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Assets.VesselType>()"
                                     class="form-select"></select>
+                                    <span asp-validation-for="VesselType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -51,21 +54,25 @@
                             <select asp-for="Status"
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Assets.AssetStatus>()"
                                     class="form-select"></select>
+                                    <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="CapacityTeu" class="form-label"></label>
                             <input asp-for="CapacityTeu" class="form-control" />
+                            <span asp-validation-for="CapacityTeu" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="DeadweightTons" class="form-label"></label>
                             <input asp-for="DeadweightTons" class="form-control" />
+                            <span asp-validation-for="DeadweightTons" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-check mt-4 pt-2">
                                 <input asp-for="IsActive" class="form-check-input" />
+                                <span asp-validation-for="IsActive" class="text-danger"></span>
                                 <label asp-for="IsActive" class="form-check-label">
                                     Активен
                                 </label>
@@ -77,6 +84,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

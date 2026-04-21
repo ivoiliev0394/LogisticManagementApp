@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Pricing.AgreementCreateViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Pricing.AgreementCreateViewModel
 @using LogisticManagementApp.Domain.Enums.Pricing
 
 @{
@@ -20,7 +20,6 @@
                 <form asp-action="CreateAgreement" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -35,6 +34,7 @@
                                     asp-items="Html.GetEnumSelectList<AgreementType>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="AgreementType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -42,6 +42,7 @@
                             <input asp-for="ValidFromUtc"
                                    type="date"
                                    class="form-control" />
+                                   <span asp-validation-for="ValidFromUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -49,18 +50,21 @@
                             <input asp-for="ValidToUtc"
                                    type="date"
                                    class="form-control" />
+                                   <span asp-validation-for="ValidToUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="Currency" class="form-label"></label>
                             <input asp-for="Currency"
                                    class="form-control" />
+                                   <span asp-validation-for="Currency" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="PaymentTerms" class="form-label"></label>
                             <input asp-for="PaymentTerms"
                                    class="form-control" />
+                                   <span asp-validation-for="PaymentTerms" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -68,12 +72,14 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="4"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <div class="form-check form-switch">
                                 <input asp-for="IsActive"
                                        class="form-check-input" />
+                                       <span asp-validation-for="IsActive" class="text-danger"></span>
                                 <label asp-for="IsActive"
                                        class="form-check-label">
                                     Активен

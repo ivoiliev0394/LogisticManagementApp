@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Billing.ChargeRuleAppliedCreateViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Billing.ChargeRuleAppliedCreateViewModel
 
 @{
     ViewData["Title"] = "Ново charge rule";
@@ -20,7 +20,6 @@
                 <form asp-action="CreateChargeRuleApplied" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -30,31 +29,37 @@
                                     class="form-select">
                                 <option value="">Избери charge</option>
                             </select>
+                            <span asp-validation-for="ChargeId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="SourceEntityType" class="form-label"></label>
                             <input asp-for="SourceEntityType" class="form-control" />
+                            <span asp-validation-for="SourceEntityType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="SourceEntityId" class="form-label"></label>
                             <input asp-for="SourceEntityId" class="form-control" />
+                            <span asp-validation-for="SourceEntityId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="RuleCode" class="form-label"></label>
                             <input asp-for="RuleCode" class="form-control" />
+                            <span asp-validation-for="RuleCode" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="RuleDescription" class="form-label"></label>
                             <input asp-for="RuleDescription" class="form-control" />
+                            <span asp-validation-for="RuleDescription" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="AppliedAmount" class="form-label"></label>
                             <input asp-for="AppliedAmount" class="form-control" />
+                            <span asp-validation-for="AppliedAmount" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -62,6 +67,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="4"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

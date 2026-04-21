@@ -1,4 +1,4 @@
-@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Pricing.PricingQuoteListItemViewModel>
+﻿@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Pricing.PricingQuoteListItemViewModel>
 
 @{
     ViewData["Title"] = "Pricing Quotes";
@@ -26,10 +26,7 @@
                         Нов pricing quote
                     </a>
                 </div>
-
-                <partial name="_StatusMessage" />
-
-                @if (!Model.Any())
+@if (!Model.Any())
                 {
                     <div class="alert alert-info mb-0">
                         Няма налични записи.
@@ -127,3 +124,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

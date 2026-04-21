@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.AdminPortal.AdminEntityListViewModel
+﻿@model LogisticManagementApp.Models.AdminPortal.AdminEntityListViewModel
 @{
     ViewData["Title"] = $"Admin · {Model.DisplayName}";
 }
@@ -14,10 +14,7 @@
             <a asp-action="Create" asp-route-entity="@Model.EntityName" class="btn btn-success">Нов запис</a>
         </div>
     </div>
-
-    @await Html.PartialAsync("~/Views/Shared/_StatusMessage.cshtml")
-
-    <div class="card shadow-sm">
+<div class="card shadow-sm">
         <div class="card-body border-bottom">
             <form method="get" asp-action="Entities" class="row g-2 align-items-end">
                 <input type="hidden" name="entity" value="@Model.EntityName" />

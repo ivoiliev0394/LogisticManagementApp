@@ -10,19 +10,10 @@
             <div class="card-body p-4">
                 <h2 class="mb-3 text-center text-success">LogisticApp Login</h2>
                 <p class="text-muted text-center mb-4">Влез в системата</p>
-
-                @if (TempData["SuccessMessage"] is string successMessage)
-                {
-                    <div class="alert alert-success mb-3">
-                        @successMessage
-                    </div>
-                }
-
-                <form asp-action="Login" method="post">
+<form asp-action="Login" method="post">
                     @Html.AntiForgeryToken()
                     <input asp-for="ReturnUrl" type="hidden" />
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="mb-3">
                         <label asp-for="UsernameOrEmail" class="form-label"></label>
@@ -38,6 +29,7 @@
 
                     <div class="form-check mb-3">
                         <input asp-for="RememberMe" class="form-check-input" />
+                        <span asp-validation-for="RememberMe" class="text-danger"></span>
                         <label asp-for="RememberMe" class="form-check-label"></label>
                     </div>
 

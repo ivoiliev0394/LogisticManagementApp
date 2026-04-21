@@ -1,4 +1,4 @@
-using LogisticManagementApp.Applicationn.Interfaces.AdminPortal;
+﻿using LogisticManagementApp.Applicationn.Interfaces.AdminPortal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -56,6 +56,17 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(string entity, IFormCollection form)
         {
+            var model = _adminCrudService.GetCreateForm(entity);
+            var requiredSummaryMessages = ValidateRequiredFields(model, form, isEdit: false);
+            ViewBag.RequiredSummaryMessages = requiredSummaryMessages;
+
+            if (!ModelState.IsValid)
+            {
+                ApplyPostedValues(model, form);
+                ViewData["Title"] = $"Admin · Нов {model.DisplayName}";
+                return View("~/Views/Admin/Form.cshtml", model);
+            }
+
             try
             {
                 var key = _adminCrudService.CreateEntity(entity, ExtractValues(form));
@@ -65,8 +76,8 @@ namespace LogisticManagementApp.Controllers
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = ex.Message;
-                var model = _adminCrudService.GetCreateForm(entity);
                 ApplyPostedValues(model, form);
+                ViewData["Title"] = $"Admin · Нов {model.DisplayName}";
                 return View("~/Views/Admin/Form.cshtml", model);
             }
         }
@@ -85,6 +96,19 @@ namespace LogisticManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(string entity, string key, IFormCollection form)
         {
+            var model = _adminCrudService.GetEditForm(entity, key);
+            if (model == null) return NotFound();
+
+            var requiredSummaryMessages = ValidateRequiredFields(model, form, isEdit: true);
+            ViewBag.RequiredSummaryMessages = requiredSummaryMessages;
+
+            if (!ModelState.IsValid)
+            {
+                ApplyPostedValues(model, form);
+                ViewData["Title"] = $"Admin · Редакция {model.DisplayName}";
+                return View("~/Views/Admin/Form.cshtml", model);
+            }
+
             try
             {
                 if (!_adminCrudService.UpdateEntity(entity, key, ExtractValues(form)))
@@ -96,10 +120,8 @@ namespace LogisticManagementApp.Controllers
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = ex.Message;
-                var model = _adminCrudService.GetEditForm(entity, key);
-                if (model == null) return NotFound();
-
                 ApplyPostedValues(model, form);
+                ViewData["Title"] = $"Admin · Редакция {model.DisplayName}";
                 return View("~/Views/Admin/Form.cshtml", model);
             }
         }
@@ -133,6 +155,39 @@ namespace LogisticManagementApp.Controllers
             }
         }
 
+
+        private List<string> ValidateRequiredFields(LogisticManagementApp.Models.AdminPortal.AdminEntityFormViewModel model, IFormCollection form, bool isEdit)
+        {
+            var requiredSummaryMessages = new List<string>();
+
+            foreach (var field in model.Fields)
+            {
+                if (field.IsHidden)
+                    continue;
+
+                if (isEdit && field.IsKey)
+                    continue;
+
+                if (!isEdit && field.IsReadOnly)
+                    continue;
+
+                if (field.IsNullable)
+                    continue;
+
+                if (string.Equals(field.DataType, "checkbox", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                if (!form.TryGetValue(field.Name, out var postedValue) || string.IsNullOrWhiteSpace(postedValue.ToString()))
+                {
+                    var message = $"Полето {field.DisplayName} е задължително.";
+                    requiredSummaryMessages.Add(message);
+                    ModelState.AddModelError(field.Name, message);
+                }
+            }
+
+            return requiredSummaryMessages;
+        }
+
         private static Dictionary<string, string?> ExtractValues(IFormCollection form)
         {
             return form.Keys
@@ -147,6 +202,11 @@ namespace LogisticManagementApp.Controllers
         {
             foreach (var field in model.Fields)
             {
+                if (field.IsHidden)
+                {
+                    continue;
+                }
+
                 if (field.DataType == "checkbox")
                 {
                     field.Value = form.ContainsKey(field.Name) ? "true" : "false";

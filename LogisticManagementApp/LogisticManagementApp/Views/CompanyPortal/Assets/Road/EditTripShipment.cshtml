@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Assets.Road.TripShipmentEditViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Assets.Road.TripShipmentEditViewModel
 
 @{
     ViewData["Title"] = "Редакция на trip shipment";
@@ -19,7 +19,6 @@
                 <form asp-action="EditTripShipment" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <input asp-for="Id" type="hidden" />
 
@@ -31,6 +30,7 @@
                                     class="form-select">
                                 <option value="">-- Избери --</option>
                             </select>
+                            <span asp-validation-for="TripId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -40,6 +40,7 @@
                                     class="form-select">
                                 <option value="">-- Избери --</option>
                             </select>
+                            <span asp-validation-for="ShipmentId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -49,6 +50,7 @@
                                     class="form-select">
                                 <option value="">-- Няма --</option>
                             </select>
+                            <span asp-validation-for="ShipmentLegId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -58,6 +60,7 @@
                                     class="form-select">
                                 <option value="">-- Няма --</option>
                             </select>
+                            <span asp-validation-for="PickupTripStopId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -67,11 +70,13 @@
                                     class="form-select">
                                 <option value="">-- Няма --</option>
                             </select>
+                            <span asp-validation-for="DeliveryTripStopId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="Priority" class="form-label"></label>
                             <input asp-for="Priority" class="form-control" />
+                            <span asp-validation-for="Priority" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -79,6 +84,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

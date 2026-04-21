@@ -1,4 +1,4 @@
-@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Billing.TaxRateListItemViewModel>
+﻿@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Billing.TaxRateListItemViewModel>
 
 @{
     ViewData["Title"] = "Tax Rates";
@@ -23,10 +23,7 @@
                         </p>
                     </div>
                 </div>
-
-                <partial name="_StatusMessage" />
-
-                @if (!Model.Any())
+@if (!Model.Any())
                 {
                     <div class="alert alert-info mb-0">
                         Няма налични записи.

@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Assets.Air.AirCrewAssignmentEditViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Assets.Air.AirCrewAssignmentEditViewModel
 
 @{
     ViewData["Title"] = "Редакция на air crew assignment";
@@ -21,7 +21,6 @@
                     <input asp-for="Id" type="hidden" />
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
 
@@ -32,6 +31,7 @@
                                     class="form-select">
                                 <option value="">-- Избери --</option>
                             </select>
+                            <span asp-validation-for="FlightId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -41,6 +41,7 @@
                                     class="form-select">
                                 <option value="">-- Избери --</option>
                             </select>
+                            <span asp-validation-for="AirCrewMemberId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -48,16 +49,19 @@
                             <select asp-for="AssignedRole"
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Assets.AirCrewRole>()"
                                     class="form-select"></select>
+                                    <span asp-validation-for="AssignedRole" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="AssignedAtUtc" class="form-label"></label>
                             <input asp-for="AssignedAtUtc" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="AssignedAtUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="Notes" class="form-label"></label>
                             <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
 
                     </div>

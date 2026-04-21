@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Billing.PaymentEditViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Billing.PaymentEditViewModel
 @using LogisticManagementApp.Domain.Enums.Billing
 
 @{
@@ -23,7 +23,6 @@
 
                     <input asp-for="Id" type="hidden" />
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -33,6 +32,7 @@
                                     class="form-select">
                                 <option value="">Избери invoice</option>
                             </select>
+                            <span asp-validation-for="InvoiceId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -41,6 +41,7 @@
                                     asp-items="Html.GetEnumSelectList<PaymentMethod>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -48,16 +49,19 @@
                             <input asp-for="PaymentDateUtc"
                                    type="datetime-local"
                                    class="form-control" />
+                                   <span asp-validation-for="PaymentDateUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="Amount" class="form-label"></label>
                             <input asp-for="Amount" class="form-control" />
+                            <span asp-validation-for="Amount" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="Currency" class="form-label"></label>
                             <input asp-for="Currency" class="form-control" />
+                            <span asp-validation-for="Currency" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -66,11 +70,13 @@
                                     asp-items="Html.GetEnumSelectList<PaymentStatus>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="TransactionReference" class="form-label"></label>
                             <input asp-for="TransactionReference" class="form-control" />
+                            <span asp-validation-for="TransactionReference" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -78,6 +84,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="4"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

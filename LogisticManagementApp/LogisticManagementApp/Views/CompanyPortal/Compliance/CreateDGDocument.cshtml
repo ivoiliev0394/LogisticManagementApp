@@ -19,7 +19,6 @@
                 <form asp-action="CreateDGDocument" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -29,6 +28,7 @@
                                     class="form-select">
                                 <option value="">Избери declaration</option>
                             </select>
+                            <span asp-validation-for="DangerousGoodsDeclarationId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -38,16 +38,19 @@
                                     class="form-select">
                                 <option value="">Избери file resource</option>
                             </select>
+                            <span asp-validation-for="FileResourceId" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="DocumentName" class="form-label"></label>
                             <input asp-for="DocumentName" class="form-control" />
+                            <span asp-validation-for="DocumentName" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="Notes" class="form-label"></label>
                             <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

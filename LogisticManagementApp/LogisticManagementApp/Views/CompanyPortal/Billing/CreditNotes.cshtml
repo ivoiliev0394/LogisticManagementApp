@@ -1,4 +1,4 @@
-@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Billing.CreditNoteListItemViewModel>
+﻿@model IEnumerable<LogisticManagementApp.Models.CompanyPortal.Billing.CreditNoteListItemViewModel>
 
 @{
     ViewData["Title"] = "Credit Notes";
@@ -27,10 +27,7 @@
                         Нова credit note
                     </a>
                 </div>
-
-                <partial name="_StatusMessage" />
-
-                @if (!Model.Any())
+@if (!Model.Any())
                 {
                     <div class="alert alert-info mb-0">
                         Няма налични записи.
@@ -127,3 +124,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

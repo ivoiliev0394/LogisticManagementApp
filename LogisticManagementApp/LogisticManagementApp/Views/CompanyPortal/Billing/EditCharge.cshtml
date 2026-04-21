@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Billing.ChargeEditViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Billing.ChargeEditViewModel
 @using LogisticManagementApp.Domain.Enums.Billing
 
 @{
@@ -23,7 +23,6 @@
 
                     <input asp-for="Id" type="hidden" />
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -33,6 +32,7 @@
                                     class="form-select">
                                 <option value="">Избери shipment</option>
                             </select>
+                            <span asp-validation-for="ShipmentId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -42,31 +42,37 @@
                                     class="form-select">
                                 <option value="">Без leg</option>
                             </select>
+                            <span asp-validation-for="ShipmentLegId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="ChargeCode" class="form-label"></label>
                             <input asp-for="ChargeCode" class="form-control" />
+                            <span asp-validation-for="ChargeCode" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-8">
                             <label asp-for="Description" class="form-label"></label>
                             <input asp-for="Description" class="form-control" />
+                            <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <label asp-for="Quantity" class="form-label"></label>
                             <input asp-for="Quantity" class="form-control" />
+                            <span asp-validation-for="Quantity" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <label asp-for="UnitPrice" class="form-label"></label>
                             <input asp-for="UnitPrice" class="form-control" />
+                            <span asp-validation-for="UnitPrice" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <label asp-for="Currency" class="form-label"></label>
                             <input asp-for="Currency" class="form-control" />
+                            <span asp-validation-for="Currency" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
@@ -75,11 +81,13 @@
                                     asp-items="Html.GetEnumSelectList<ChargeSourceType>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="SourceType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="TaxRatePercent" class="form-label"></label>
                             <input asp-for="TaxRatePercent" class="form-control" />
+                            <span asp-validation-for="TaxRatePercent" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -87,11 +95,13 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="4"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <div class="form-check">
                                 <input asp-for="IsTaxable" class="form-check-input" />
+                                <span asp-validation-for="IsTaxable" class="text-danger"></span>
                                 <label asp-for="IsTaxable" class="form-check-label">
                                     Taxable
                                 </label>

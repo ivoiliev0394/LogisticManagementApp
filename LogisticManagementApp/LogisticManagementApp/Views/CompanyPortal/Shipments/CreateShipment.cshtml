@@ -22,19 +22,26 @@
 
                 <form asp-action="CreateShipment" method="post">
                     @Html.AntiForgeryToken()
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label asp-for="ShipmentNo" class="form-label"></label>
+                            <input asp-for="ShipmentNo" class="form-control" />
+                            <span asp-validation-for="ShipmentNo" class="text-danger"></span>
+                        </div>
+
                         <div class="col-12 col-md-6">
                             <label asp-for="OrderId" class="form-label"></label>
                             <select asp-for="OrderId" asp-items="Model.OrderOptions" class="form-select">
                                 <option value="">Без обвързана поръчка</option>
                             </select>
+                            <span asp-validation-for="OrderId" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label asp-for="Status" class="form-label"></label>
                             <select asp-for="Status" asp-items="Html.GetEnumSelectList<ShipmentStatus>()" class="form-select"></select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
@@ -42,6 +49,7 @@
                             <select asp-for="SenderAddressId" asp-items="Model.AddressOptions" class="form-select">
                                 <option value="">Изберете sender address</option>
                             </select>
+                            <span asp-validation-for="SenderAddressId" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
@@ -49,11 +57,13 @@
                             <select asp-for="ReceiverAddressId" asp-items="Model.AddressOptions" class="form-select">
                                 <option value="">Изберете receiver address</option>
                             </select>
+                            <span asp-validation-for="ReceiverAddressId" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label asp-for="PrimaryMode" class="form-label"></label>
                             <select asp-for="PrimaryMode" asp-items="Html.GetEnumSelectList<TransportMode>()" class="form-select"></select>
+                            <span asp-validation-for="PrimaryMode" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
@@ -61,26 +71,31 @@
                             <select asp-for="Incoterm" asp-items="Html.GetEnumSelectList<Incoterm>()" class="form-select">
                                 <option value="">Без incoterm</option>
                             </select>
+                            <span asp-validation-for="Incoterm" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label asp-for="DeclaredValue" class="form-label"></label>
                             <input asp-for="DeclaredValue" class="form-control" />
+                            <span asp-validation-for="DeclaredValue" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label asp-for="Currency" class="form-label"></label>
                             <input asp-for="Currency" class="form-control" placeholder="EUR" />
+                            <span asp-validation-for="Currency" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="CustomerReference" class="form-label"></label>
                             <input asp-for="CustomerReference" class="form-control" />
+                            <span asp-validation-for="CustomerReference" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="Notes" class="form-label"></label>
                             <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 
@@ -93,3 +108,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

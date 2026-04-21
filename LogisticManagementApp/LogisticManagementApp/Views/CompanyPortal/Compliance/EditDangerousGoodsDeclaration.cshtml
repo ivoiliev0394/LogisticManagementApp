@@ -20,7 +20,6 @@
                 <form asp-action="EditDangerousGoodsDeclaration" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -30,6 +29,7 @@
                                     class="form-select">
                                 <option value="">Избери shipment</option>
                             </select>
+                            <span asp-validation-for="ShipmentId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -39,16 +39,19 @@
                                     class="form-select">
                                 <option value="">Без package</option>
                             </select>
+                            <span asp-validation-for="PackageId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="UnNumber" class="form-label"></label>
                             <input asp-for="UnNumber" class="form-control" />
+                            <span asp-validation-for="UnNumber" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-8">
                             <label asp-for="ProperShippingName" class="form-label"></label>
                             <input asp-for="ProperShippingName" class="form-control" />
+                            <span asp-validation-for="ProperShippingName" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -57,6 +60,7 @@
                                     asp-items="Html.GetEnumSelectList<HazardClass>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="HazardClass" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -66,21 +70,25 @@
                                     class="form-select">
                                 <option value="">Без group</option>
                             </select>
+                            <span asp-validation-for="PackingGroup" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="NetQuantity" class="form-label"></label>
                             <input asp-for="NetQuantity" class="form-control" />
+                            <span asp-validation-for="NetQuantity" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="QuantityUnit" class="form-label"></label>
                             <input asp-for="QuantityUnit" class="form-control" />
+                            <span asp-validation-for="QuantityUnit" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-check mt-4 pt-2">
                                 <input asp-for="RequiresSpecialHandling" class="form-check-input" />
+                                <span asp-validation-for="RequiresSpecialHandling" class="text-danger"></span>
                                 <label asp-for="RequiresSpecialHandling" class="form-check-label">
                                     Requires special handling
                                 </label>
@@ -92,6 +100,7 @@
                             <textarea asp-for="HandlingInstructions"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="HandlingInstructions" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -99,6 +108,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

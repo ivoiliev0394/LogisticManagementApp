@@ -1,4 +1,4 @@
-html {
+﻿html {
     position: relative;
     min-height: 100%;
     font-size: 14px;
@@ -1181,4 +1181,26 @@ span.flatpickr-weekday {
 .pagination .page-link:hover {
     background: rgba(61, 220, 132, 0.10);
     border-color: rgba(61, 220, 132, 0.45);
+}
+
+
+.custom-confirm-modal {
+    background: #1f2430;
+    color: #f8f9fa;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.custom-confirm-modal .modal-title {
+    color: #ffffff;
+}
+
+.custom-confirm-modal .btn-close {
+    filter: invert(1) grayscale(1) brightness(200%);
+}
+
+.custom-confirm-modal .modal-body {
+    font-size: 1rem;
+    line-height: 1.6;
 }

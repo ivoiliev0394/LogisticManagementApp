@@ -128,7 +128,7 @@
     </header>
 
     <div class="container">
-        <partial name="_StatusMessage" />
+        <partial name="_StatusMessage" model="null" />
 
         <main role="main" class="pb-3">
             @RenderBody()
@@ -141,9 +141,32 @@
         </div>
     </footer>
 
+    <div class="modal fade" id="customDeleteConfirmModal" tabindex="-1" aria-labelledby="customDeleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-confirm-modal">
+                <div class="modal-header border-0 pb-0">
+                    <div>
+                        <span class="badge bg-danger-subtle text-danger-emphasis mb-2">Потвърждение</span>
+                        <h5 class="modal-title" id="customDeleteConfirmModalLabel">Потвърждение за изтриване</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-3">
+                    <p class="mb-0" id="customDeleteConfirmModalMessage">Сигурни ли сте, че искате да изтриете този запис?</p>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Отказ</button>
+                    <button type="button" class="btn btn-danger" id="customDeleteConfirmModalApprove">Да, изтрий</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/decimal-input-fix.js" asp-append-version="true"></script>
+    <script src="~/js/auto-generated-fields.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

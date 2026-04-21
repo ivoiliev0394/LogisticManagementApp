@@ -19,7 +19,6 @@
                 <form asp-action="CreateResourceAvailability" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-4">
@@ -28,6 +27,7 @@
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Operations.ResourceType>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="ResourceType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-8">
@@ -37,16 +37,19 @@
                                     class="form-select">
                                 <option value="">Избери resource</option>
                             </select>
+                            <span asp-validation-for="ResourceId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="AvailableFromUtc" class="form-label"></label>
                             <input asp-for="AvailableFromUtc" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="AvailableFromUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="AvailableToUtc" class="form-label"></label>
                             <input asp-for="AvailableToUtc" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="AvailableToUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -55,16 +58,19 @@
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Operations.AvailabilityStatus>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="Reason" class="form-label"></label>
                             <input asp-for="Reason" class="form-control" />
+                            <span asp-validation-for="Reason" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="Notes" class="form-label"></label>
                             <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

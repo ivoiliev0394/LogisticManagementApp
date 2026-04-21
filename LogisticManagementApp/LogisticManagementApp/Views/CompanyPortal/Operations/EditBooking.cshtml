@@ -20,12 +20,12 @@
                     @Html.AntiForgeryToken()
                     <input asp-for="Id" type="hidden" />
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label asp-for="BookingNo" class="form-label"></label>
                             <input asp-for="BookingNo" class="form-control" />
+                            <span asp-validation-for="BookingNo" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -35,6 +35,7 @@
                                     class="form-select">
                                 <option value="">Без carrier</option>
                             </select>
+                            <span asp-validation-for="CarrierCompanyId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -44,6 +45,7 @@
                                     class="form-select">
                                 <option value="">Без shipment</option>
                             </select>
+                            <span asp-validation-for="ShipmentId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -52,6 +54,7 @@
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Operations.BookingStatus>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -60,11 +63,13 @@
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Shipments.TransportMode>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="TransportMode" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="CarrierReference" class="form-label"></label>
                             <input asp-for="CarrierReference" class="form-control" />
+                            <span asp-validation-for="CarrierReference" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -72,6 +77,7 @@
                             <input asp-for="RequestedAtUtc"
                                    type="datetime-local"
                                    class="form-control" />
+                                   <span asp-validation-for="RequestedAtUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -79,6 +85,7 @@
                             <input asp-for="ConfirmedAtUtc"
                                    type="datetime-local"
                                    class="form-control" />
+                                   <span asp-validation-for="ConfirmedAtUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -86,6 +93,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

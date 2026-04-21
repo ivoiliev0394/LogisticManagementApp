@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Pricing.PricingQuoteLineCreateViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Pricing.PricingQuoteLineCreateViewModel
 @using LogisticManagementApp.Domain.Enums.Pricing
 
 @{
@@ -20,7 +20,6 @@
                 <form asp-action="CreatePricingQuoteLine" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-4">
@@ -30,6 +29,7 @@
                                     class="form-select">
                                 <option value="">-- Избери --</option>
                             </select>
+                            <span asp-validation-for="PricingQuoteId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-2">
@@ -37,6 +37,7 @@
                             <input asp-for="LineNo"
                                    type="number"
                                    class="form-control" />
+                                   <span asp-validation-for="LineNo" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
@@ -45,18 +46,21 @@
                                     asp-items="Html.GetEnumSelectList<PricingQuoteLineType>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="LineType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <label asp-for="ReferenceCode" class="form-label"></label>
                             <input asp-for="ReferenceCode"
                                    class="form-control" />
+                                   <span asp-validation-for="ReferenceCode" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="Description" class="form-label"></label>
                             <input asp-for="Description"
                                    class="form-control" />
+                                   <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -65,6 +69,7 @@
                                    type="number"
                                    step="0.01"
                                    class="form-control" />
+                                   <span asp-validation-for="Quantity" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -73,6 +78,7 @@
                                    type="number"
                                    step="0.01"
                                    class="form-control" />
+                                   <span asp-validation-for="UnitPrice" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -81,6 +87,7 @@
                                    type="number"
                                    step="0.01"
                                    class="form-control" />
+                                   <span asp-validation-for="LineAmount" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -88,6 +95,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="4"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

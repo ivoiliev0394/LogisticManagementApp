@@ -19,7 +19,6 @@
                 <form asp-action="CreateDocumentVersion" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -27,6 +26,7 @@
                             <select asp-for="DocumentId" asp-items="Model.DocumentOptions" class="form-select">
                                 <option value="">Избери document</option>
                             </select>
+                            <span asp-validation-for="DocumentId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -34,21 +34,25 @@
                             <select asp-for="FileResourceId" asp-items="Model.FileResourceOptions" class="form-select">
                                 <option value="">Избери file resource</option>
                             </select>
+                            <span asp-validation-for="FileResourceId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
                             <label asp-for="VersionNo" class="form-label"></label>
                             <input asp-for="VersionNo" class="form-control" />
+                            <span asp-validation-for="VersionNo" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-5">
                             <label asp-for="CreatedOnUtc" class="form-label"></label>
                             <input asp-for="CreatedOnUtc" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="CreatedOnUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-12">
                             <label asp-for="ChangeDescription" class="form-label"></label>
                             <textarea asp-for="ChangeDescription" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="ChangeDescription" class="text-danger"></span>
                         </div>
                     </div>
 

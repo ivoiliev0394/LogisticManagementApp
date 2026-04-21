@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Routes.RoutePlanStopCreateViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Routes.RoutePlanStopCreateViewModel
 
 @{
     ViewData["Title"] = "Нов route plan stop";
@@ -19,7 +19,6 @@
                 <form asp-action="CreateRoutePlanStop" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -29,6 +28,7 @@
                                     class="form-select">
                                 <option value="">Избери route plan</option>
                             </select>
+                            <span asp-validation-for="RoutePlanId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -38,6 +38,7 @@
                                     class="form-select">
                                 <option value="">Без linked route stop</option>
                             </select>
+                            <span asp-validation-for="RouteStopId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -47,6 +48,7 @@
                                     class="form-select">
                                 <option value="">Избери location</option>
                             </select>
+                            <span asp-validation-for="LocationId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
@@ -55,6 +57,7 @@
                                    type="number"
                                    min="1"
                                    class="form-control" />
+                                   <span asp-validation-for="SequenceNo" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
@@ -63,6 +66,7 @@
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Routes.RouteStopType>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="StopType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -71,6 +75,7 @@
                                    type="datetime-local"
                                    step="60"
                                    class="form-control" />
+                                   <span asp-validation-for="PlannedArrivalUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -79,6 +84,7 @@
                                    type="datetime-local"
                                    step="60"
                                    class="form-control" />
+                                   <span asp-validation-for="PlannedDepartureUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -87,6 +93,7 @@
                                    type="datetime-local"
                                    step="60"
                                    class="form-control" />
+                                   <span asp-validation-for="ActualArrivalUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -95,6 +102,7 @@
                                    type="datetime-local"
                                    step="60"
                                    class="form-control" />
+                                   <span asp-validation-for="ActualDepartureUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -102,6 +110,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Assets.Road.TripStopCreateViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Assets.Road.TripStopCreateViewModel
 
 @{
     ViewData["Title"] = "Нов trip stop";
@@ -19,7 +19,6 @@
                 <form asp-action="CreateTripStop" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -29,6 +28,7 @@
                                     class="form-select">
                                 <option value="">-- Избери --</option>
                             </select>
+                            <span asp-validation-for="TripId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -38,11 +38,13 @@
                                     class="form-select">
                                 <option value="">-- Избери --</option>
                             </select>
+                            <span asp-validation-for="LocationId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="SequenceNumber" class="form-label"></label>
                             <input asp-for="SequenceNumber" class="form-control" />
+                            <span asp-validation-for="SequenceNumber" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -50,6 +52,7 @@
                             <input asp-for="PlannedArrivalUtc"
                                    type="datetime-local"
                                    class="form-control" />
+                                   <span asp-validation-for="PlannedArrivalUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -57,6 +60,7 @@
                             <input asp-for="PlannedDepartureUtc"
                                    type="datetime-local"
                                    class="form-control" />
+                                   <span asp-validation-for="PlannedDepartureUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -64,6 +68,7 @@
                             <input asp-for="ActualArrivalUtc"
                                    type="datetime-local"
                                    class="form-control" />
+                                   <span asp-validation-for="ActualArrivalUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -71,6 +76,7 @@
                             <input asp-for="ActualDepartureUtc"
                                    type="datetime-local"
                                    class="form-control" />
+                                   <span asp-validation-for="ActualDepartureUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -78,6 +84,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

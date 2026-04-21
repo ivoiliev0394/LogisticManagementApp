@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Routes.RouteStopCreateViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Routes.RouteStopCreateViewModel
 
 @{
     ViewData["Title"] = "Нов route stop";
@@ -19,7 +19,6 @@
                 <form asp-action="CreateRouteStop" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -29,6 +28,7 @@
                                     class="form-select">
                                 <option value="">Избери route</option>
                             </select>
+                            <span asp-validation-for="RouteId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -38,6 +38,7 @@
                                     class="form-select">
                                 <option value="">Избери location</option>
                             </select>
+                            <span asp-validation-for="LocationId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -45,6 +46,7 @@
                             <input asp-for="SequenceNo"
                                    type="number"
                                    class="form-control" />
+                                   <span asp-validation-for="SequenceNo" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -53,6 +55,7 @@
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Routes.RouteStopType>()"
                                     class="form-select">
                             </select>
+                            <span asp-validation-for="StopType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -60,6 +63,7 @@
                             <input asp-for="PlannedArrivalTime"
                                    type="time"
                                    class="form-control" />
+                                   <span asp-validation-for="PlannedArrivalTime" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -67,6 +71,7 @@
                             <input asp-for="PlannedDepartureTime"
                                    type="time"
                                    class="form-control" />
+                                   <span asp-validation-for="PlannedDepartureTime" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
@@ -74,6 +79,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 

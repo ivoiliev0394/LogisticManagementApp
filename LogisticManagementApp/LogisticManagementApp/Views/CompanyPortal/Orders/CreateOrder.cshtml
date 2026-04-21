@@ -22,14 +22,20 @@
 
                 <form asp-action="CreateOrder" method="post">
                     @Html.AntiForgeryToken()
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label asp-for="OrderNo" class="form-label"></label>
+                            <input asp-for="OrderNo" class="form-control" />
+                            <span asp-validation-for="OrderNo" class="text-danger"></span>
+                        </div>
+
                         <div class="col-12 col-md-6">
                             <label asp-for="PickupAddressId" class="form-label"></label>
                             <select asp-for="PickupAddressId" asp-items="Model.AddressOptions" class="form-select">
                                 <option value="">Изберете pickup адрес</option>
                             </select>
+                            <span asp-validation-for="PickupAddressId" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
@@ -37,27 +43,32 @@
                             <select asp-for="DeliveryAddressId" asp-items="Model.AddressOptions" class="form-select">
                                 <option value="">Изберете delivery адрес</option>
                             </select>
+                            <span asp-validation-for="DeliveryAddressId" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label asp-for="Priority" class="form-label"></label>
                             <select asp-for="Priority" class="form-select"
                                     asp-items="Html.GetEnumSelectList<OrderPriority>()"></select>
+                                    <span asp-validation-for="Priority" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label asp-for="RequestedPickupDateUtc" class="form-label"></label>
                             <input asp-for="RequestedPickupDateUtc" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="RequestedPickupDateUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="CustomerReference" class="form-label"></label>
                             <input asp-for="CustomerReference" class="form-control" />
+                            <span asp-validation-for="CustomerReference" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="Notes" class="form-label"></label>
                             <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 
@@ -70,3 +81,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

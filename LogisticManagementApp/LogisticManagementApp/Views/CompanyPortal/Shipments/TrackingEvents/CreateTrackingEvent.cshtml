@@ -24,17 +24,18 @@
                     @Html.AntiForgeryToken()
                     <input asp-for="ShipmentId" type="hidden" />
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-12 col-md-6">
                             <label asp-for="EventType" class="form-label"></label>
                             <select asp-for="EventType" asp-items="Html.GetEnumSelectList<TrackingEventType>()" class="form-select"></select>
+                            <span asp-validation-for="EventType" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label asp-for="EventTimeUtc" class="form-label"></label>
                             <input asp-for="EventTimeUtc" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="EventTimeUtc" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
@@ -42,16 +43,19 @@
                             <select asp-for="LocationId" asp-items="Model.LocationOptions" class="form-select">
                                 <option value="">Без location</option>
                             </select>
+                            <span asp-validation-for="LocationId" class="text-danger"></span>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label asp-for="Source" class="form-label"></label>
                             <input asp-for="Source" class="form-control" placeholder="UI" />
+                            <span asp-validation-for="Source" class="text-danger"></span>
                         </div>
 
                         <div class="col-12">
                             <label asp-for="Details" class="form-label"></label>
                             <textarea asp-for="Details" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Details" class="text-danger"></span>
                         </div>
                     </div>
 
@@ -68,3 +72,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

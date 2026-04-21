@@ -1,4 +1,4 @@
-@model LogisticManagementApp.Models.CompanyPortal.Assets.CargoUnits.ContainerCreateViewModel
+﻿@model LogisticManagementApp.Models.CompanyPortal.Assets.CargoUnits.ContainerCreateViewModel
 
 @{
     ViewData["Title"] = "Нов container";
@@ -19,12 +19,12 @@
                 <form asp-action="CreateContainer" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label asp-for="ContainerNumber" class="form-label"></label>
                             <input asp-for="ContainerNumber" class="form-control" />
+                            <span asp-validation-for="ContainerNumber" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -32,6 +32,7 @@
                             <select asp-for="ContainerType"
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Shipments.ContainerType>()"
                                     class="form-select"></select>
+                                    <span asp-validation-for="ContainerType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
@@ -39,31 +40,37 @@
                             <select asp-for="Status"
                                     asp-items="Html.GetEnumSelectList<LogisticManagementApp.Domain.Enums.Shipments.ContainerStatus>()"
                                     class="form-select"></select>
+                                    <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="TareWeightKg" class="form-label"></label>
                             <input asp-for="TareWeightKg" class="form-control" />
+                            <span asp-validation-for="TareWeightKg" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="MaxGrossWeightKg" class="form-label"></label>
                             <input asp-for="MaxGrossWeightKg" class="form-control" />
+                            <span asp-validation-for="MaxGrossWeightKg" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label asp-for="VolumeCbm" class="form-label"></label>
                             <input asp-for="VolumeCbm" class="form-control" />
+                            <span asp-validation-for="VolumeCbm" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="SealNumber" class="form-label"></label>
                             <input asp-for="SealNumber" class="form-control" />
+                            <span asp-validation-for="SealNumber" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-check mt-4 pt-2">
                                 <input asp-for="IsActive" class="form-check-input" />
+                                <span asp-validation-for="IsActive" class="text-danger"></span>
                                 <label asp-for="IsActive" class="form-check-label">
                                     Активен
                                 </label>
@@ -75,6 +82,7 @@
                             <textarea asp-for="Notes"
                                       class="form-control"
                                       rows="3"></textarea>
+                                      <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
                     </div>
 
